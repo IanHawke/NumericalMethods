@@ -1,0 +1,246 @@
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+         % Information sheet for the Matlab lab - Maths 6111 %
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[10pt]{article} 
+\input ma_no_html_header
+
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{breaklinks=true,colorlinks=true}
+%\input ma_header
+\setlength{\parindent}{0pt}
+\pagestyle{myheadings}
+% \markright{
+% \protect {\protect \epsfxsize=0.2 true cm \protect \epsffile {dolph.line.eps}}
+% \it Maths 3018/6111 - Numerical methods \hfill}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{center}
+\textbf{\Large Maths 3018/6111 - Numerical Methods \\*[8mm]
+Worksheet 4 - Solutions}\\*[.8cm]
+\end{center}
+
+\section*{Theory}
+
+\begin{enumerate}
+\item Convert the ODE
+  \begin{equation*}
+    y''' + x y'' + 3 y' + y = e^{-x}
+  \end{equation*}
+  into a first order system of ODEs.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  Step by step we introduce
+  \begin{align*}
+    u & = y' \\
+    v & = u' \\
+      & = y''.
+  \end{align*}
+  We can therefore write the ODE into a system of ODEs. The first
+  order ODEs for $y$ and $u$ are given by the definitions above. The
+  ODE for $v$ is given from the original equation, substituting in the
+  definition of $u$ where appropriate, to get
+  \begin{align*}
+    \begin{pmatrix}
+      y \\ u \\ v
+    \end{pmatrix}' & =
+    \begin{pmatrix}
+      u \\ v \\ e^{-x} - x y'' - 3 y' - y
+    \end{pmatrix} \\
+    & =
+    \begin{pmatrix}
+      u \\ v \\ e^{-x} - x v - 3 u - y
+    \end{pmatrix}.
+  \end{align*}
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\item Show by Taylor expansion that the backwards differencing
+  estimate of $f'(x)$,
+  \begin{equation*}
+    f'(x) \simeq \frac{f(x) - f(x-h)}{h}
+  \end{equation*}
+  is first order accurate.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  We have the Taylor series expansion of $f(x-h)$ about $x$ is
+  \begin{equation*}
+    f(x-h) = f(x) - h f'(x) + \frac{h^2}{2!} f''(x) + {\cal O}(h^3).
+  \end{equation*}
+  Substituting this in to the backwards difference formula we find
+  \begin{align*}
+    \frac{f(x) - f(x-h)}{h} & = \frac{f(x) - f(x) + h f'(x) -
+      \frac{h^2}{2!} f''(x) + {\cal O}(h^3)}{h} \\
+    & = f'(x) - \frac{h}{2!} f''(x) + {\cal O}(h^2).
+  \end{align*}
+  Therefore the difference between the exact derivative $f'$ and the
+  backwards difference estimate is $\propto h$ and hence the finite
+  difference estimate is first order accurate.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\item Use Taylor expansion to derive a symmetric or central difference
+  estimate of $f^{(4)}(x)$ on a grid with spacing $h$.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  For this we need the Taylor expansions
+  \begin{align*}
+    f(x + h) & = f(x) + h f^{(1)}(x) + \frac{h^2}{2!} f^{(2)}(x) +
+    \frac{h^3}{3!} f^{(3)}(x) + \frac{h^4}{4!} f^{(4)}(x) +
+    \frac{h^5}{5!} f^{(5)}(x) + \dots \\
+    f(x - h) & = f(x) - h f^{(1)}(x) + \frac{h^2}{2!} f^{(2)}(x) -
+    \frac{h^3}{3!} f^{(3)}(x) + \frac{h^4}{4!} f^{(4)}(x) -
+    \frac{h^5}{5!} f^{(5)}(x) + \dots \\
+    f(x + 2 h) & = f(x) + 2 h f^{(1)}(x) + \frac{4 h^2}{2!} f^{(2)}(x) +
+    \frac{8 h^3}{3!} f^{(3)}(x) + \frac{16 h^4}{4!} f^{(4)}(x) +
+    \frac{32 h^5}{5!} f^{(5)}(x) + \dots \\
+    f(x - 2 h) & = f(x) - 2 h f^{(1)}(x) + \frac{4 h^2}{2!} f^{(2)}(x) -
+    \frac{8 h^3}{3!} f^{(3)}(x) + \frac{16 h^4}{4!} f^{(4)}(x) -
+    \frac{32 h^5}{5!} f^{(5)}(x) + \dots 
+  \end{align*}
+  By a central or symmetric difference estimate we mean that the
+  coefficient of $f(x \pm n h)$ should have the same magnitude. By
+  comparison with central difference estimates for first and second
+  derivatives we see that for odd order derivatives the coefficients
+  should have opposite signs and for even order the same sign.
+
+  So we write our estimate as
+  \begin{equation*}
+    f^{(4)}(x) \simeq A f(x) + B \left( f(x + h) + f(x - h) \right)
+    + C \left( f(x + 2 h) +  f(x - 2 h) \right)
+  \end{equation*}
+  and we then need to constrain the coefficients $A, B, C$. By looking
+  at terms proportional to $h^s$ we see
+  \begin{align*}
+    h^0: && 0 & = A + 2 B + 2 C \\
+    h^1: && 0 & = 0 \\
+    h^2: && 0 & = B + 4 C \\
+    h^3: && 0 & = 0 \\
+    h^4: && \frac{1}{h^4} & = \frac{B}{12} + \frac{16 C}{12}. 
+  \end{align*}
+  This gives three constraints on our three unknowns so we cannot go
+  to higher order. Solving the equations gives
+  \begin{equation*}
+    A = \frac{6}{h^4}, \qquad B = -\frac{4}{h^4}, \qquad C =
+    \frac{1}{h^4}.
+  \end{equation*}
+  Writing it out in obvious notation we have
+  \begin{equation*}
+    f_1^{(4)} = \frac{1}{h^4} \left( 6 f_i - 4 (f_{i+1} + f_{i-1}) +
+      (f_{i+2} + f_{i-2}) \right).
+  \end{equation*}
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\item State the convergence rate of Euler's method and the
+  Euler predictor-corrector method.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  Euler's method converges as $h$ and the predictor-corrector method
+  as $h^2$.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\item Explain when multistage methods such as Runge-Kutta methods are useful.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  Multistage methods require only one vector of initial data, which
+  must be provided to completely specify the IVP; that is, the method
+  is self-starting. It is also easy to adapt a multistage method to
+  use variable step sizes; that is, to make the algorithm adaptive
+  depending on local error estimates in order to keep the global error
+  within some tolerance. Finally, it is relatively easy to
+  theoretically show convergence. Combining this we see that
+  multistage methods are useful as generic workhorse algorithms and in
+  cases where the function defining the IVP may vary widely in
+  behaviour, so that adaptive algorithms are required.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\item{} [3018 only] Explain the power method for finding the largest
+  eigenvalue of a matrix. In particular, explain why it is simpler to
+  find the absolute value, and how to find the phase information.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  The idea behind the power method is that most easily seen by writing
+  out a generic vector ${\bf x}$ in terms of the eigenvectors of the
+  matrix $A$ whose eigenvalues we wish to find,
+  \begin{equation*}
+    {\bf x} = \sum_{i=1}^N a_i {\bf e}_i,
+  \end{equation*}
+  where we assume that the eigenvectors are ordered such that the
+  associated eigenvalues have the order $|\lambda_1| > |\lambda_2| \ge
+  |\lambda_3| \ge \dots \ge |\lambda_N|$. Note that we always assume
+  that there is a unique eigenvalue $\lambda_1$ with largest
+  magnitude. 
+
+  We then note that multiplying this generic vector by the matrix $A$
+  a number of times gives
+  \begin{equation*}
+    A^k {\bf x} = \lambda_1^k \sum_{i=1}^n a_i \left(
+      \frac{\lambda_i}{\lambda_1} \right)^k {\bf e}_i.
+  \end{equation*}
+  We then note that, for $i \ne 1$, the ratio of the eigenvalues
+  $(\lambda_i/\lambda_1)^k$ must tend to zero as $k \rightarrow
+  \infty$. Therefore in the limit we will ``pick out'' $\lambda_1$. 
+
+  Of course, to actually get the eigenvalue itself we have to
+  essentially divide two vectors. That is, we define a sequence ${\bf
+    x}^{(k)}$ where the initial value ${\bf x}^{(0)}$ is arbitrary and
+  at each step we multiply by $A$, so that
+  \begin{equation*}
+    {\bf x}^{(k)} = A^k {\bf x}^{(0)}.
+  \end{equation*}
+  It follows that we can straightforwardly get $\lambda_1$ by looking
+  at ``the ratio of successive iterations''. E.g.,
+  \begin{equation*}
+    \lim_{k \rightarrow \infty} \frac{\| {\bf x}^{(k+1)} \|}{\| {\bf
+        x}^{(k)} \|} = | \lambda_1 |.
+  \end{equation*}
+
+  This only gives information about the magnitude as we have used the
+  simplest way of getting from a vector to a real number, the absolute
+  value. To retain information about the phase we need to replace the
+  absolute value of the vectors with some linear functional such as
+  the sum of the coefficients. 
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  %
+\end{enumerate}
+
+\end{document}
+

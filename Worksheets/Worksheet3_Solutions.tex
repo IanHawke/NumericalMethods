@@ -1,0 +1,264 @@
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+         % Information sheet for the Matlab lab - Maths 6111 %
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[10pt]{article} 
+\input ma_no_html_header
+
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{breaklinks=true,colorlinks=true}
+%\input ma_header
+\setlength{\parindent}{0pt}
+\pagestyle{myheadings}
+% \markright{
+% \protect {\protect \epsfxsize=0.2 true cm \protect \epsffile {dolph.line.eps}}
+% \it Maths 3018/6111 - Numerical methods \hfill}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{center}
+\textbf{\Large Maths 3018/6111 - Numerical Methods \\*[8mm]
+Worksheet 3 - Solutions}\\*[.8cm]
+\end{center}
+
+\section*{Theory}
+
+\begin{enumerate}
+\item Apply Simpson's rule to compute
+  \begin{equation*}
+    \int_0^{\pi/2} \cos(x) \, dx
+  \end{equation*}
+  using 3 points (so $h = \pi / 4$) and 5 points (so $h = \pi / 8$).
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  The exact solution is, of course, 1.
+
+  Simpson's rule (composite version) is
+  \begin{equation*}
+    I = \frac{h}{3} \left[ f(a) + f(b) + 2 \sum_{j=1}^{N/2-1}
+      f(x_{2j}) + 4 \sum_{j=1}^{N/2}  f(x_{2j-1} \right]
+  \end{equation*}
+  where we are using $N+1$ points with $x_0=a$, $x_N=b$, equally
+  spaced with grid spacing $h = (b-a)/N$.
+
+  With 3 points we have $N=2$ and $h=(\pi/2)/2=\pi/4$, and so we have
+  nodes and samples given by
+  \begin{equation*}
+    \begin{array}{c|c|c}
+      i & x_i & f(x_i) \\ \hline
+      0 & 0 & 1 \\
+      1 & \pi/4 & \tfrac{1}{\sqrt{2}} \\
+      2 & \pi/2 & 0
+    \end{array}
+  \end{equation*}
+  Using Simpsons rule we then get
+  \begin{align*}
+    I & = \frac{h}{3} \left[ f_0 + f_2 + 4 f_1 \right] \\
+      & = \frac{\pi}{12} \left( 1 + 2 \sqrt{2} \right) \\
+      & \approx 1.0023.
+  \end{align*}
+
+  With 5 points we have $N=4$ and $h=(\pi/2)/4=\pi/8$, and so we have
+  nodes and samples given by
+  \begin{equation*}
+    \begin{array}{c|c|c}
+      i & x_i & f(x_i) \\ \hline
+      0 & 0 & 1 \\
+      1 & \pi/8 & \cos(\pi / 8) \approx 0.9239 \\
+      2 & \pi/4 & \tfrac{1}{\sqrt{2}} \\
+      3 & 3\pi/8 & \cos(3 \pi / 8) \approx 0.3827\\
+      4 & \pi/2 & 0
+    \end{array}
+  \end{equation*}
+  Using Simpsons rule we then get
+  \begin{align*}
+    I & = \frac{h}{3} \left[ f_0 + f_4 + 4 (f_1 + f_3) + 2 f_2 \right] \\
+      & = \frac{\pi}{24} \left( 1 + 4 (\cos(\pi/8) + \cos(3\pi/8)) +
+        \sqrt{2} \right) \\ 
+      & \approx 1.00013.
+  \end{align*}
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\item Apply Richardson extrapolation to the result above; does the
+  answer improve?
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  Simpson's rule has order of accuracy 4. We note that we have just
+  computed the result using 3 ($N=2$) and 5 ($N=4$) points. Richardson
+  extrapolation gives the result
+  \begin{align*}
+    R_4 & = \frac{2^4 I_4 - I_2}{2^4 - 1} \\
+    & \approx 0.999992.
+  \end{align*}
+  We note that the error has gone from $2.3 \times 10^{-3}$ for $I_2$
+  to $1.3 \times 10^{-4}$ for $I_4$ and now to $8.4 \times 10^{-6}$
+  for the Richardson extrapolation $R_4$, a good improvement.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\item State the rate of convergence of the trapezoidal rule and
+  Simpson's rule, and sketch (or explain in words) the proof.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  For the trapezoidal rule the error converges as $h^2$. For Simpson's
+  rule the error converges as $h^4$.
+
+  In both cases the proof takes a similar path. Consider the
+  quadrature over a single subinterval. Taylor series expand the
+  quadrature rule about a suitable point $x_j$ (left edge for
+  trapezoidal rule, centre for Simpson's rule) to get an expression
+  for the quadrature of the interval in terms of $h$ and the function
+  $f$ and its derivatives as evaluated at $x_j$.
+
+  Next write down the anti-derivative $F(t)$ of $f$ for the interval
+  as a function of the width of the interval $t$. This, when evaluated
+  at $t=h$, is the exact solution for the quadrature of the
+  subinterval. Taylor series expand $F$ about $t=0$ to get an
+  expression for the exact result in terms of $h$ and the function $f$
+  and its derivatives as evaluated at $x_j$.
+
+  By comparing the two expressions we have a bound on the error in
+  terms of $h$ and derivatives of $f$. By summing over all intervals
+  (note that at this stage we lose a power of $h$ as we have $N$
+  subintervals with $N \propto h^{-1}$) we can bound the global error
+  in terms of $h$ and the maximum value of a derivative of $f$.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\item Explain in words adaptive and Gaussian quadrature, in particular
+  the aims of each and the times when one or the other is more useful.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  Adaptive quadrature uses any standard quadrature method and some
+  error estimator, such as Richardson extrapolation, to place
+  additional nodes wherever required to ensure that the error is less
+  than some desired tolerance. Each subinterval is tested to ensure
+  that its (appropriately weighted) contribution to the total error is
+  sufficiently small. If it is not, the subinterval is further
+  subdivided by introducing more nodes in a fashion appropriate for
+  the quadrature method used. This is a straightforward way of getting
+  high accuracy for low computational cost using standard quadrature
+  algorithms. 
+
+  Gaussian quadrature aims to get the best result for a \emph{generic}
+  function by allowing both the choice of nodes and weights to
+  vary. The location of the nodes and the value of the weights is
+  given by ensuring that the quadrature is exact for as many
+  polynomials as possible; i.e., if we have $N$ nodes (and hence $N$
+  weights) we should be able to exactly integrate $x^s$ for $0 \le s
+  \le 2N - 1$. By introduing a weighting function we can also deal
+  with integrands that are (mildly) singular at the boundaries of the
+  domain, or unbounded domains. Provided the function can be evaluated
+  anywhere this is an effective way of getting high accuracy with few
+  function evaluations for most functions.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\item{} [3018 only] Show how the speed of convergence of a nonlinear
+  root finding method depends and the derivatives of the map $g(x)$
+  near the fixed point $s$.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  We assume we are constructing an iterative sequence $x_n$ where
+  $x_{n+1} = g(x_n)$, and that the error at step $n$ is $e_n = x_n -
+  s$. Then if we assume that the step $x_{n+1}$ is sufficiently close
+  to the root $s$ then we can write
+  \begin{align*}
+    e_{n+1} & = x_{n+1} - s \\
+    & = g(x_n) - g(s) \\ 
+    \intertext{using the definition of the sequence and the fixed
+      point}
+    & = g'(s) (x_n -s) + \frac{g''(s)}{2!} (x_n - s)^2 + {\cal O}
+    \left( (x_n - s)^3 \right) \\
+    \intertext{by Taylor expanding}
+    & = g'(s) e_n + \frac{g''(s)}{2!} e_n^2 + {\cal O} \left( e_n^3
+    \right).
+  \end{align*}
+  Hence if $g'(s) \ne 0$ we have that the error reduces by a constant
+  amount proportional to the derivative at each step. If the
+  derivative does vanish the error at each iteration is proportional
+  to the square of the previous error which leads to faster
+  convergence. 
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\item{} [3018 only] Use Newton's method to find the root in $[0,1]$ of
+  \begin{equation*}
+    f(x) = \sin(x) - e^x + 0.9 + x.
+  \end{equation*}
+  Start from $x_0=1/2$ and retain 3 significant figures. Take 3 steps.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  For Newton's method we have
+  \begin{equation*}
+    x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}.
+  \end{equation*}
+  So first we compute the derivative,
+  \begin{equation*}
+    f'(x) = \cos(x) - e^x + 1.
+  \end{equation*}
+  It follows that the iterative scheme is give by
+  \begin{equation*}
+    x_{n+1} = x_n - \frac{\sin(x_n) - e^{x_n} + 0.9 + x_n}{\cos(x_n) -
+      e^{x_n} + 1}. 
+  \end{equation*}
+  We start from $x_0=1/2$ and compute with full precision but only
+  retain 3 significant figures for the values of the $x_n$:
+  \begin{align*}
+    x_1 & = x_0 - \frac{\sin(x_0) - e^{x_0} + 0.9 + x_0}{\cos(x_0) -
+      e^{x_0} + 1} \\
+    & \approx -0.508; \\
+    \intertext{retaining 3 s.f.\ we set $x_1 = -0.508$, and find}
+    x_2 & = x_1 - \frac{\sin(x_1) - e^{x_1} + 0.9 + x_1}{\cos(x_1) -
+      e^{x_1} + 1} \\
+    & \approx 0.0393; \\
+    \intertext{retaining 3 s.f.\ we set $x_2 = 0.0393$, and find}
+    x_3 & = x_2 - \frac{\sin(x_2) - e^{x_2} + 0.9 + x_2}{\cos(x_2) -
+      e^{x_2} + 1} \\
+    & \approx 0.103.
+  \end{align*}
+  
+  After 5 steps you would see, to 3 s.f., that it has converged to
+  $0.106$, so after 3 steps it does quite well; a better approximation
+  to the solution is $0.106022965\dots$.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\end{enumerate}
+
+\end{document}
+

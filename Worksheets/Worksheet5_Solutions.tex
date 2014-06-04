@@ -1,0 +1,204 @@
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+         % Information sheet for the Matlab lab - Maths 6111 %
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[10pt]{article} 
+\input ma_no_html_header
+
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{breaklinks=true,colorlinks=true}
+%\input ma_header
+\setlength{\parindent}{0pt}
+\pagestyle{myheadings}
+% \markright{
+% \protect {\protect \epsfxsize=0.2 true cm \protect \epsffile {dolph.line.eps}}
+% \it Maths 3018/6111 - Numerical methods \hfill}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{center}
+\textbf{\Large Maths 3018/6111 - Numerical Methods \\*[8mm]
+Worksheet 5 - Solutions}\\*[.8cm]
+\end{center}
+
+\section*{Theory}
+
+\begin{enumerate}
+\item Explain when multistep methods such as Adams-Bashforth are
+  useful and when multistage methods such as RK methods are better.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  {\bf Note:} There were typos (transposing multistep and multistage)
+  on early versions of this worksheet.
+
+  Multistep methods are more computationally efficient (fewer function
+  evaluations) and more accurate than multistage methods. However,
+  they are not self-starting, difficult to adapt to use variable step
+  sizes, and the theory to show that they are stable and convergent is
+  more complex. They are most useful when efficiency is the primary
+  concern and the system is sufficiently well controlled that equally
+  spaced steps can be taken.
+
+  In other situations, as discussed on worksheet 4, the self-starting
+  simplicity combined with adaptive stepping means that multistage
+  methods are preferrable.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\item Compute the coefficients of the AB3 algorithm.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  %
+  For Adams-Bashforth methods we have
+  \begin{equation*}
+    y_{n+1} = y_n + b_{k-1} f_n + b_{k-2} f_{n-1} + \dots + b_0
+    f_{n+1-k}. 
+  \end{equation*}
+  Here we have $k=3$ and so we have
+  \begin{equation*}
+    y_{n+1} = y_n + h \left[b_{2} f_n + b_{1} f_{n-1} + b_0 f_{n-2}
+    \right].
+  \end{equation*}
+
+  We want to ensure that this gives an exact approximation of the
+  integral form for polynomials of order $s = 0, \dots, 2$. That is,
+  we want
+  \begin{equation*}
+    \int_{x_n}^{x_{n+1}} p_s(x) = h \left[b_{2} p_s(x_n) + b_{1}
+      p_s(x_{n-1}) + b_0 p_s(x_{n-2}) \right].
+  \end{equation*}
+  For simplicity, and without loss of generality, we set $n=0$, and
+  use the polynomials
+  \begin{align*}
+    p_0(x) & = 1, \\
+    p_1(x) & = x, \\
+    p_2(x) & = x (x + h).
+  \end{align*}
+  We then see that we get
+  \begin{align*}
+    s &= 0: & \int_0^h 1 & = h \left[ b_2 \times 1 + b_1 \times 1 +
+      b_0 \times 1 \right] \\
+    && 1 & = b_2 + b_1 + b_0. \\
+    s &= 1: & \int_0^h x & = h \left[ b_2 \times 0 + b_1 \times (-h) +
+      b_0 \times (-2h) \right] \\
+    && 1/2 & = - b_1 -2 b_0. \\
+    s &= 2: & \int_0^h x (x + h) & = h \left[ b_2 \times 0 + b_1 \times 0 +
+      b_0 \times (2h^2) \right] \\
+    && 5/6 & = 2 b_0. \\
+  \end{align*}
+
+  By back substitution we find
+  \begin{equation*}
+    b_0 = \frac{5}{12}, \qquad b_1 = -\frac{4}{3}, \qquad b_2 =
+    \frac{23}{12}, 
+  \end{equation*}
+  which means that the algorithm is
+  \begin{equation*}
+    y_{n+1} = y_n + \frac{h}{12} \left[ 23 f_n - 16 f_{n-1} + 5
+      f_{n-2} \right]. 
+  \end{equation*}
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\item Explain the meaning of stability, consistency and convergence
+  when applied to numerical methods for IVPs. State the theorem
+  connecting these.
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  \emph{Stability}: The numerical solution is bounded at all
+  iterations over a finite interval. I.e., if the true solution is
+  $y(x)$ and $x \in [0, X]$ with $X$ finite, and we use $N+1$ steps
+  with $x_0=0$ and $x_N=X$, then $|y_i|$ is finite for all $i = 0, 1,
+  \dots, N$, irrespective of the value of $N$.
+
+  \emph{Consistency}: The numerical method is a faithful
+  representation of the differential equation to lowest order in $h$.
+  That is, if you Taylor expand the numerical difference scheme and
+  let $h \rightarrow 0$ you recover the original differential equation
+  independent of the limiting process.
+
+  \emph{Convergence}: If $y(x)$ is the exact solution and $y(x;h)$ the
+  numerical solution using step size $h$, in the limit as $h
+  \rightarrow 0$ the numerical solution is the exact solution:
+  \begin{equation*}
+    \lim_{h \rightarrow 0} y(x;h) = y(x).
+  \end{equation*}
+
+  The theorem states that consistency and stability are equivalent to
+  convergence. 
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\item Using the stability polynomial and your results above, check the
+  order of accuracy and the stability of the 3 step Adams-Bashforth
+  method. 
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+  The coefficients of AB3 in the standard $k$-step formula notation are
+  \begin{align*}
+    a_3 & = 1 & a_2 & = -1 & a_1 & = 0 & a_0 & = 0 \\
+    b_3 & = 0 & b_2 & = \frac{23}{12} & b_1 & = -\frac{4}{3} & b_0 & =
+    \frac{5}{12}.
+  \end{align*}
+  Therefore the stability polynomial is
+  \begin{equation*}
+    p(z) = z^3 - z^2
+  \end{equation*}
+  with derivative
+  \begin{equation*}
+    p'(z) = 3 z^2 - 2 z
+  \end{equation*}
+  and the other required polynomial is
+  \begin{equation*}
+    q(z) = \frac{1}{12} \left( 23 z^2 - 16 z + 5 \right).
+  \end{equation*}
+  
+  To check consistency we need that $p(1) = 0$ and $p'(1) = q(1)$,
+  which we check:
+  \begin{align*}
+    p(1) & = 1 - 1 \\
+    & = 0. \\
+    p'(1) - q(1) & = (3 - 2) - \frac{1}{12} \left( 23 - 16 + 5 \right)
+    \\
+    & = 1 - \frac{12}{12} \\
+    & = 0.
+  \end{align*}
+  So the method is consistent.
+
+  To check stability we have to find the roots of the stability
+  polynomial $p(z)$. We write
+  \begin{equation*}
+    p(z) = z^2 (z - 1)
+  \end{equation*}
+  to see that the roots are 0 (twice) and 1, which means that the
+  method satisfies the \emph{strong} root condition implying both
+  stability and relative stability, meaning it is a useful method. 
+  % 
+  \begin{center}
+    \rule{0.9\textwidth}{.1pt}
+  \end{center}
+  % 
+\end{enumerate}
+
+\end{document}
+

@@ -1,0 +1,61 @@
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+         % Information sheet for the Matlab lab - Maths 6111 %
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[10pt]{article} 
+\input ma_no_html_header
+
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{breaklinks=true,colorlinks=true}
+%\input ma_header
+\setlength{\parindent}{0pt}
+\pagestyle{myheadings}
+% \markright{
+% \protect {\protect \epsfxsize=0.2 true cm \protect \epsffile {dolph.line.eps}}
+% \it Maths 3018/6111 - Numerical methods \hfill}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{center}
+\textbf{\Large Maths 3018/6111 - Numerical Methods \\*[8mm]
+Worksheet 5}\\*[.8cm]
+\end{center}
+
+\section*{Theory}
+
+\begin{enumerate}
+\item Explain when multistep methods such as Adams-Bashforth are
+  useful and when multistage methods such as RK methods are better.
+\item Compute the coefficients of the AB3 algorithm.
+\item Explain the meaning of stability, consistency and convergence
+  when applied to numerical methods for IVPs. State the theorem
+  connecting these.
+\item Using the stability polynomial and your results above, check the
+  order of accuracy and the stability of the 3 step Adams-Bashforth
+  method. 
+\end{enumerate}
+
+\section*{Coding}
+
+\begin{enumerate}
+\item Apply the 2-step Adams-Bashforth method to the ODE from
+  Worksheet 4, 
+  \begin{equation*}
+    y' + 2 y = 2 - e^{-4 x}, \quad y(0) = 1.
+  \end{equation*}
+  Use the Euler or Euler predictor-corrector method to start. Again,
+  find the value of $y(1)$ (analytic answer is $1 -
+  (e^{-2}-e^{-4})/2$) and see how your method converges with
+  resolution.
+\item Apply the 2-step implicit Adams-Moulton method to the above ODE,
+  using the 2-step Adams-Bashforth method as a predictor. Use the
+  Euler or Euler predictor-corrector method to start. See how your
+  method converges with resolution.
+
+\end{enumerate}
+
+\end{document}
+

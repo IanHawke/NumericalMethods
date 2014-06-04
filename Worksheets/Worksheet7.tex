@@ -1,0 +1,80 @@
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+         % Information sheet for the Matlab lab - Maths 6111 %
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[10pt]{article} 
+\input ma_no_html_header
+
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{breaklinks=true,colorlinks=true}
+%\input ma_header
+\setlength{\parindent}{0pt}
+\pagestyle{myheadings}
+% \markright{
+% \protect {\protect \epsfxsize=0.2 true cm \protect \epsffile {dolph.line.eps}}
+% \it Maths 3018/6111 - Numerical methods \hfill}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{center}
+\textbf{\Large Maths 3018/6111 - Numerical Methods \\*[8mm]
+Worksheet 7}\\*[.8cm]
+\end{center}
+
+\section*{Theory}
+
+\begin{enumerate}
+\item Find the linear system that results from using central
+  differencing to solve the elliptic equation
+  \begin{equation*}
+    u_{xx} + u_{yy} = \sin ( \pi y ) \left( 2 - 6 x - (\pi x)^2 (1 -
+      x) \right).
+  \end{equation*}
+  Central differencing, trivial boundary conditions, and a $3 \times
+  2$ grid should be used.
+\item Explain the strategy for solving evolutionary PDEs using finite
+  differencing methods.
+\item Write out a FTCS method for the equations
+  \begin{align*}
+    \partial_t y - \partial_{xx} y & = \sin(x), & x & \in [0,1], &
+    y(t, 0) & = 0 = y(t, 1), \\
+    \partial_t y + \partial_{x} y & = e^{-(x-1/2)^2}, & x & \in [0,1], &
+    y(t, 0) & = 0 = y(t, 1).
+  \end{align*}
+  In both cases the initial data should be taken to be $y(0, x) =
+  f(x)$. Full details of the grid, the discrete initial and boundary
+  conditions, and the discrete update algorithm should be given.
+\item Using von Neumann analysis, find when the BTCS method is stable
+  for the advection equation.
+\end{enumerate}
+
+\section*{Coding}
+
+\begin{enumerate}
+\item Implement the finite difference method above to solve the
+  elliptic equation
+  \begin{equation*}
+    u_{xx} + u_{yy} = \sin ( \pi y ) \left( 2 - 6 x - (\pi x)^2 (1 -
+      x) \right).
+  \end{equation*}
+  Check how it converges with resolution (the exact solution is $u =
+  x^2 (1 - x) \sin(\pi y)$.
+\item Implement a FTBS algorithm for the advection equation with
+  periodic boundaries. Use a sine wave on $x \in [0,1]$ as initial
+  data. Check how it converges with resolution.
+\item{} [Additional] Apply the FTBS algorithm to the traffic flow equation
+  \begin{equation*}
+    \partial_t y + \partial_x \left( y ( 1 - y) \right) = 0.
+  \end{equation*}
+  Use initial data $y(0, x) = \exp(-x^2)$, $y(0, x) = 0.2 + 1.2 H(x)$
+  and $y(0, x) = 1 - H(x)$ on $x \in [-10, 10]$ where $H(x)$ is the
+  Heaviside step function. By comparing against the results for
+  Burger's equation, explain your results. You may want to restrict to
+  $t \leq 0.5$.
+\end{enumerate}
+
+\end{document}
+

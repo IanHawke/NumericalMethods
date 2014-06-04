@@ -1,0 +1,71 @@
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+         % Information sheet for the Matlab lab - Maths 6111 %
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[10pt]{article} 
+\input ma_no_html_header
+
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{breaklinks=true,colorlinks=true}
+%\input ma_header
+\setlength{\parindent}{0pt}
+\pagestyle{myheadings}
+% \markright{
+% \protect {\protect \epsfxsize=0.2 true cm \protect \epsffile {dolph.line.eps}}
+% \it Maths 3018/6111 - Numerical methods \hfill}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{center}
+\textbf{\Large Maths 3018/6111 - Numerical Methods \\*[8mm]
+Worksheet 6}\\*[.8cm]
+\end{center}
+
+\section*{Theory}
+
+\begin{enumerate}
+\item Explain the shooting method for BVPs.
+\item Give a \emph{complete} algorithm for solving the BVP
+  \begin{equation*}
+    y'' - 3 y' + 2 y = 0, \quad y(0) = 0, \quad y(1) = 1
+  \end{equation*}
+  using the finite difference method. Include the description of the
+  grid, the grid spacing, the treatment of the boundary conditions,
+  the finite difference operators and a description of the linear
+  system to be solved. You do not need to say which method would be
+  used to solve the linear system, but should mention any special
+  properties of the system that might make it easier to solve.
+\item Explain how your algorithm would have to be modified to solve
+  the BVP where the boundary condition at $x=1$ becomes the Neumann
+  condition 
+  \begin{equation*}
+    y'(1) = 1 + \frac{e}{e-1}.
+  \end{equation*}
+\end{enumerate}
+
+\section*{Coding}
+
+\begin{enumerate}
+\item Write a simple shooting method to solve the BVP
+  \begin{equation*}
+    y'' - 3 y' + 2 y = 0, \quad y(0) = 0, \quad y(1) = 1.
+  \end{equation*}
+  Use {\tt ode45} to solve the ODE, rewritten in first order form, and
+  either a simple bisection method or the in-built Matlab {\tt fsolve}
+  routine to find the root. Compare your estimate against the answer
+  \begin{equation*}
+    y(x) = \frac{e^{2 x - 1} - e^{x - 1}}{e - 1}.
+  \end{equation*}
+\item Implement your finite difference algorithm algorithm above to
+  solve this BVP, using Matlab's in-built linear system solver. Show
+  that your result converges to the correct answer.
+\item Modify your algorithm for the Neumann boundary condition
+  above. Check that it converges to the same answer as for the
+  Dirichlet case.
+\end{enumerate}
+
+\end{document}
+

@@ -1,0 +1,81 @@
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+         % Information sheet for the Matlab lab - Maths 6111 %
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[10pt]{article} 
+\input ma_no_html_header
+
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{breaklinks=true,colorlinks=true}
+%\input ma_header
+\setlength{\parindent}{0pt}
+\pagestyle{myheadings}
+% \markright{
+% \protect {\protect \epsfxsize=0.2 true cm \protect \epsffile {dolph.line.eps}}
+% \it Maths 3018/6111 - Numerical methods \hfill}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{center}
+\textbf{\Large Maths 3018/6111 - Numerical Methods \\*[8mm]
+Worksheet 1}\\*[.8cm]
+\end{center}
+
+\section*{Theory}
+
+\begin{enumerate}
+\item Write down the $1$, $2$ and $\infty$ vector norms of
+  \begin{equation*}
+    {\bf v}_1 =
+    \begin{pmatrix}
+      1 \\ 3 \\ -1
+    \end{pmatrix}, \quad
+    {\bf v}_2 =
+    \begin{pmatrix}
+      1 \\ -2
+    \end{pmatrix}, \quad
+    {\bf v}_3 =
+    \begin{pmatrix}
+      1 \\ 6 \\ -3 \\ 1
+    \end{pmatrix}.
+  \end{equation*}
+\item Find the $1$ and $\infty$ matrix norms of
+  \begin{equation*}
+    A_1 =
+    \begin{pmatrix}
+      1 & 2 \\ 3 & 4
+    \end{pmatrix}, \quad
+    A_2 =
+    \begin{pmatrix}
+      -3 & 2 \\ 3 & 6
+    \end{pmatrix}
+  \end{equation*}
+\item Find the condition numbers of the above matrices. What does this
+  suggest about the numerical behaviour of an algorithm that used such
+  a matrix?
+\item Explain the difference between direct and indirect methods for
+  solving linear systems. Give an example of when the latter may be
+  more useful.
+\end{enumerate}
+
+\section*{Coding}
+
+\begin{enumerate}
+\item Enter each of the matrices above into Matlab. For each matrix,
+  work out the transpose and inverse using in-built Matlab commands.
+\item Check your calculation of the vector and matrix norms, and the
+  condition numbers.
+\item Write a function that takes a matrix, computes its condition
+  number, and reports whether the matrix is suitably well-conditioned
+  (the choice of criteria is up to you).
+\item{} [3018 only] Write a bisection method to find the root of
+  \begin{equation*}
+    f(x) = \tan x - e^{-x}, \quad x \in [0,1].
+  \end{equation*}
+\end{enumerate}
+
+\end{document}
+
