@@ -1,4 +1,6 @@
 NumericalMethods
 ================
 
-Some open material relating to the Southampton Numerical Methods course
+Currently this collates material, mostly in IPython notebook form, related to the Numerical Methods course run through Mathematics at the University of Southampton.
+
+
