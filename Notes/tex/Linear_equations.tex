@@ -1133,27 +1133,6 @@ some restrictions on the choice of $N$:
   %
 \end{enumerate}
 %
-One can show that an iterative method converges if and only
-if the matrix $M = N^{-1} P$ exists and has all eigenvalues
-$\lambda_i$ with modulus strictly less than 1:
-%
-\begin{equation*}
-  \varrho(M) \equiv \max_i | \lambda_i | < 1 \Longleftrightarrow
-  \text{Method converges}
-\end{equation*}
-%
-where the symbol $\varrho(M)$ is called the \textit{spectral radius}
-of $M$.  It is sometimes hard to verify whether this condition is
-satisfied.  A weaker, but more easily verifiable statement is that
-the method converges if at least one norm of the matrix $M$
-is strictly less than one:
-%
-\begin{equation*}
-  \norm{ M } < 1 \implies \text{Method converges.}
-\end{equation*}
-%
-However, the reverse is not true: a method may converge but some of
-the norms of $M$ may be larger than or equal to one.
 
 \subsection{Iteration schemes}
 
@@ -1242,49 +1221,87 @@ iterations.    A typical choice is to set $\omega$ quite close to one.
 
 \subsection{Analysis of convergence}
 
-A concept that is extremely useful in determining the behaviour and
-convergence of many algorithms to solve linear system is that of
-\textit{diagonal dominance}.  A matrix is strictly diagonally dominant
-if the modulus of each diagonal element is greater than the sum of the
-moduli of all the other elements in its row:
+We want to know when an iterative scheme will converge to the correct solution.
+We can gain some insight from the scalar case.
+Here we have
+%
+\begin{equation}
+  a x = b
+\end{equation}
+%
+with $a, b$ being real numbers, with the solution $x_\text{exact} = b / a$.
+Re-writing this as an iterative scheme we have
+%
+\begin{equation}
+  x^{(k+1)} = \frac{b + p x^{(k)}}{n}
+\end{equation}
+%
+where $n - p = a$.
+
+To check convergence we want to see what happens when $x$ is near the correct solution.
+We set $x^{(0)} = b / a + \epsilon$. We see that
+%
+\begin{align}
+  && x^{(1)} &= \frac{b + b (n - a) / a + \epsilon (n - a)}{n} \\
+  \implies && x^{(1)} - x_\text{exact} &= \epsilon \left( 1 - \frac{a}{n} \right) \\
+  \implies && x^{(N)} - x_\text{exact} &= \epsilon \left( 1 - \frac{a}{n} \right)^N.
+\end{align}
+%
+So we expect this iteration scheme to converge to the exact solution if $|1 - a/n| < 1$.
+More usefully for our intuition we can write this as $| p / n | < 1$.
+
+In the general matrix case a similar analysis goes through, except instead of $| p / n|$ we look at $M = N^{-1} P$.
+This is precisely the convergence matrix mentioned above.
+The condition $| p / n | < 1$ becomes the condition on the eigenvalues of $M$ instead.
+One can show that an iterative method converges if and only if the matrix $M = N^{-1} P$ exists and has all eigenvalues $\lambda_i$ with modulus strictly less than 1:
+%
+\begin{equation*}
+  \varrho(M) \equiv \max_i | \lambda_i | < 1 \Longleftrightarrow
+  \text{Method converges}
+\end{equation*}
+%
+where the symbol $\varrho(M)$ is called the \textit{spectral radius} of $M$.
+It is sometimes hard to verify whether this condition is satisfied.
+A weaker, but more easily verifiable statement is that the method converges if at least one norm of the matrix $M$ is strictly less than one:
+%
+\begin{equation*}
+  \norm{ M } < 1 \implies \text{Method converges.}
+\end{equation*}
+%
+However, the reverse is not true: a method may converge but some of the norms of $M$ may be larger than or equal to one.
+
+As it can be difficult to compute the full spectral radius, approximate conditions for special matrices have been developed.
+A concept that is extremely useful in determining the behaviour and convergence of many algorithms to solve linear system is that of \textit{diagonal dominance}.
+A matrix is strictly diagonally dominant if the modulus of each diagonal element is greater than the sum of the moduli of all the other elements in its row:
 %
 \begin{equation*}
   | a_{i i} | > \sum_{\genfrac{}{}{0pt}{}{j=1}{j \ne i}}^n
   | a_{i j} |, \qquad (1 \le i \le n) .
 \end{equation*}
 %
-This may seem a rather peculiar condition to require on a matrix.  As
-a matter of fact, it is not so for many applications of practical
-interest.  For example, most algorithms that solve numerically partial
-differential equations using finite difference methods involve the
-solutions of large linear systems whose matrix of coefficients is
-diagonally dominant.
+This may seem a rather peculiar condition to require on a matrix.
+As a matter of fact, it is not so for many applications of practical interest.
+For example, most algorithms that solve numerically partial differential equations using finite difference methods involve the solutions of large linear systems whose matrix of coefficients is diagonally dominant.
 
-The importance of diagonally dominance from the point of view of
-direct methods to solve linear systems of equations stems from the
-following theorems:
+The importance of diagonally dominance from the point of view of direct methods to solve linear systems of equations stems from the following theorems:
 
 \begin{theorem}
-If the matrix of the coefficients $A$ is strictly diagonally dominant
-then the Jacobi method converges.
+If the matrix of the coefficients $A$ is strictly diagonally dominant then the Jacobi method converges.
 \end{theorem}
 
 \medskip
 
 \begin{theorem}
-If the matrix of the coefficients $A$ is strictly
-diagonally dominant then the Gauss-Seidel method converges.
+If the matrix of the coefficients $A$ is strictly diagonally dominant then the Gauss-Seidel method converges.
 \end{theorem}
 
 \noindent
-\textbf{Remark} - Note that diagonal dominance (i.e.\ the sum can be
-equal to the diagonal element) in itself does not ensure convergence.
+\textbf{Remark} - Note that diagonal dominance (i.e.\ the sum can be equal to the diagonal element) in itself does not ensure convergence.
 
 \smallskip
 
 \begin{theorem}
-If the matrix of the coefficients $A$ is
-symmetric and positive definite then Gauss-Seidel's method converges.
+If the matrix of the coefficients $A$ is symmetric and positive definite then Gauss-Seidel's method converges.
 \end{theorem}
 
 \noindent
