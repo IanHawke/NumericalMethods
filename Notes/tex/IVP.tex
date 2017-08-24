@@ -332,15 +332,15 @@ equation~(\ref{IVP.eq:8}) to obtain a refined estimate.  This
 procedure is called the Euler predictor-corrector method and can be
 summarised as:
 %
-\begin{equation}
-  \begin{array}{ll}
-    y^{(p)}_{n+1} = y_n + h f(x_n,y_n) & \text{Predictor step} \\*[3mm]
-    y_{n+1} = y_n + \displaystyle \frac{h}{2}
+\begin{subequations}
+  \label{IVP.eq:9}
+  \begin{align}
+    y^{(p)}_{n+1} &= y_n + h f(x_n,y_n) & \text{Predictor step} \\
+    y_{n+1} &= y_n + \frac{h}{2}
     \left [f(x_n,y_n) + f(x_{n+1},y^{(p)}_{n+1}) \right ] &
     \text{Corrector step}.
-  \end{array}
-  \label{IVP.eq:9}
-\end{equation}
+  \end{align}
+\end{subequations}
 %
 We can show that the predictor-corrector method is of order $\order{h^3}$
 by comparing the Taylor expansion of~(\ref{IVP.eq:6}) with that
@@ -405,14 +405,14 @@ We fix the four parameter $a$, $b$, $\alpha$ and $\beta$ so that
 (\ref{kutta}) agrees as well as possible with the Taylor series
 expansion of the differential equation~(\ref{IVP.eq:14})
 %
-\begin{eqnarray}
-  y_{n+1} & = & y_n + h y_n' + \frac{h^2}{2} y_n'' + \ldots \nonumber \\
-  & = & y_n + h f(x_n,y_n) + \frac{h^2}{2} \dv{}{x} f(x_n,
+\begin{align}
+  y_{n+1} &= y_n + h y_n' + \frac{h^2}{2} y_n'' + \ldots \nonumber \\
+  &= y_n + h f(x_n,y_n) + \frac{h^2}{2} \dv{}{x} f(x_n,
   y_n) + \dots, \nonumber \\
-  & = & y_n + h f_n + h^2 \left (\frac{1}{2} f_x +
+  &= y_n + h f_n + h^2 \left (\frac{1}{2} f_x +
     \frac{1}{2}f_y f_n \right ) + \dots
   \label{tay}
-\end{eqnarray}
+\end{align}
 %
 where $f_n \equiv f(x_n,y_n)$.  On the other hand, using (\ref{kutta})
 we have
@@ -462,15 +462,15 @@ to the algorithm
 %
 with
 %
-\begin{equation}
-  \begin{array}{ll@{\hspace{5mm}}l}
-    k_1=hf(x_n,y_n), & &
-    k_2=hf(x_n+\frac{1}{2}h,y_n+\frac{1}{2}k_1), \\
-    k_3=hf(x_n+\frac{1}{2}h,y_n+\frac{1}{2}k_2), & &
-    k_4=hf(x_n+h,y_n+k_3).
-  \end{array}
-  \label{IVP.eq:23}
-\end{equation}
+\begin{subequations}
+\label{IVP.eq:23}
+  \begin{align}
+    k_1 &= h f(x_n,y_n), &
+    k_2 &= h f(x_n+\frac{1}{2}h,y_n+\frac{1}{2}k_1), \\
+    k_3 &= h f(x_n+\frac{1}{2}h,y_n+\frac{1}{2}k_2), &
+    k_4 &= hf(x_n+h,y_n+k_3).
+  \end{align}
+\end{subequations}
 %
 The local error term for the fourth-order Runge-Kutta methods is
 $\order{h^5}$; the global error is $\order{h^4}$.
@@ -508,13 +508,13 @@ $y_{h/2}(x_0+h)$ be the solution obtained using two steps of length
 $h/2$ of the fourth order Runge-Kutta method.  By assumption we have
 that
 %
-\begin{equation}
-  \begin{array}{l}
-    y_e(x_0+h) = y_{h}(x_0+h) + C h^5 , \\
-    y_e(x_0+h) = y_{h/2}(x_0+h) + 2 C (h/2)^5 .
-  \end{array}
-  \label{IVP.eq:42}
-\end{equation}
+\begin{subequations}
+\label{IVP.eq:42}
+  \begin{align}
+    y_e(x_0+h) &= y_{h}(x_0+h) + C h^5 , \\
+    y_e(x_0+h) &= y_{h/2}(x_0+h) + 2 C (h/2)^5 .
+  \end{align}
+\end{subequations}
 %
 By subtraction we obtain from these two equations that
 %
@@ -647,11 +647,13 @@ $x_{n-2}=-2$, $x_{n-3}=-3$, $x_{n-4}=-4$, and $h=1$. We take as a
 basis the following five polynomials:
 %
 \begin{equation}
-  \begin{array}{l}
-    p_0(x)=1, \\ p_1(x)=x, \\
-    p_2(x)=x(x+1), \\ p_3(x)=x(x+1)(x+2), \\
-    p_4(x)=x(x+1)(x+2)(x+3) \\
-  \end{array}
+  \begin{aligned}
+    p_0(x)&=1, \\
+    p_1(x)&=x, \\
+    p_2(x)&=x(x+1), \\
+    p_3(x)&=x(x+1)(x+2), \\
+    p_4(x)&=x(x+1)(x+2)(x+3) \\
+  \end{aligned}
   \label{IVP.eq:27}
 \end{equation}
 %

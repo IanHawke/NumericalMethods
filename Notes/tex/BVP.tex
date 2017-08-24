@@ -153,40 +153,41 @@ the problem in a linear system.  As an example, consider the equation
 We can represent the derivatives using their finite difference
 approximations:
 %
-\begin{equation}
-  \begin{array}{l}
-    y'(x_i) = \displaystyle \frac{y_{i+1}-y_{i-1}}{2h} -
-    \frac{h^2}{6}y'''(\xi_1), \\*[3mm]
-    y''(x_i) = \displaystyle \frac{y_{i+1}+y_{i-1}-2 y_i}{h^2} -
+\begin{subequations}
+  \label{er}
+  \begin{align}
+    y'(x_i) &= \frac{y_{i+1}-y_{i-1}}{2h} -
+    \frac{h^2}{6} y'''(\xi_1), \\
+    y''(x_i) &=  \frac{y_{i+1}+y_{i-1}-2 y_i}{h^2} -
     \frac{h^2}{12}y^{(4)}(\xi_2),
-  \end{array} \label{er}
-\end{equation}
+  \end{align}
+\end{subequations}
 %
 where $x_i=a+i h$, $i=0,1,2,...,n+1$, $h=(b-a)/(n+1)$. Thus, the
 discrete version of~(\ref{lbvp}) is the system of $n+2$ linear
 algebraic equations
 %
-\begin{eqnarray*}
-  & & y_0=A, \\
-  & &  y_{i-1} \left ( 1 - \frac{h}{2} p_i \right ) -
+\begin{align*}
+  y_0 &=A, \\
+  y_{i-1} \left ( 1 - \frac{h}{2} p_i \right ) -
   y_i \left ( 2 - h^2 q_i \right ) +
-  y_{i+1} \left (1 + \frac{h}{2} p_i \right )  = h^2 f_i , \\
-  & & y_{n+1}=B,
-\end{eqnarray*}
+  y_{i+1} \left (1 + \frac{h}{2} p_i \right )  &= h^2 f_i , \\
+  y_{n+1} &=B,
+\end{align*}
 %
 where $p_i=p(x_i)$, $q_i=q(x_i)$, $f_i=f(x_i)$.  This can be solved as
 such or reduced to an $n \times n$ system.  For example, if $n=4$, the
 corresponding matrix form is given by
 %
 \begin{equation*}
-  \left ( \begin{array}{cccc}
-      -2 + h^2 q_1 & 1 + \frac{h}{2} p_1 & 0 & 0 \\
-      1 - \frac{h}{2} p_2 & -2  + h^2 q_2 & 1 + \frac{h}{2} p_2 & 0\\
-      0 & 1 - \frac{h}{2} p_3 & -2  + h^2 q_3 & 1 + \frac{h}{2} p_3 \\
-      0 & 0 & 1 - \frac{h}{2} p_4 & -2  + h^2 q_4
-    \end{array} \right )
-  \left (\begin{array}{cccc} y_1\\ y_2\\ y_3\\ y_4 \end{array} \right ) =
-  \left (\begin{array}{cccc} F_1\\ F_2\\ F_3\\ F_4 \end{array} \right )
+  \begin{pmatrix}
+    -2 + h^2 q_1 & 1 + \frac{h}{2} p_1 & 0 & 0 \\
+    1 - \frac{h}{2} p_2 & -2  + h^2 q_2 & 1 + \frac{h}{2} p_2 & 0\\
+    0 & 1 - \frac{h}{2} p_3 & -2  + h^2 q_3 & 1 + \frac{h}{2} p_3 \\
+    0 & 0 & 1 - \frac{h}{2} p_4 & -2  + h^2 q_4
+  \end{pmatrix}
+  \begin{pmatrix} y_1\\ y_2\\ y_3\\ y_4 \end{pmatrix} =
+  \begin{pmatrix} F_1\\ F_2\\ F_3\\ F_4 \end{pmatrix}
 \end{equation*}
 %
 with

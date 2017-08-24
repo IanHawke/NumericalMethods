@@ -21,11 +21,11 @@ called {\em homogeneous}; otherwise it is said to be {\em non
 \noindent
 {\bf Example} - The equations
 %
-\begin{eqnarray*}
-  (a) & & \pdv{\phi}{t} - \pdv[2]{\phi}{x} = 0, \\
-  (b) & & \phi(x,t) \pdv[2]{\phi}{t} + \pdv{\phi}{x} = f(x,t), \\
-  (c) & & \pdv[4]{\phi}{x} + \pdv[4]{\phi}{y} = g(x,y) ,
-\end{eqnarray*}
+\begin{align*}
+  (a) & & \pdv{\phi}{t} - \pdv[2]{\phi}{x} &= 0, \\
+  (b) & & \phi(x,t) \pdv[2]{\phi}{t} + \pdv{\phi}{x} &= f(x,t), \\
+  (c) & & \pdv[4]{\phi}{x} + \pdv[4]{\phi}{y} &= g(x,y) ,
+\end{align*}
 %
 are, respectively, (a) Linear, homogeneous, second order, (b)
 nonlinear, non-homogeneous, second order, (c) linear, non-homogeneous,
@@ -275,14 +275,14 @@ As an example, consider the simple case $n=2$ and $m=3$.  The
 approximate solution of equation~(\ref{dp}) at the grid points are the
 solution of the $6\times 6$ system
 %
-\begin{eqnarray*}
-  & & [u_{01}-2u_{11}+u_{21}]+\alpha[u_{10}-2u_{11}+u_{12}]=h^2f_{11},\\
-  & & [u_{02}-2u_{12}+u_{22}]+\alpha[u_{11}-2u_{12}+u_{13}]=h^2f_{12},\\
-  & & [u_{03}-2u_{13}+u_{23}]+\alpha[u_{12}-2u_{13}+u_{14}]=h^2f_{13},\\
-  & & [u_{11}-2u_{21}+u_{31}]+\alpha[u_{20}-2u_{21}+u_{22}]=h^2f_{21},\\
-  & & [u_{12}-2u_{22}+u_{32}]+\alpha[u_{21}-2u_{22}+u_{23}]=h^2f_{22},\\
-  & & [u_{13}-2u_{23}+u_{33}]+\alpha[u_{22}-2u_{23}+u_{24}]=h^2f_{23}.
-\end{eqnarray*}
+\begin{align*}
+  [u_{01}-2u_{11}+u_{21}]+\alpha[u_{10}-2u_{11}+u_{12}] &= h^2 f_{11},\\
+  [u_{02}-2u_{12}+u_{22}]+\alpha[u_{11}-2u_{12}+u_{13}] &= h^2 f_{12},\\
+  [u_{03}-2u_{13}+u_{23}]+\alpha[u_{12}-2u_{13}+u_{14}] &= h^2 f_{13},\\
+  [u_{11}-2u_{21}+u_{31}]+\alpha[u_{20}-2u_{21}+u_{22}] &= h^2 f_{21},\\
+  [u_{12}-2u_{22}+u_{32}]+\alpha[u_{21}-2u_{22}+u_{23}] &= h^2 f_{22},\\
+  [u_{13}-2u_{23}+u_{33}]+\alpha[u_{22}-2u_{23}+u_{24}] &= h^2 f_{23}.
+\end{align*}
 %
 The unknown quantities in this problem can be ordered in many ways. We
 select the one known as the natural ordering
@@ -294,14 +294,14 @@ select the one known as the natural ordering
 The system has the form $A \bu = \bF$ with
 %
 \begin{equation}
-  A = \left ( \begin{array}{cccccc}
+  A = \begin{pmatrix}
       -2 (1+\alpha) & \alpha & 0 & 1 & 0 & 0 \\
       \alpha & -2(1+\alpha) & \alpha & 0 & 1 & 0 \\
       0 & \alpha & -2(1+\alpha) & 0 & 0 & 1 \\
       1 & 0 & 0 & -2(1+\alpha) & \alpha & 0 \\
       0 & 1 & 0 & \alpha & -2(1+\alpha) & \alpha \\
       0 & 0 & 1 & 0 & \alpha & -2(1+\alpha) \\
-    \end{array} \right ) \label{eq:PDE:A}
+    \end{pmatrix} \label{eq:PDE:A}
 \end{equation}
 %
 and
@@ -329,11 +329,12 @@ to store the matrix $A$ of the coefficients defined in
 equation~(\ref{eq:PDE:A}).  In fact, we can rewrite
 equation~(\ref{eq:ellfd}) as
 %
-\begin{equation}
-  u_{i,j} = \frac{1}{2(1+\alpha)} \left [ u_{i-1,j} +u_{i+1,j} +
-    \alpha (u_{i,j-1}+u_{i,j+1}) - h^2 f_{i,j} \right ], \quad
-  1 \le i \le n, \, 1 \le j \le m . \label{PDE:eq:Ell:Updateuij}
-\end{equation}
+\begin{align}
+  u_{i,j} &= \frac{1}{2(1+\alpha)} \left [ u_{i-1,j} +u_{i+1,j} +
+    \alpha (u_{i,j-1}+u_{i,j+1}) - h^2 f_{i,j} \right ],
+    \label{PDE:eq:Ell:Updateuij} \\ & \notag \qquad
+  1 \le i \le n, \, 1 \le j \le m .
+\end{align}
 %
 This equation is a Gauss-Seidel formula to update $u_{i,j}$. When this
 equation is used, the value obtained from the right-hand side replaces
@@ -364,13 +365,12 @@ of equation~(\ref{dp}). Substituting
 %
 into the difference equation~(\ref{eq:ellfd}), we obtain
 %
-\begin{eqnarray*}
- & & \frac{1}{h_x^2}[e_{i-1,j}+e_{i+1,j}-2e_{i,j}] +
-      \frac{1}{h_y^2}[e_{i,j-1}+e_{i,j+1}-2e_{i,j}] = \\
- & & \hspace{10mm} f_{i,j} -
-     \frac{1}{h_x^2}[\hat u_{i-1,j}+\hat u_{i+1,j}-2\hat u_{i,j}] -
-     \frac{1}{h_y^2}[\hat u_{i,j-1}+\hat u_{i,j+1}-2\hat u_{i,j}].
-\end{eqnarray*}
+\begin{align*}
+ \frac{1}{h_x^2}[e_{i-1,j}+e_{i+1,j}-2e_{i,j}] +
+ \frac{1}{h_y^2}[e_{i,j-1}+e_{i,j+1}-2e_{i,j}] &= f_{i,j} - \\
+ & \qquad \frac{1}{h_x^2}[\hat u_{i-1,j}+\hat u_{i+1,j}-2\hat u_{i,j}] - \\
+ & \qquad \frac{1}{h_y^2}[\hat u_{i,j-1}+\hat u_{i,j+1}-2\hat u_{i,j}].
+\end{align*}
 %
 Using the finite-difference approximation formula~(\ref{fd}) to
 eliminate the finite differences we obtain
@@ -865,14 +865,14 @@ To obtain equation~(\ref{PDE:eq:LaxEquiv}) we Taylor expand
 $u_{i}^{n+1}$ and $u_{i\pm 1}^{n}$ around $u_{i}^{n}$ (indicated with
 $u$ in what follows):
 %
-\begin{eqnarray*}
- & & u_{i}^{n+1} = u + \delta \partial_t u +
+\begin{align*}
+ u_{i}^{n+1} &= u + \delta \partial_t u +
                  \frac{\delta^2}{2}\partial_{t t} u +
                  \frac{\delta^3}{3!} \partial_{t t t} u + \order{\delta^4}, \\
- & & u_{i\pm 1}^{n} = u + h \partial_x u \pm
+ u_{i\pm 1}^{n} &= u + h \partial_x u \pm
                  \frac{h^2}{2}\partial_{x x} u \pm
                  \frac{h^3}{3!} \partial_{x x x} u + \order{h^4} .
-\end{eqnarray*}
+\end{align*}
 %
 Substituting into equation~(\ref{PDE:eq:hypLax}) and dividing through
 by $\delta$ we obtain
@@ -916,18 +916,18 @@ equation~(\ref{eq:PDE:14}) we have
 Differentiating with respect to time on both sides and making use
 of~(\ref{PDE:eq:16}) and~(\ref{PDE:eq:15}) we obtain:
 %
-\begin{eqnarray*}
- \partial_{t t} u & = & -v \partial_x \partial_t u
+\begin{align*}
+ \partial_{t t} u &=  -v \partial_x \partial_t u
    - \frac{\delta}{2} \partial_t \partial_{t t} u + \order{\delta^2} \\
-  & = & -v \partial_x \left ( -v \partial_x u
+  &=  -v \partial_x \left ( -v \partial_x u
    - \frac{\delta}{2} \partial_{t t} u \right )
    - \frac{\delta}{2} \partial_t v^2 \partial_{x x} u + \order{\delta^2} \\
-  & = & v^2 \partial_{x x} u + v \partial_x
+  &=  v^2 \partial_{x x} u + v \partial_x
         \left ( \frac{\delta}{2} v^2 \partial_{x x} u \right ) +
       v^3 \frac{\delta}{2} \partial_{x x x} u + \order{\delta^2} \\
-  & = & v^2 \partial_{x x} u + \delta v^3 \partial_{x x x} u +
+  &=  v^2 \partial_{x x} u + \delta v^3 \partial_{x x x} u +
       \order{\delta^2}.
-\end{eqnarray*}
+\end{align*}
 %
 Differentiating equation~(\ref{PDE:eq:15}) with respect to time we
 obtain
@@ -958,12 +958,12 @@ first-order one-sided-difference approximation in the upwind
 direction.  For $v > 0$ the finite difference upwind approximation of
 equation~(\ref{PDE:eq:advect}) is
 %
-\begin{equation}
-  \frac{u_{i}^{n+1}-u_{i}^{n}}{\delta} + v
-  \frac{u_{i}^{n} - u_{i-1}^{n}}{h} = 0 \implies
-  u_{i}^{n+1} = u_{i}^{n} - c ( u_{i}^{n} - u_{i-1}^{n} ) ,
+\begin{align}
+  && \frac{u_{i}^{n+1}-u_{i}^{n}}{\delta} + v
+  \frac{u_{i}^{n} - u_{i-1}^{n}}{h} &= 0 \\ \implies &&
+  u_{i}^{n+1} &= u_{i}^{n} - c ( u_{i}^{n} - u_{i-1}^{n} ) ,
   \label{eq:PDE:Upw}
-\end{equation}
+\end{align}
 %
 where $c=v \delta/h$ is the convection number.  The upwind method is
 consistent, first order in time and space and stable if $c \le 1$,

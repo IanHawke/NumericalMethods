@@ -4,12 +4,12 @@
 \section{Introduction}
 
 The numerical solution of systems of linear equations can be a rather
-taxing problem.    Solving a system like 
+taxing problem.    Solving a system like
 %
 \begin{align*}
   \left\{
     \begin{aligned}
-      2 x + 3 y & = 7, \\ 
+      2 x + 3 y & = 7, \\
       x - y & = 1,
     \end{aligned} \right.
 \end{align*}
@@ -71,7 +71,7 @@ to solve a linear system of equations.
 
 \subsection{Introduction}
 
-Unless otherwise stated, we plan to solve 
+Unless otherwise stated, we plan to solve
 %
 \begin{equation*}
   A \bx = \bb ,
@@ -90,7 +90,7 @@ set) or an infinite number of solutions (undetermined set).
 
 \smallskip
 
-\noindent {\bf Remark} - Numerically, finding $\bx$ using $\bx = 
+\noindent {\bf Remark} - Numerically, finding $\bx$ using $\bx =
 A^{-1} \bb$ is invariably bad: there are faster and more accurate
 methods to solve a linear system of equations.
 
@@ -116,11 +116,11 @@ Some common norms are:
 %
 \begin{center}
   \begin{tabular}{ll@{\hspace{5mm}}l}
-    $\displaystyle \norm{\bx}_1 \equiv \sum_{j=1}^n |x_j|$ , 
+    $\displaystyle \norm{\bx}_1 \equiv \sum_{j=1}^n |x_j|$ ,
     & & $\displaystyle \norm{\bx}_2 \equiv \left [ \sum_{j=1}^n (x_j)^2 \right ]^{1/2}$, \\
     $\displaystyle \norm{\bx}_p \equiv \left [ \sum_{j=1}^n (x_j)^p \right ]^{1/p}
-    \, p>0$, 
-    & & $\displaystyle \norm{\bx}_\infty = \max_j |x_j|$ . 
+    \, p>0$,
+    & & $\displaystyle \norm{\bx}_\infty = \max_j |x_j|$ .
   \end{tabular}
 \end{center}
 
@@ -165,7 +165,7 @@ the matrix space $M_n$ as
 
 These norms are said to be \textit{induced} by the corresponding
 vector norm and we use the same symbol for the matrix and the vector
-norm.   For example, 
+norm.   For example,
 %
 \begin{align*}
   \norm{ A }_1 & \equiv \max_{\norm{ \bx }_1 = 1} \norm{ A \bx }_1 , \\
@@ -235,14 +235,14 @@ quantity
 and we call ${\cal E}$ the \textit{weighted residual},
 %
 \begin{equation*}
-  {\cal E} = \frac{\norm{ \br }}{\norm{ \bb }} = 
+  {\cal E} = \frac{\norm{ \br }}{\norm{ \bb }} =
   \frac{\norm{ A \bx_c - \bb }}{\norm{ \bb }} .
 \end{equation*}
 %
-One can show that 
+One can show that
 %
 \begin{equation}
- \frac{1}{K(A)} {\cal E} \le 
+ \frac{1}{K(A)} {\cal E} \le
       \frac{ \norm{ \bx_c - \bx_t }}{\norm{ \bx_t }} \le
       K(A) {\cal E} .
  \label{cond_and_res}
@@ -255,7 +255,7 @@ to a solution with small weighted residual we can be confident of the
 accuracy of the solution.  However, if the condition number is big,
 $K(A) \gg 1$, then, even though the weighted residual may be very
 small, the relative error in the solution may be extremely large.
- 
+
 \subsection{Ill-conditioned systems}
 
 The condition number gives us a warning that the solution may not be
@@ -265,7 +265,7 @@ implies.     Consider the linear system
 \begin{align}
   \left\{
     \begin{aligned}
-      x + 2 y & = 3 , \\ 
+      x + 2 y & = 3 , \\
       0.499 x + 1.001 y & = 1.5 .
     \end{aligned} \right.
  \label{ill_cond_1}
@@ -277,7 +277,7 @@ first equation and a slightly different second equation:
 \begin{align}
   \left\{
     \begin{aligned}
-      x + 2 y & = 3 , \\ 
+      x + 2 y & = 3 , \\
       0.5 x + 1.001 y & = 1.5 .
     \end{aligned} \right.
  \label{ill_cond_2}
@@ -291,27 +291,23 @@ We can analyse this result in terms of the condition number.   The
 matrix of the coefficients and its inverse are
 %
 \begin{equation*}
-  A = 
-  \left ( 
-   \begin{array}{c c}
-    1 & 2 \\*[3mm]
+  A =
+  \begin{pmatrix}
+    1 & 2 \\
     \dfrac{499}{1000} & \dfrac{1001}{1000} \\
-   \end{array}
-  \right )
+  \end{pmatrix}
   \qquad
-  A^{-1} = 
-  \left ( 
-   \begin{array}{c c}
-     \dfrac{1001}{3} & \dfrac{-2000}{3} \\*[3mm]
-     \dfrac{-499}{3} & \dfrac{1000}{3} \\
-   \end{array}
-  \right )
+  A^{-1} =
+  \begin{pmatrix}
+   \dfrac{1001}{3} & \dfrac{-2000}{3} \\
+   \dfrac{-499}{3} & \dfrac{1000}{3} \\
+  \end{pmatrix}
 \end{equation*}
-% 
+%
 with infinity norms (maximum of the 1-norm of the rows)
 %
 \begin{equation*}
-  \norm{ A }_\infty = 3 , \quad \norm{ A^{-1} }_\infty = \frac{3001}{3} 
+  \norm{ A }_\infty = 3 , \quad \norm{ A^{-1} }_\infty = \frac{3001}{3}
   \implies K(A) = 3001 .
 \end{equation*}
 %
@@ -386,7 +382,7 @@ example, the system
   \begin{pmatrix}
     x_1 \\ x_2 \\ x_3
   \end{pmatrix}
- = 
+ =
  \begin{pmatrix}
    1 \\ 2 \\ 3
  \end{pmatrix}
@@ -402,7 +398,7 @@ $x_3$ is known it can be substituted in the second equation
  5 x_2 + 4 x_3       & = 2 && \implies & 5 x_2 + 2           & = 2 \\
                      &     && \implies & x_2                 & = 0 , \\
  3 x_1 + 2 x_2 + x_3 & = 1 && \implies & 3 x_1 + \frac{1}{2} & = 1 \\
-                     &     && \implies & x_1                 & = \frac{1}{6} .   
+                     &     && \implies & x_1                 & = \frac{1}{6} .
 \end{align*}
 
 The Gauss elimination algorithm consists of a series of steps that
@@ -422,7 +418,7 @@ be solved by back substitution.  The algorithm is as follows:
 where $j$ is an index that runs from 2 to $n$.  In implementing this
 algorithm by hand it is convenient to write $A$ and $\bb$ as a single
 $n \times (n+1)$ matrix called the \textit{augmented matrix}.
-Consider for example 
+Consider for example
 %
 \begin{equation*}
   A =
@@ -451,15 +447,15 @@ By applying the first step of the algorithm to this matrix we obtain
 \begin{equation*}
   \left (
   \begin{array}{c c c|c}
-   1 & 2 & 3 & 10 \\ 
-   0 & 5 - 4 \times 2 & 6 - 4 \times 3 & 11 - 4 \times 10 \\  
+   1 & 2 & 3 & 10 \\
+   0 & 5 - 4 \times 2 & 6 - 4 \times 3 & 11 - 4 \times 10 \\
    0 & 8 - 7 \times 2 & 0 - 7  \times 3 & 12 - 7 \times 10
   \end{array}
  \right ) =
  \left (
   \begin{array}{c c c|c}
-   1 & 2 & 3 & 10 \\ 
-   0 & -3 & -6 & -29 \\ 
+   1 & 2 & 3 & 10 \\
+   0 & -3 & -6 & -29 \\
    0 & -6 & -21 & -58
   \end{array}
  \right )
@@ -484,15 +480,15 @@ called the \textit{pivot}. In the case of our example system we have:
 \begin{equation*}
   \left (
   \begin{array}{c c c|c}
-   1 & 2 & 3 & 10 \\ 
-   0 & -3 & -6 & -29 \\ 
+   1 & 2 & 3 & 10 \\
+   0 & -3 & -6 & -29 \\
    0 & -6 - 2 (-3) & -21 - 2 (-6) & -58 - 2 (-29)
   \end{array}
  \right ) =
  \left (
   \begin{array}{c c c|c}
-   1 & 2 & 3 & 10 \\ 
-   0 & -3 & -6 & -29 \\  
+   1 & 2 & 3 & 10 \\
+   0 & -3 & -6 & -29 \\
    0 & 0 & -9 & 0
   \end{array}
  \right ) .
@@ -550,7 +546,7 @@ the following augmented matrix and solution:
   \left (
    \begin{array}{c c|c}
     10^{-5} & 1 & 1 \\
-    0 & -99999 & -99998 
+    0 & -99999 & -99998
    \end{array}
   \right )
   \implies
@@ -568,13 +564,13 @@ rather different result.    The augmented matrix is now
    \left (
     \begin{array}{c c|c}
       0.1000 \times 10^{-4} & 0.1000 \times 10 & 0.1000 \times 10 \\
-      0.1000 \times 10 & 0.1000 \times 10 & 0.2000 \times 10 
+      0.1000 \times 10 & 0.1000 \times 10 & 0.2000 \times 10
     \end{array}
   \right ) & \implies \\
    \left (
     \begin{array}{c c|c}
       0.1000 \times 10^{-4} & 0.1000 \times 10 & 0.1000 \times 10 \\
-      0.0000 \times 10^{0} & -0.1000 \times 10^6 & -0.1000 \times 10^6 
+      0.0000 \times 10^{0} & -0.1000 \times 10^6 & -0.1000 \times 10^6
     \end{array}
   \right ) & \implies
   \begin{cases}
@@ -605,7 +601,7 @@ rounding errors occur:
   \left (
     \begin{array}{c c|c}
       0.1000 \times 10 & 0.1000 \times 10 & 0.2000 \times 10 \\
-      0.0000 \times 10^{0} & 0.1000 \times 10 & 0.1000 \times 10 
+      0.0000 \times 10^{0} & 0.1000 \times 10 & 0.1000 \times 10
     \end{array}
   \right ) & \implies
   \begin{cases}
@@ -614,7 +610,7 @@ rounding errors occur:
 \end{align}
 %
 The solutions are very close to the exact solution as we would have
-expected from the analysis of the condition number.    
+expected from the analysis of the condition number.
 
 The procedure of  exchanging rows  (or columns) in  order  to have the
 biggest pivot  (i.e.\ the first  coefficient of the  row that is  to be
@@ -629,10 +625,10 @@ Gauss elimination algorithm, we want to replace row $j$ with
 where $\varepsilon$ is a small number, ideally as small as possible.
 This can be easily arranged: at each step of the algorithm we
 rearrange the set of equations so that we are eliminating using the
-largest pivot in modulus.  
+largest pivot in modulus.
 
 Notice that the factors that multiply the rows are always smaller than
-unity.    This procedure is called \textit{partial pivoting}.    
+unity.    This procedure is called \textit{partial pivoting}.
 
 An algorithm that is similar to the one above, but that exchanges both
 rows and columns in order that the biggest element in the matrix is
@@ -704,7 +700,7 @@ $n^2$ coefficients.   $L$ and $U$ are both triangular and thus have
 $n(n+1)/2$ entries each for a total of $n^2 + n$ entries.
 In other words, $L$ and $U$ have together $n$ coefficients more than the
 original matrix $A$.  Therefore we can choose $n$ coefficients of $L$
-and $U$ to our own liking.    
+and $U$ to our own liking.
 
 To derive a formula for the $LU$ factorisation we start by writing
 explicitly in terms of the components the decomposition $A = L U$.
@@ -712,7 +708,7 @@ Call $a_{i j}$, $\ell_{i j}$ and $u_{i j}$ the elements respectively
 of $A$, $L$ and $U$.    The following relation must hold:
 %
 \begin{equation}
-  a_{i j} = \sum_{s=1}^n \ell_{i s} u_{s j} = 
+  a_{i j} = \sum_{s=1}^n \ell_{i s} u_{s j} =
   \sum_{s=1}^{\min(i,j)} \ell_{i s} u_{s j} ,
   \label{LU_fact}
 \end{equation}
@@ -742,37 +738,37 @@ matrix $U$ is \textit{unit} upper triangular.
 \begin{table}
   \begin{center}
     \fbox{
-      \parbox[t]{80mm}{ 
+      \parbox[t]{80mm}{
         \setlength{\parindent}{0pt} \footnotesize
         \textbf{for} $k = 1,2,\ldots,n$ \textbf{do} \par
         \hspace{5mm}
         Specify a nonzero value for either $\ell_{k k}$ (Doolittle) \par
-        \hspace{5mm}or $u_{k k}$ (Crout) and compute the other from 
+        \hspace{5mm}or $u_{k k}$ (Crout) and compute the other from
         \begin{equation*}
-          \ell_{k k} u_{k k} = 
+          \ell_{k k} u_{k k} =
           a_{k k} - \sum_{s=1}^{k-1} \ell_{k s} u_{s k} .
         \end{equation*}
-        
+
         \hspace{5mm} Build the $k$-th row of $U$:\par
         \hspace{5mm} \textbf{for} $j=k+1,k+2, \ldots, n$ \textbf{do} \par
         \begin{equation*}
-          u_{k j} = \left( a_{k j} - 
+          u_{k j} = \left( a_{k j} -
             \sum_{s=1}^{k-1} \ell_{k s} u_{s j} \right) / \ell_{k k}
         \end{equation*}
         \hspace{5mm} \textbf{end}
-        
+
         \smallskip
-        
+
         \hspace{5mm} Build the $k$-th column of $L$:\par
         \hspace{5mm} \textbf{for} $i=k+1,k+2, \ldots, n$ \textbf{do} \par
         \begin{equation*}
-          \ell_{i k} = \left( a_{i k} - 
+          \ell_{i k} = \left( a_{i k} -
             \sum_{s=1}^{k-1} \ell_{i s} u_{s k} \right) / u_{k k}
         \end{equation*}
         \hspace{5mm} \textbf{end}
-        
+
         \smallskip
-        
+
         \textbf{end}
       }
     }
@@ -785,7 +781,7 @@ Following the Doolittle's factorisation we set $\ell_{1 1} = 1$ and
 obtain
 %
 \begin{equation*}
-  u_{1 1} = a_{1 1} . 
+  u_{1 1} = a_{1 1} .
 \end{equation*}
 %
 We can now compute all the elements of the first row of $U$ and of the
@@ -799,14 +795,14 @@ first column of $L$, by setting either $i=1$ or $j=1$:
 Consider now $a_{2 2}$.   Equation~(\ref{LU_fact}) becomes:
 %
 \begin{equation*}
-  a_{2 2} = \ell_{2 1} u_{1 2} + \ell_{2 2} u_{2 2} . 
+  a_{2 2} = \ell_{2 1} u_{1 2} + \ell_{2 2} u_{2 2} .
 \end{equation*}
 %
 If, according to the Doolittle's scheme, we set $\ell_{2 2} = 1$ we
 have:
 %
 \begin{equation*}
-  u_{2 2} = a_{2 2} - \ell_{2 1} u_{1 2} , 
+  u_{2 2} = a_{2 2} - \ell_{2 1} u_{1 2} ,
 \end{equation*}
 %
 where $\ell_{2 1}$ and $u_{1 2}$ are known from the previous steps.
@@ -924,7 +920,7 @@ modulus of each diagonal element is greater than the sum of the moduli
 of all the other elements in its row:
 %
 \begin{equation*}
-  | a_{i i} | > \sum_{\genfrac{}{}{0pt}{}{j=1}{j \ne i}}^n 
+  | a_{i i} | > \sum_{\genfrac{}{}{0pt}{}{j=1}{j \ne i}}^n
   | a_{i j} |, \qquad (1 \le i \le n) .
 \end{equation*}
 %
@@ -935,7 +931,7 @@ partial differential equations using finite difference methods involve
 the solutions of large linear systems whose matrix of coefficients is
 diagonally dominant.
 
-The importance of diagonally dominance from the point of view of
+The importance of diagonal dominance from the point of view of
 direct methods to solve linear systems of equations stems from the
 following theorems:
 
@@ -976,20 +972,20 @@ in Table~\ref{cholesky}.
         \textbf{for} $k = 1,2,\ldots,n$ \textbf{do} \par
         \hspace{5mm} Compute the diagonal element \par
         \begin{equation*}
-          \ell_{k k} = 
+          \ell_{k k} =
           \left ( a_{k k} - \sum_{s=1}^{k-1} \ell_{k s}^2 \right )^{1/2} .
         \end{equation*}
-        
+
         \hspace{5mm} Build the $k$-th column of $L$:\par
         \hspace{5mm} \textbf{for} $i=k+1,k+2, \ldots, n$ \textbf{do} \par
         \begin{equation*}
-          \ell_{i k} = \left ( a_{i k} - 
+          \ell_{i k} = \left ( a_{i k} -
             \sum_{s=1}^{k-1} \ell_{i s} \ell_{k s} \right ) / \ell_{k k}
         \end{equation*}
         \hspace{5mm} \textbf{end}
-        
+
         \smallskip
-        
+
         \textbf{end}
       }
     }
@@ -1000,13 +996,15 @@ in Table~\ref{cholesky}.
 
 \subsection{Tridiagonal systems}
 
-\noindent Consider a $4\times 4$ system 
+\noindent Consider a $4\times 4$ system
 %
 \begin{equation*}
-  \left ( \begin{array}{cccc}
-      b_1 & c_1 & 0 & 0\\ a_1 & b_2 & c_2 & 0 \\
-      0 & a_2 & b_3 & c_3 \\ 0 & 0 & a_3 & b_4 
-    \end{array} \right ) 
+  \begin{pmatrix}
+    b_1 & c_1 & 0 & 0 \\
+    a_1 & b_2 & c_2 & 0 \\
+    0 & a_2 & b_3 & c_3 \\
+    0 & 0 & a_3 & b_4
+  \end{pmatrix}
   \begin{pmatrix}
     x_1 \\ x_2 \\ x_3 \\ x_4
   \end{pmatrix}
@@ -1018,13 +1016,15 @@ in Table~\ref{cholesky}.
 %
 It is called a \textit{tridiagonal system}. Tridiagonal systems give
 rise to particularly simple results when using Gaussian elimination.
-Forward elimination at each step yields a system 
+Forward elimination at each step yields a system
 %
 \begin{equation*}
-  \left ( \begin{array}{cccc} 
-      1 & c_1/d_1 & 0 & 0 \\ 0 & 1 & c_2/d_2 & 0 \\ 
-      0 & 0 & 1 & c_3/d_3 \\ 0 & 0 & 0 & 1 
-    \end{array} \right ) 
+  \begin{pmatrix}
+    1 & c_1/d_1 & 0 & 0 \\
+    0 & 1 & c_2/d_2 & 0 \\
+    0 & 0 & 1 & c_3/d_3 \\
+    0 & 0 & 0 & 1
+  \end{pmatrix}
   \begin{pmatrix}
     x_1 \\ x_2 \\ x_3 \\ x_4
   \end{pmatrix}
@@ -1034,43 +1034,41 @@ Forward elimination at each step yields a system
   \end{pmatrix},
 \end{equation*}
 %
-where 
+where
 %
-\begin{equation*}
-  \begin{array}{ll@{\hspace{4mm}}l}
-    d_1=b_1, & & y_1=f_1/d_1, \\
-    d_2=b_2-a_1c_1/d_1, & & y_2=(f_2-y_1 a_1)/d_2, \\
-    d_3=b_3-a_2c_2/d_2, & & y_3=(f_3-y_2 a_2)/d_3, \\
-    d_4=b_4-a_3c_3/d_3, & & y_4=(f_4-y_3 a_3)/d_4.
-  \end{array}
-\end{equation*}
+\begin{align*}
+    d_1 &= b_1, & y_1 &= f_1/d_1, \\
+    d_2 &= b_2-a_1c_1/d_1, & y_2 &= (f_2-y_1 a_1)/d_2, \\
+    d_3 &= b_3-a_2c_2/d_2, & y_3 &= (f_3-y_2 a_2)/d_3, \\
+    d_4 &= b_4-a_3c_3/d_3, & y_4 &= (f_4-y_3 a_3)/d_4.
+\end{align*}
 %
 Finally, the backward substitution procedure gives the answer
 %
 \begin{equation*}
   \left\{
-    \begin{array}{l}
-      x_4=y_4,\\
-      x_3=y_3-x_4 c_3/d_3,\\
-      x_2=y_2-x_3 c_2/d_2,\\
-      x_1=y_1-x_2 c_1/d_1.
-    \end{array} \right .
+    \begin{aligned}
+      x_4 &= y_4,\\
+      x_3 &= y_3-x_4 c_3/d_3,\\
+      x_2 &= y_2-x_3 c_2/d_2,\\
+      x_1 &= y_1-x_2 c_1/d_1.
+    \end{aligned} \right .
 \end{equation*}
 %
 It is clear what will happen in general case of $n\times n$
 tridiagonal system.  The forward elimination procedure is
 
 \begin{enumerate}
-  % 
+  %
 \item At the first step $d_1=b_1$ and $y_1=f_1/d_1$;
-  % 
+  %
 \item At the $k$-th step $d_k=b_k-a_{k-1}c_{k-1}/d_{k-1}$ and
-  $y_k=(f_k-y_{k-1} a_{k-1})/d_k$. 
+  $y_k=(f_k-y_{k-1} a_{k-1})/d_k$.
 %
 \item Once all the $y_k$ have been computed, the $x_k$ can be
   determined using backward substitution: $x_n = y_n$, \ldots,
   $x_{k-1}=y_{k-1}-x_k c_{k-1}/d_{k-1}$, \ldots
-  % 
+  %
 \end{enumerate}
 
 \section{Iterative methods}
@@ -1104,7 +1102,7 @@ where $\det(A) \ne 0$.   Then the coefficient matrix can be
 split, in an infinite number of ways, into the form
 %
 \begin{equation*}
-  A = N - P , 
+  A = N - P ,
 \end{equation*}
 %
 where $N$ and $P$ are matrices of the same order as $A$.    The
@@ -1118,7 +1116,7 @@ Starting from some \textit{arbitrary} vector $\bx^{(0)}$, we define a
 sequence of vectors $\{ \bx^{(n)}\}$, by the recursion
 %
 \begin{equation}
-  N \bx^{(n)} = P \bx^{(n-1)} + \bb, \quad n=1,2,3,\ldots 
+  N \bx^{(n)} = P \bx^{(n-1)} + \bb, \quad n=1,2,3,\ldots
   \label{rec1}
 \end{equation}
 %
@@ -1127,12 +1125,12 @@ $N$ and $P$.      By looking at~(\ref{rec1}) we can already find
 some restrictions on the choice of $N$:
 %
 \begin{enumerate}
-  % 
-\item The matrix $N$ should not be singular, i.e.\ $\det(N) \ne 0$. 
-  % 
+  %
+\item The matrix $N$ should not be singular, i.e.\ $\det(N) \ne 0$.
+  %
 \item The matrix $N$ should be chosen such that a system of the form
   $N \by = \bz$ is ``easily'' solved.
-  % 
+  %
 \end{enumerate}
 %
 One can show that an iterative method converges if and only
@@ -1181,7 +1179,7 @@ an upper triangular matrix, $A_L$ and $A_U$ respectively.   The iteration
 scheme is
 %
 \begin{equation*}
-  \bx^{(n+1)} = \bb + ( A_L + A_U ) \bx^{(n)}  
+  \bx^{(n+1)} = \bb + ( A_L + A_U ) \bx^{(n)}
 \end{equation*}
 
 %
@@ -1218,8 +1216,8 @@ Gauss-Seidel iteration scheme as:
 \begin{align*}
   && \bx^{(n+1)} & = \bb + A_L \bx^{(n+1)} + A_U \bx^{(n)} \\
   \implies && \bx^{(n+1)} & = \bx^{(n)} + \left [ \bb + A_L \bx^{(n+1)}
-    + (A_U - I) \bx^{(n)} \right ] \\ 
-  &&             & = \bx^{(n)} + \bc,  
+    + (A_U - I) \bx^{(n)} \right ] \\
+  &&             & = \bx^{(n)} + \bc,
 \end{align*}
 %
 where the correction term is $\bc = \bb + A_L \bx^{(n+1)} + (A_U - I)
@@ -1249,12 +1247,12 @@ convergence of many algorithms to solve linear system is that of
 \textit{diagonal dominance}.  A matrix is strictly diagonally dominant
 if the modulus of each diagonal element is greater than the sum of the
 moduli of all the other elements in its row:
-% 
+%
 \begin{equation*}
-  | a_{i i} | > \sum_{\genfrac{}{}{0pt}{}{j=1}{j \ne i}}^n 
+  | a_{i i} | > \sum_{\genfrac{}{}{0pt}{}{j=1}{j \ne i}}^n
   | a_{i j} |, \qquad (1 \le i \le n) .
 \end{equation*}
-% 
+%
 This may seem a rather peculiar condition to require on a matrix.  As
 a matter of fact, it is not so for many applications of practical
 interest.  For example, most algorithms that solve numerically partial
@@ -1315,13 +1313,13 @@ In the case of Doolittle's factorisation we have $\det(L) = 1$ and
 therefore
 %
 \begin{equation*}
-\det(A) = \det(U) = \prod_{i=1}^n u_{i i} . 
+\det(A) = \det(U) = \prod_{i=1}^n u_{i i} .
 \end{equation*}
 %
 If partial pivoting has been used for the Gaussian elimination then
 %
 \begin{equation*}
-  \det(A) = \pm \prod_{i=1}^n u_{i i} , 
+  \det(A) = \pm \prod_{i=1}^n u_{i i} ,
 \end{equation*}
 %
 where the sign is positive or negative depending if the number of row
