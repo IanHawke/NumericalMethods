@@ -174,10 +174,10 @@ differential equations.  Three main groups are:
   equation for the values of the solution on the grid points.  These
   are the only methods that we discuss at any length in this unit.
   %
-\item \textit{Finite elements methods}
+\item \textit{Finite element methods}
 
   The domain of the solution is divided into cells.  The solution is
-  represented as a simple function (e.g. a linear function) on each
+  represented as a simple function (e.g.\ a linear function) on each
   cell and the partial differential equation is transformed to an
   algebraic problem for the matching conditions of the simple
   solutions at the boundaries of the cells.
@@ -194,7 +194,7 @@ differential equations.  Three main groups are:
   estimate to a high degree of accuracy the partial derivatives of the
   solution on the grid points.  These methods are highly accurate and
   fast, but in general require the domain of the solution to be fairly
-  simple, e.g. a rectangle.
+  simple, e.g.\ a rectangle.
   %
 \end{enumerate}
 
@@ -404,7 +404,7 @@ and zero boundary conditions. Analysing this equality, it is possible
 to prove that
 %
 \begin{equation*}
-  ||e_{i,j}|| \simeq O(h_x h_y).
+  ||e_{i,j}|| \simeq \order{h_x h_y}.
 \end{equation*}
 %
 This means that in the limit $n\to +\infty$ and $m\to +\infty$ the
@@ -454,14 +454,14 @@ time derivative in equation~(\ref{PDE:eq:Para:template}) using a
 forward difference approximation
 %
 \begin{equation}
-  \pdv{u}{t} = \frac{u_i^{n+1}-u_i^{n}}{\delta} + O(\delta)
+  \pdv{u}{t} = \frac{u_i^{n+1}-u_i^{n}}{\delta} + \order{\delta}
   \label{PDE:eq:ut}
 \end{equation}
 %
 and the spatial derivative using
 %
 \begin{equation}
-  \pdv[2]{u}{x} = \frac{u_{i+1}^{n}+u_{i-1}^{n}-2u_{i}^{n}}{h^2} + O(h^2)
+  \pdv[2]{u}{x} = \frac{u_{i+1}^{n}+u_{i-1}^{n}-2u_{i}^{n}}{h^2} + \order{h^2}
   \label{PDE:eq:uxx}
 \end{equation}
 %
@@ -494,7 +494,7 @@ Equation~(\ref{PDE:eq:Para:expl}) must be complemented by the
 discretized version of the initial and boundary conditions, namely
 %
 \begin{equation*}
-  u_{0}^{n} = u_{N+1}^{n} = 0 \quad \mbox{and} \quad u_{i}^{0} = g(x_i) .
+  u_{0}^{n} = u_{N+1}^{n} = 0 \qand u_{i}^{0} = g(x_i) .
 \end{equation*}
 
 \subsubsection{Consistency, Stability and Convergence}
@@ -593,9 +593,9 @@ method}
 
 Equation~(\ref{PDE:eq:Para:expl}) is first order in time and second
 order in space: in fact the error involved in the discretisation of
-the time derivative, equation~(\ref{PDE:eq:ut}), is $O(\delta)$, while
+the time derivative, equation~(\ref{PDE:eq:ut}), is $\order{\delta}$, while
 the error in the discretisation of the space derivative,
-equation~(\ref{PDE:eq:uxx}), is $O(h^2)$.
+equation~(\ref{PDE:eq:uxx}), is $\order{h^2}$.
 
 Equation~(\ref{PDE:eq:Para:expl}) is clearly consistent.  As $\delta
 \to 0$ and $h \to 0$ the finite difference approximations of the time
@@ -705,140 +705,6 @@ In other words $|q| < 1$ for all values of $s$ and the backward-time,
 centred space method is unconditionally stable and, hence,
 unconditionally convergent.
 
-\subsection[Crank-Nicolson]{A second order method in both time and space:
-Crank-Nicolson}
-
-The backward-time centred-space approximation of the diffusion
-equation~(\ref{PDE:eq:Para:template}) has a major advantage over
-explicit methods: it is unconditionally stable.  However, in one
-respect it is not an improvement on the explicit method: it is only
-first order in time, even though it is second order in space.  Using a
-second order finite difference approximation of the time derivative
-would be an obvious improvement.
-
-Crank and Nicholson (1947) proposed approximating the partial
-derivative $u_t$ using a finite difference centred at the time value
-$t^n + \delta/2 \equiv t^{n+1/2}$:
-%
-\begin{equation*}
-  \pdv{u}{t} = \frac{u_{i}^{n+1}-u_{i}^{n}}{\delta} + O(\delta^2)
-\end{equation*}
-%
-This choice of grid point requires that also the spatial derivative
-should be evaluated at $t^{n+1/2}$.  Crank and Nicholson suggested
-that the second derivative at this grid point could be approximated
-with the average of the second derivatives at $t^n$ and at $t^{n+1}$:
-%
-\begin{equation*}
-  \left . \pdv[2]{u}{x} \right |_{t+\delta/2} \simeq
-  \frac{1}{2} \left ( \left . \pdv[2]{u}{x} \right |_{t} +
-    \left . \pdv[2]{u}{x} \right |_{t + \delta} \right ) \, .
-\end{equation*}
-%
-With this choice of discretisation the finite difference
-representation of equation~(\ref{PDE:eq:Para:template}) is:
-%
-\begin{align}
-  & & \frac{u_{i}^{n+1}-u_{i}^{n}}{\delta} & = \frac{1}{2}
-  \left ( \frac{u_{i+1}^{n+1} - 2 u_{i}^{n+1} + u_{i-1}^{n+1}}{h^2} +
-    \frac{u_{i+1}^{n} - 2 u_{i}^{n} + u_{i-1}^{n}}{h^2} \right )
-  \nonumber \\
-  \implies & &
-  -s u_{i-1}^{n+1} + 2(1+s) u_{i}^{n+1} - s u_{i+1}^{n+1} & =
-  s u_{i-1}^{n} + 2(1-s) u_{i}^{n} - s u_{i+1}^{n}
-  \label{PDE:eq:CN}
-\end{align}
-%
-The system of linear equations~(\ref{PDE:eq:CN}) is once again
-tri-diagonal and can be solved efficiently using a Gaussian
-elimination algorithm.
-
-By deriving the Modified Differential Equation (MDE) corresponding to
-the finite difference scheme~(\ref{PDE:eq:CN}) it is possible to show
-that the algorithm is indeed second order both in time and in space
-and that it is consistent.  Using the Von Neumann method, i.e. by
-looking for a solution of~(\ref{PDE:eq:CN}) of the
-form~(\ref{PDE:eq:uellk}), we obtain that
-%
-\begin{equation*}
-  q = \frac{1-s \sin^2(\alpha h/2)}{1 + s \sin^2(\alpha h/2)} .
-\end{equation*}
-%
-We have $|q| < 1$ for all values of $s=\delta/h^2$ and, hence, the
-Crank-Nicolson method is unconditionally stable and convergent.
-
-\subsection[The Hopscotch method]{The Hopscotch method - A method for nonlinear parabolic equations}
-
-The Hopscotch method (Gourlay 1970) is an interesting combination of
-the forward-time centred-space (FTCS) method and the backward-time
-centred-space (BTCS) method.  The basic idea of the hopscotch method
-is to make two sweeps through the solution domain at each time step.
-On the first sweep, the explicit FTCS method,
-equation~(\ref{PDE:eq:Para:expl}), re-written here for convenience,
-%
-\begin{equation}
-  u_{i}^{n+1} = (1-2s) u_{i}^{n} + s (u_{i+1}^{n}+u_{i-1}^{n})
-  \label{PDE:eq:Para:expl1}
-\end{equation}
-%
-is applied at every other grid point.  On the second sweep, the
-implicit BTCS method, equation~(\ref{PDE:eq:Para:BTCS}),
-%
-\begin{equation}
-  u_{i}^{n+1} = u_{i}^{n} + s (u_{i+1}^{n+1}+u_{i-1}^{n+1} - 2 u_{i}^{n+1})
-  \label{PDE:eq:Para:BTCS1}
-\end{equation}
-%
-is applied at the remaining points.
-Equation~(\ref{PDE:eq:Para:BTCS1}) appears to be implicit, but the
-values of $u_{i\pm1}^{n+1}$ are known from the first sweep through the
-grid with the explicit FTCS method.  Consequently,
-equation~(\ref{PDE:eq:Para:BTCS1}) can be solved explicitly for
-$u_{i}^{n+1}$ to give
-%
-\begin{equation*}
-  (1+2s)u_{i}^{n+1} = u_{i}^{n} + s ( u_{i+1}^{n+1} + u_{i-1}^{n+1} ).
-\end{equation*}
-%
-The pattern of explicit and implicit points is alternated at each time
-level.  Moreover, the explicit and implicit steps can be combined in
-the more compact
-%
-\begin{equation}
-  u_{i}^{n+2} = 2 u_{i}^{n+1} - u_{i}^{n}
-  \label{PDE:eq:Para:Hop2}
-\end{equation}
-%
-where $u_{i}^{n+1}$ has been computed using~(\ref{PDE:eq:Para:BTCS1}).
-This simplification further increases the efficiency of the method.
-Equation~(\ref{PDE:eq:Para:expl1}) must be used on the first time
-step, but equation~(\ref{PDE:eq:Para:Hop2}) can be used at all
-subsequent time steps.  Note, however, that a drawback of this
-approach is that the solution is known only on half the grid points at
-each time step.  If the complete solution is needed, for example, to
-produce a graph, then the implicit step~(\ref{PDE:eq:Para:BTCS1})
-should follow the combined step~(\ref{PDE:eq:Para:Hop2}).  To restart
-the iteration, the explicit step~(\ref{PDE:eq:Para:expl1}) is used
-once more followed by~(\ref{PDE:eq:Para:Hop2}).
-
-The hopscotch method, applied to the diffusion equation, is stable and
-consistent.  However, in order to guarantee an accurate result as
-$\delta$ and $h$ tend to zero we have to require that the mesh ratio
-$\delta/h^2$ is constant.  In other words, in this respect the
-Hopscotch method is no better than the BTCS method (but is simpler to
-implement, especially if the equation is non linear, see below).
-
-If the equation is nonlinear then the implicit step becomes a
-nonlinear algebraic equation for $u_{i}^{n}$.  However, we can
-approximate the nonlinear terms by computing the nonlinearity using an
-average value for $u_{i}^{n}$:
-%
-\begin{equation}
-  \bar{u}_{i}^{n} = \frac{1}{4} ( u_{i+1}^{n} + u_{i-1}^{n} + u_{i+1}^{n+1} +
-  u_{i-1}^{n+1} )
-  \label{PDE:eq:para:baru}
-\end{equation}
-
 \section{Hyperbolic Equations}
 
 \subsection{Introduction}
@@ -867,7 +733,7 @@ and a boundary condition at $x=a$, $u(a,t) = G(t)$.  Note that the
 domain is unbounded in the positive $x$-direction: numerically this
 implies that the numerical solution of equation~(\ref{PDE:eq:advect})
 is acceptable only if the effects of the right boundary are
-negligible, i.e. only for the time taken for the signal to propagate
+negligible, i.e.\ only for the time taken for the signal to propagate
 across the integration region and reach the right boundary.
 
 \subsection{The forward-time centred-space method}
@@ -1002,10 +868,10 @@ $u$ in what follows):
 \begin{eqnarray*}
  & & u_{i}^{n+1} = u + \delta \partial_t u +
                  \frac{\delta^2}{2}\partial_{t t} u +
-                 \frac{\delta^3}{3!} \partial_{t t t} u + O(\delta^4), \\
+                 \frac{\delta^3}{3!} \partial_{t t t} u + \order{\delta^4}, \\
  & & u_{i\pm 1}^{n} = u + h \partial_x u \pm
                  \frac{h^2}{2}\partial_{x x} u \pm
-                 \frac{h^3}{3!} \partial_{x x x} u + O(h^4) .
+                 \frac{h^3}{3!} \partial_{x x x} u + \order{h^4} .
 \end{eqnarray*}
 %
 Substituting into equation~(\ref{PDE:eq:hypLax}) and dividing through
@@ -1016,25 +882,24 @@ by $\delta$ we obtain
   -\frac{\delta}{2} \partial_{t t} u
   -\frac{\delta^2}{6} \partial_{t t t} u
   + \frac{h^2}{2 \delta} \partial_{x x} u
-  - \frac{v h^2}{6} \partial_{x x x}u + O(\delta^3) + O(h^3)
+  - \frac{v h^2}{6} \partial_{x x x}u + \order{\delta^3} + \order{h^3}
   \label{eq:PDE:14}
 \end{equation}
 %
 We now wish to replace the derivatives with respect to time with
 derivatives respect to space using this relation.  At first order in
-$\delta$ we have that [we indicate with $O(\delta^n)$ terms that are
+$\delta$ we have that [we indicate with $\order{\delta^n}$ terms that are
 of the order of $n$ in either $\delta$ or $h$]:
 %
 \begin{equation}
-  \partial_t u = - v \partial_x u + O(\delta)
-  \label{PDE:eq:16}
+  \partial_t u = - v \partial_x u + \order{\delta}  \label{PDE:eq:16}
 \end{equation}
 %
 so that
 %
 \begin{equation}
-  \partial_{t t} u = - v \partial_x \partial_t u + O(\delta) =
-  v^2 \partial_{x x} u + O(\delta)
+  \partial_{t t} u = - v \partial_x \partial_t u + \order{\delta} =
+  v^2 \partial_{x x} u + \order{\delta}
   \label{PDE:eq:15}
 \end{equation}
 %
@@ -1045,7 +910,7 @@ equation~(\ref{eq:PDE:14}) we have
 %
 \begin{equation*}
   \partial_t u = -v \partial_x u
-  - \frac{\delta}{2} \partial_{t t} u + O(\delta^2) .
+  - \frac{\delta}{2} \partial_{t t} u + \order{\delta^2} .
 \end{equation*}
 %
 Differentiating with respect to time on both sides and making use
@@ -1053,22 +918,22 @@ of~(\ref{PDE:eq:16}) and~(\ref{PDE:eq:15}) we obtain:
 %
 \begin{eqnarray*}
  \partial_{t t} u & = & -v \partial_x \partial_t u
-   - \frac{\delta}{2} \partial_t \partial_{t t} u + O(\delta^2) \\
+   - \frac{\delta}{2} \partial_t \partial_{t t} u + \order{\delta^2} \\
   & = & -v \partial_x \left ( -v \partial_x u
    - \frac{\delta}{2} \partial_{t t} u \right )
-   - \frac{\delta}{2} \partial_t v^2 \partial_{x x} u + O(\delta^2) \\
+   - \frac{\delta}{2} \partial_t v^2 \partial_{x x} u + \order{\delta^2} \\
   & = & v^2 \partial_{x x} u + v \partial_x
         \left ( \frac{\delta}{2} v^2 \partial_{x x} u \right ) +
-      v^3 \frac{\delta}{2} \partial_{x x x} u + O(\delta^2) \\
+      v^3 \frac{\delta}{2} \partial_{x x x} u + \order{\delta^2} \\
   & = & v^2 \partial_{x x} u + \delta v^3 \partial_{x x x} u +
-      O(\delta^2).
+      \order{\delta^2}.
 \end{eqnarray*}
 %
 Differentiating equation~(\ref{PDE:eq:15}) with respect to time we
 obtain
 %
 \begin{equation*}
-  \partial_{t t t} u = -v^3 \partial_{x x x} u + O(\delta) ,
+  \partial_{t t t} u = -v^3 \partial_{x x x} u + \order{\delta} ,
 \end{equation*}
 %
 and substituing both these expression into equation~(\ref{eq:PDE:14})
