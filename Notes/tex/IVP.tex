@@ -1,0 +1,968 @@
+
+\chapter[Initial value problems]{Initial value problems for Ordinary Differential Equations}
+
+\section{Introduction}
+
+A system of first order differential equation (ODE) is a relationship
+between an unknown (vectorial) function $\by(x)$ and its derivative
+$\by'(x)$. The general system of first order differential equations
+has the form
+%
+\begin{equation}
+  \by'(x)=\boldsymbol{f}(x,\by(x)). \label{odedef}
+\end{equation}
+%
+The solution of the differential equation is a function $\by(x)$ that
+satisfies~(\ref{odedef}). Analytic techniques produce a family of
+solutions and an initial condition of the form
+%
+\begin{equation}\label{odeic}
+  \by(0)= \by_0
+\end{equation}
+%
+can be used to determine a member of this family. The differential
+equations~(\ref{odedef}) and the initial condition~(\ref{odeic})
+specify an {\it initial value problem}.  We assume that all the
+differential equations that we are going to analyse satisfy the
+conditions of the theorem that guarantees the existence and uniqueness
+of the solution of an initial value problem.
+
+\noindent \textbf{Remark} - If the original formulation of the problem
+is in the form of second or higher order differential equations, we
+can always recast it in the form~(\ref{odedef}) by introducing
+appropriate new variables.
+
+\section{Numerical differentiation}
+
+We can make use of Taylor's theorem to obtain numerically estimates of
+the derivative of a function $f(x)$ at a point $x_0$.  Indicate with
+$h$ a small step in the variable $x$.  By Taylor's theorem we have
+that:
+%
+\begin{equation}
+  f(x_0+h) = f(x_0) + h f'(x_0) + \frac{h^2}{2} f''(x_0) +
+  \frac{h^3}{6} f'''(x_0) + \order{h^4} .
+  \label{IVP.eq:1}
+\end{equation}
+%
+Solving for $f'(x_0)$ we obtain the \textit{forward difference
+  estimate of the derivative}:
+%
+\begin{equation}
+  f'(x_0) = \frac{f(x_0+h)-f(x_0)}{h} + \order{h} .
+  \label{IVP.eq:2}
+\end{equation}
+
+\noindent
+\textbf{Remark 1} - In other words the slope of the tangent to $f(x)$ at
+$x_0$ is approximated with that of the line through $[x_0,f(x_0)]$ and
+$[x_0+h,f(x_0+h)]$.   
+
+\noindent
+\textbf{Remark 2} - The symbol $\order{h}$ on the far right of
+equation~(\ref{IVP.eq:2}) indicates that the error of this estimate
+decreases linearly with the step size $h$. 
+
+Another estimate of the derivative can be obtained by taking a step
+backward:
+% 
+\begin{equation}
+  f(x_0-h) = f(x_0) - h f'(x_0) + \frac{h^2}{2} f''(x_0) -
+  \frac{h^3}{6} f'''(x_0) + \order{h^4} .
+  \label{IVP.eq:3}
+\end{equation}
+% 
+Solving for $f'(x_0)$ we obtain the \textit{backward difference
+  estimate of the derivative}:
+%
+\begin{equation}
+  f'(x_0) = \frac{f(x_0)-f(x_0-h)}{h} + \order{h} .
+  \label{IVP.eq:4}
+\end{equation}
+
+Both the forward and the backward estimate of the derivative are order
+one methods, in the sense that the error in the approximation
+decreases with the first power of the step size $h$.  It is possible
+to obtain a higher order method by using a more symmetric formula:
+subtracting~(\ref{IVP.eq:3}) from~(\ref{IVP.eq:1}) we obtain the
+\textit{central difference estimate of the derivative}:
+%
+\begin{equation}
+  f'(x_0) = \frac{f(x_0+h)-f(x_0-h)}{2 h} + \order{h^2} .
+  \label{IVP.eq:5}
+\end{equation}
+
+\noindent
+\textbf{Remark 1} - The geometrical interpretation of this estimate is
+that the slope of the tangent to $f(x)$ at $x_0$ is well approximated
+by the slope of the secant through $[x_0-h,f(x_0-h)]$ and
+$[x_0+h,f(x_0+h)]$.
+
+\noindent
+\textbf{Remark 2} - An intuitive explanation of why the central
+difference is more accurate than either the forward and the backward
+difference is that it contains information on the function on
+\underline{both} sides of the point where the derivative is to be
+estimated.
+
+\noindent
+\textbf{Exercise} - Obtain an accurate estimate of $f''(x_0)$.
+
+\section{Errors}
+
+All procedures to solve numerically an initial value problem consist
+of transforming the continuous differential equation~(\ref{odedef})
+into a discrete iteration procedure that starting from the initial
+condition~(\ref{odeic}) returns the values of the dependent variables
+$\by(x)$ at points $x_n = x_0 + n h$, with $h$ a small number called
+the \textit{discretisation step}.
+
+In this discretisation and iteration procedure several types of errors
+arise.  These are classified as follows:
+%
+\begin{enumerate}
+  \itemsep 0pt
+  % 
+\item Local truncation error
+  % 
+\item Local roundoff error
+  % 
+\item Global truncation error
+  % 
+\item Global roundoff error
+  % 
+\item Total error
+  % 
+\end{enumerate}
+%
+The \textbf{roundoff error} is caused by the limited precision of
+computers.  The \textbf{global roundoff error} is the accumulation of
+the local roundoff errors.  The \textbf{total error} is the sum of the
+global truncation error and the global roundoff error.
+
+The \textbf{local truncation error} is the error made in one step when
+we replace a continuous process (like a derivative) with a discrete
+one (like the numerical estimate of the derivative using forward
+differences).  The local truncation error is inherent in any
+algorithm.  The accumulation of all the local errors in the process of
+an iterative procedure (like those used to integrate a differential
+equation) give rise to the \textbf{global truncation} error.  Again,
+this error will be present even if all calculations are performed
+using exact arithmetic.  If the local truncation errors are
+$\order{h^{n+1}}$, where $h$ is the discretisation step used in evaluating
+the derivatives, then the global truncation error must be $\order{h^n}$
+because the number of steps necessary to reach an arbitrary point
+$x_f$, having started at $x_0$, is $(x_f-x_0)/h$.  We can proceed more
+formally to establish a better bound on the global truncation error
+and, more importantly, to understand better its relation with the
+original differential equation.  For simplicity we consider only a
+single first order differential equation instead of a system
+like~(\ref{odedef}).  Moreover, we assume that no roundoff error is
+involved.
+
+Consider the initial value problem
+%
+\begin{equation}
+  y'=f(x,y), \qquad y(0)=s, \qquad 0\le x\le X>0. 
+  \label{IVP.eq:30}
+\end{equation}
+%
+The difference $y(x_n)-y_n$ is the global truncation error. This is
+not simply the sum of all local truncation errors that entered at the
+previous points. The key point is to understand how two solutions
+differ at any point if they are started with different initial
+conditions as each step in the numerical solution must use as its
+initial value the approximated ordinate computed at the preceding
+step.
+
+We assume that $f_y=\pdv{f}{y}(x,y)$ is continuous
+and satisfies the condition $f_y\le \lambda$ for $0\le x\le X>0$. The
+solution is $y=y(x,s)$. We would like to know how the solution depends
+on $s$. Define
+% 
+\begin{equation}
+  u(x)=\pdv{y}{s}(x,s) \, .
+ \label{IVP.eq:58}
+\end{equation}
+%
+We can obtain a differential equation - the variational equation - for
+$u$ by differentiating with respect to $s$ in the initial value
+problem~(\ref{IVP.eq:30}) to get
+%
+\begin{equation}
+  u'(x) = \pdv{u}{x} = \pdv{y'}{s} = \pdv{f}{s} = f_y(x,y) u, \qquad u(0)=1, \qquad 0 \le x \le X > 0. 
+  \label{IVP.eq:31}
+\end{equation}
+% 
+Note that if $f_y \le \lambda$ for $0 \le x \le X > 0$, then the solution
+of the variational equation satisfies the inequality
+%
+\begin{equation}
+  |u(x)| \le e^{\lambda x}, \qquad 0\le x\le X>0.
+  \label{IVP.eq:33}
+\end{equation}
+%
+{\it Proof}: we have 
+%
+\begin{equation}
+  u' / u = f_y = \lambda-\alpha(x), \qquad \alpha(x)\ge 0.
+  \label{IVP.eq:32}
+\end{equation}
+%
+Integrating this inequality, we obtain
+%
+\begin{equation}
+  \log|u| = \lambda x - \mint{0}{x}{\alpha(\tau)}{\tau}, \implies 
+  |u(x)| = e^{\lambda x} - \mint{0}{x}{\alpha(\tau)}{\tau} \le e^{\lambda x}.
+  \label{IVP.eq:34}
+\end{equation}
+%
+The last inequality is justified because 
+%
+\begin{equation}
+  \mint{0}{x}{\alpha(\tau)}{\tau} \ge 0.
+  \label{IVP.eq:35}
+\end{equation}
+%
+Using this inequality, it is easy to show that if the initial value
+problem is solved with two initial values $s$ and $s+\delta $, the
+solutions differ at $x$ by at most $|\delta|e^{\lambda x}$, as
+%
+\begin{equation}
+  |y(x,s) - y(x,s+\delta )| = |\delta|
+  \left | \pdv{}{s} y(x,s+\theta\delta) \right| =
+  |u(x)| |\delta| \le e^{\lambda x}|\delta|, \qquad 0<\theta<1.
+ \label{IVP.eq:36}
+\end{equation}
+
+\noindent \textbf{Global Error Theorem}: if all local truncation
+errors $\delta_1,\delta_2,...,\delta_n$ do not exceed $\delta$ in
+magnitude, then the global truncation error does not exceed
+%
+\begin{equation}
+ \delta \frac{1-e^{n\lambda h}}{1-e^{\lambda h}}  .
+ \label{IVP.eq:37}
+\end{equation} 
+
+\noindent
+{\it Proof}: In computing $y_1$ there was an error $|\delta_1|$.  In
+computing $y_2$ the global error is  
+%
+\begin{equation}
+ |\delta_1| e^{\lambda h} + |\delta_2|,
+ \label{IVP.eq:38}
+\end{equation}
+where the first term in the right-hand side is the error in the
+initial condition, and the second term is the new truncation error. In
+computing $y_3$ the global error is
+%
+\begin{equation}
+ (|\delta_1| e^{\lambda h} + |\delta_2| ) e^{\lambda h} + |\delta_3|,
+ \label{IVP.eq:39}
+\end{equation}
+%
+and so on.  Finally, if $|\delta_i|\le \delta$, $i=1,2,...,n$, we
+obtain for the global truncation error
+%
+\begin{equation}
+ |\delta_1| e^{n\lambda h} + |\delta_2| e^{(n-1)\lambda h} + \ldots +
+ |\delta_n| \le \delta \frac{1-e^{n\lambda h}}{1-e^{\lambda h}}.
+ \label{IVP.eq:40}
+\end{equation}
+
+As a consequence of this theorem, if all local truncation errors
+$\delta_i=\order{h^{n+1}})$, then the global truncation error is $\order{h^n}$.
+In fact the numerator of the fraction is either order one or of the
+order of $\exp[\lambda(b-a)]$.  The denominator is of the order of
+$h$, assuming that $\lambda h \ll 1$.  If the global truncation error
+is $\order{h^n}$ the method is said to be of \textbf{order
+  $\boldsymbol{n}$}.
+
+\section{Euler's methods}
+
+In what follows, we assume that equation~(\ref{odedef}) refers to a
+single variable, $y(x)$.  This makes the notation lighter: however,
+all the results obtained can be extended to systems of first ordinary
+differential equations.
+
+We assume that we want to solve the initial value problem
+%
+\begin{equation}
+  y' = f(x,y) , \qquad y(x_0) = y_0 .
+  \label{IVP.eq:6}
+\end{equation}
+%
+We introduce a step $h$ and we first obtain an estimate of $y(x)$ at
+$x_1 = x_0 + h$ using Taylor's theorem, exactly as we had done for the
+forward difference estimate of the derivative.  We obtain
+%
+\begin{equation}
+  y(x_1) \equiv y(x_0+h) = y(x_0) + y'(x_0) h + \order{h^2} = 
+  y(x_0) + h f(x_0,y(x_0)) + \order{h^2} .
+  \label{IVP.eq:7}
+\end{equation}
+%
+By analogy we obtain that the value $y_n$ of the function at the point
+$x_n = x_0 + n h$ is given by
+%
+\begin{equation}
+  y_{n+1} \equiv y(x_{n+1}) = y_{n} + h f(x_{n},y_{n}) + \order{h^2} .
+  \label{IVP.eq:10}
+\end{equation}
+%
+This iteration scheme to estimate the solution of the initial value
+problem~(\ref{IVP.eq:6}) at the points $x_n$ is called \textit{Euler's
+  method}.  This method is extremely simple, but very inaccurate and
+potentially unstable.  It is reliable only if an extremely small step
+$h$ is used.  Its geometrical interpretation is that we use the slope
+of the function $y(x_n)$ at the beginning of the interval
+$[x_n,x_{n+1}]$ to estimate the value of $y(x_{n+1})$.  This suggests
+that we can obtain a better estimate using an ``average'' of the slope
+over the same interval, i.e. if we could compute
+%
+\begin{equation}
+  y_{n+1} = y_n + h \frac{f(x_n,y_n) + f(x_{n+1},y_{n+1})}{2} .
+  \label{IVP.eq:8}
+\end{equation}
+%
+However, we do not know $y_{n+1}$ and so we cannot use this relation
+as it stands.  However, we can use equation~(\ref{IVP.eq:7}) to
+estimate the value of $y(x)$ at $x_{n+1}$ and use this value in
+equation~(\ref{IVP.eq:8}) to obtain a refined estimate.  This
+procedure is called the Euler predictor-corrector method and can be
+summarised as:
+%
+\begin{equation}
+  \begin{array}{ll}
+    y^{(p)}_{n+1} = y_n + h f(x_n,y_n) & \text{Predictor step} \\*[3mm]
+    y_{n+1} = y_n + \displaystyle \frac{h}{2} 
+    \left [f(x_n,y_n) + f(x_{n+1},y^{(p)}_{n+1}) \right ] &
+    \text{Corrector step}.
+  \end{array}
+  \label{IVP.eq:9}
+\end{equation}
+%
+We can show that the predictor-corrector method is of order $\order{h^3}$
+by comparing the Taylor expansion of~(\ref{IVP.eq:6}) with that
+of~(\ref{IVP.eq:9}).  However, we will not do this here as it is
+exactly the same procedure that is used to find the coefficients of
+the second order Runge-Kutta method (shown below).
+
+On the other hand, we can find the error for the modified Euler method by
+writing the Taylor expansion of equation~(\ref{IVP.eq:6}):
+%
+\begin{equation}
+  y_{n+1} = y_n + y'_n h+ \frac{1}{2} y''_n h^2 + \order{h^3}.
+  \label{IVP.eq:11}
+\end{equation} 
+%
+Replacing the second derivative by the forward-difference
+approximation, we obtain 
+%
+\begin{equation}
+  y_{n+1} = y_n + y'_n h + \frac{1}{2} h^2 \frac{y'_{n+1}-y'_n}{h} + \order{h^3},
+  \label{IVP.eq:12}
+\end{equation}
+%
+and hence,
+%
+\begin{equation}
+  y_{n+1} = y_n + \frac{h}{2}(y'_{n+1}+y'_n) + \order{h^3}.
+  \label{IVP.eq:13}
+\end{equation}
+%
+This shows that the error of one step of the modified Euler method is
+$\order{h^3}$. This is the \textit{local error}. There is an accumulation
+of local errors from step to step, so that the error over the whole
+range of application, the \textit{global error}, is $\order{h^2}$.
+
+\section{Runge-Kutta Methods}
+
+The Euler method is not very accurate. Much greater accuracy can be
+obtained more efficiently using a group of methods named after two
+German mathematicians, Runge and Kutta.  The idea behind these methods
+is to match the Taylor expansion of $y(x)$ at $x=x_n$ up to the
+highest possible and/or convenient order.
+
+As an example, let us consider the derivation of the second order
+method.  Here, the increment to $y$ is a weighted average of two
+estimates which we call $k_1$ and $k_2$. Thus for the equation
+%
+\begin{equation}
+  \dv{y}{x} = f(x,y),
+  \label{IVP.eq:14}
+\end{equation}
+%
+we have
+%
+\begin{align}
+  y_{n+1} & = y_n+a k_1+bk_2, \label{kutta} \\
+  k_1    & = h f(x_n,y_n), \label{IVP.eq:15} \\
+  k_2    & = h f(x_n + \alpha h, y_n + \beta k_1).\label{IVP.eq:16}
+\end{align}
+%
+We fix the four parameter $a$, $b$, $\alpha$ and $\beta$ so that
+(\ref{kutta}) agrees as well as possible with the Taylor series
+expansion of the differential equation~(\ref{IVP.eq:14})
+%
+\begin{eqnarray}
+  y_{n+1} & = & y_n + h y_n' + \frac{h^2}{2} y_n'' + \ldots \nonumber \\
+  & = & y_n + h f(x_n,y_n) + \frac{h^2}{2} \dv{}{x} f(x_n,
+  y_n) + \dots, \nonumber \\
+  & = & y_n + h f_n + h^2 \left (\frac{1}{2} f_x +
+    \frac{1}{2}f_y f_n \right ) + \dots
+  \label{tay}
+\end{eqnarray}
+%
+where $f_n \equiv f(x_n,y_n)$.  On the other hand, using (\ref{kutta})
+we have
+%
+\begin{equation}
+  y_{n+1} = y_n + a h f_n + b h f[x_n+\alpha h, y_n+\beta h f_n].
+  \label{IVP.eq:18}
+\end{equation}
+%
+Expand the right-hand side of~(\ref{IVP.eq:18}) in a Taylor series
+in terms of $x_n,y_n$
+%
+\begin{equation}
+  y_{n+1} = y_n + a h f_n + b h \left [ f_n + f_x(x_n,y_n) \alpha h +
+    f_y(x_n,y_n) f(x_n,y_n) \beta h \right ],
+  \label{IVP.eq:19}
+\end{equation}
+%
+or, rearranging,
+%
+\begin{equation}
+  y_{n+1} = y_n + h (a+b) f_n + h^2 \left [ f_x(x_n,y_n) \alpha b +
+    f_y(x_n,y_n) f(x_n,y_n) \beta b \right ].
+  \label{IVP.eq:20}
+\end{equation}
+%
+This result is identical to the Taylor series expansion (\ref{tay}) if
+%
+\begin{equation}
+  a+b=1, \quad \alpha b=\frac{1}{2}, \quad\beta b=\frac{1}{2}.
+  \label{IVP.eq:21}
+\end{equation}
+%
+Note that there are only three equations to be satisfied by the four
+unknowns. We can therefore assign an arbitrary value to one of the
+unknowns. For example, if we take $a=b=\frac{1}{2}$, and
+$\alpha=\beta=1$, we obtain the Euler predictor-corrector method.
+
+Fourth-order Runge-Kutta methods are the most widely used and are
+derived in a similar way. The most commonly used set of values leads
+to the algorithm
+%
+\begin{equation}
+  y_{n+1} = y_n + \frac{1}{6}(k_1+2k_2+2k_3+k_4),
+  \label{IVP.eq:22}
+\end{equation}
+% 
+with
+%
+\begin{equation}
+  \begin{array}{ll@{\hspace{5mm}}l} 
+    k_1=hf(x_n,y_n), & & 
+    k_2=hf(x_n+\frac{1}{2}h,y_n+\frac{1}{2}k_1), \\
+    k_3=hf(x_n+\frac{1}{2}h,y_n+\frac{1}{2}k_2), & & 
+    k_4=hf(x_n+h,y_n+k_3).
+  \end{array}
+  \label{IVP.eq:23}
+\end{equation}
+% 
+The local error term for the fourth-order Runge-Kutta methods is
+$\order{h^5}$; the global error is $\order{h^4}$.
+
+\section{Error in Runge-Kutta methods}
+
+Whatever the method used one needs to check whether the results of the
+integration are reliable, i.e. one would like an estimate of the local
+truncation error.  Moreover, the knowledge of this quantity would
+allow us to use a variable step in integrating the differential
+equation: if the local error is much smaller than a predefined
+threshold then the step size can be increased.  If it is larger the
+step size should be decreased.
+
+Call $y_e(x_0+h)$ the exact value of the solution $y(x)$ of the
+initial value problem
+%
+\begin{equation}
+  y'(x) = f(x,y) , \qquad y(x_0) = y_0 .
+\end{equation}
+%
+and indicate with $y_h(x_0+h)$ the solution obtained using a fourth
+order Runge-Kutta method with step $h$.  By construction we have that
+% 
+\begin{equation}
+  |y_e(x_0+h) - y_h(x_0+h)| = C h^5.
+  \label{IVP.eq:41}
+\end{equation}
+% 
+Here $C$ is a number independent of $h$ but dependent on $x_0$ and on
+the function $y_e$.  To estimate $C h^5$ and, hence, the local error
+we assume that $C$ does not change as $x$ changes from $x_0$ to $x_0 +
+h$ (a similar procedure is used in Richardson's extrapolation).  Let
+$y_{h/2}(x_0+h)$ be the solution obtained using two steps of length
+$h/2$ of the fourth order Runge-Kutta method.  By assumption we have
+that
+%
+\begin{equation}
+  \begin{array}{l}
+    y_e(x_0+h) = y_{h}(x_0+h) + C h^5 , \\
+    y_e(x_0+h) = y_{h/2}(x_0+h) + 2 C (h/2)^5 . 
+  \end{array}
+  \label{IVP.eq:42}
+\end{equation}
+% 
+By subtraction we obtain from these two equations that
+% 
+\begin{equation}
+  \text{Local truncation error} = C h^5 = 
+  \frac{y_h - y_{h/2}}{1-2^{-4}} .
+  \label{IVP.eq:43}
+\end{equation}
+%
+Thus the local truncation error is approximately $y_h - y_{h/2}$.
+
+This estimate of the local error is rather expensive if used in a
+variable step algorithm, because it requires two integrations to be
+run at the same time for a total of 12 function evaluations.
+  
+A second and more efficient method is to compare the result of the
+fourth order with those of a fifth order Runge-Kutta method.  As we
+have seen in the derivation of the Runge-Kutta method of order 2, a
+number of parameters must be selected.  A similar selection process
+occurs in establishing higher order Runge-Kutta methods.
+Consequently, there is not just one Runge-Kutta method of each order,
+but a family of methods.  As shown in the following table, the number
+of required function evaluations increases more rapidly than the order
+of the Runge-Kutta methods:
+
+\begin{center}
+  \begin{tabular}{l|llllllll}
+    Number of function evaluations & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\ \hline
+    Maximum order of Runge-Kutta method & 1 & 2 & 3 & 4 & 4 & 5 & 6 & 6
+  \end{tabular} 
+\end{center}
+
+\noindent
+This makes the higher-order Runge-Kutta methods less attractive than
+the fourth order method, since they are more expensive to use.
+However, Fehlberg (1969) devised a fourth order Runge-Kutta method
+that required five function evaluation and a fifth order Runge-Kutta
+method that required six function evaluations, five of which were the
+same as those used for the fourth-order method.  Therefore, with only
+six function evaluations we have a fourth-order Runge-Kutta method
+with estimate of the local error.
+
+\section{Multistep Methods}
+
+\subsection{Introduction}
+
+The modified Euler method and Runge-Kutta methods for solving initial
+value problem are single-step methods since they do not use any
+knowledge of prior values of $y(x)$ when the solution is being
+advanced from $x$ and $x+h$. If $x_0,x_1,...,x_n$ are steps along the
+$x-$axis, then $y_{n+1}$ depends only on $y_n$, and knowledge of
+$y_{n-1},...,y_0$ is not used.
+
+It is reasonable to expect that more accurate results may be obtained
+if previous values of $y(x)$ were used when estimating $y_{n+1}$.
+This idea is at the heart of multi-step methods.  This principle is
+transformed into an algorithm by writing the solution of the initial
+value problem,
+%
+\begin{equation}
+  \dv{y}{x} = f(x,y), \quad y(x_0)=y_0,
+  \label{IVP.eq:25}
+\end{equation}
+%
+as
+%
+\begin{equation}
+  y_{n+1} = y_n + \mint{x_n}{x_{n+1}}{f(x,y(x))}{x}.
+  \label{IVP.eq:24}
+\end{equation}
+%
+The integral on the right can be approximated by a numerical
+quadrature formula that depends on $\{ x_{n-j}, y_{n-j} \}$ and the
+result will be a formula for generating the approximate solution step
+by step.
+
+The general form of a multistep method to solve an initial value problem
+%
+\begin{equation}
+  y' = f(x,y), \qquad y(x_0) = y_0 ,
+  \label{IVP.eq:44}
+\end{equation}
+%
+is 
+%
+\begin{equation}
+  a_k y_{n+1} + a_{k-1} y_{n} + \ldots  + a_0 y_{n+1-k} = 
+  h [ b_k f_{n+1} + b_{k-1} f_{n} + \ldots + b_0 f_{n+1-k}]
+  \label{IVP.eq:45}
+\end{equation}
+%
+Such an algorithm is called a \textit{$k$-step method}. The
+coefficients $a_i$, $b_i$ are given. As before, $y_i$ denotes an
+approximation to the solution at $x_i=x_0+ih$, and
+$f_i=f(x_i,y_i)$. This formula is used to compute $y_{n+1}$, assuming
+that $y_{n+1-k},y_{n-k},...,y_{n}$ are known. We assume that $a_k\ne
+0$. If $b_k=0$, the method is said to be \textit{explicit}, and
+$y_{n+1}$ can be computed directly. In the opposite case the method is
+said to be \textit{implicit}.
+
+\subsection{Adams-Bashforth formula}
+
+An explicit multistep method of the type
+%
+\begin{equation}
+  y_{n+1} = y_n + a f_n + b f_{n-1} + c f_{n-2} +...,\label{adams}
+\end{equation}
+%
+where $f_i=f(x_i,y_i)$ belongs to the class of Adam-Bashforth methods.
+The Adam-Bashforth formula of order 5, based on the equally spaced
+points $x_i = x_0 + i h$, $i=0,1,\ldots,n$ is:
+%
+\begin{equation}
+  y_{n+1} = y_n + \frac{h}{720} [ 1901 f_n - 2774 f_{n-1} +
+  2616 f_{n-2} - 1274 f_{n-3} + 251 f_{n-4}].\label{pred}
+\end{equation}
+%
+To obtain the coefficients that appear in this equation we start by
+observing that we wish to approximate the integral
+%
+\begin{equation}
+  \mint{x_n}{x_{n+1}}{f[x,y(x)]}{x} \approx h [A f_n + B f_{n-1} +
+  C f_{n-2} + D f_{n-3} + E f_{n-4}].
+  \label{IVP.eq:26}
+\end{equation}
+The coefficients $A,B,C,D,E$ are determined by requiring that this
+equation is exact whenever the integrand is a polynomial of degree
+less than 5. For simplicity we assume that $x_n=0$, $x_{n-1}=-1$,
+$x_{n-2}=-2$, $x_{n-3}=-3$, $x_{n-4}=-4$, and $h=1$. We take as a
+basis the following five polynomials:
+%
+\begin{equation}
+  \begin{array}{l}
+    p_0(x)=1, \\ p_1(x)=x, \\
+    p_2(x)=x(x+1), \\ p_3(x)=x(x+1)(x+2), \\
+    p_4(x)=x(x+1)(x+2)(x+3) \\  
+  \end{array}
+  \label{IVP.eq:27}
+\end{equation}
+%
+When these are substituted in the equation 
+%
+\begin{equation}
+  \mint{0}{1}{p_m(x)}{x} \approx A p_m(0)+B p_m(-1)+C p_m(-2)+D p_m(-3)+E p_m(-4)
+  \label{IVP.eq:28}
+\end{equation}
+%
+for $m=0,1,2,3,4$, we obtain the system for determination of
+$A,B,C,D,E$
+% 
+\begin{equation}
+  \left\{
+    \begin{aligned}
+      A + B + C + D + E & = 1,\\
+      -B - 2C - 3D - 4E & = 1/2,\\
+      2C + 6D + 12E     & = 5/6,\\
+      -6D - 24E         & = 9/4,\\
+      24E                & = 251/30.
+    \end{aligned} \right .
+  \label{IVP.eq:29}
+\end{equation}
+%
+The coefficients of the Adam-Bashforth formula are obtained by back
+substitution.
+
+\smallskip
+
+\noindent \textbf{Remark 1} - A special procedure must be employed to
+start the method since initially only $y_0 \equiv y(x_0)$ is known. A
+Runge-Kutta method is ideal for obtaining $y_1$, $y_2$, $y_3$ and
+$y_4$.
+
+\smallskip
+
+\noindent \textbf{Remark 2} - The method is order five, i.e. the local
+error is $\order{h^6}$ and the global error is $\order{h^5}$.
+
+\subsection{Adams-Moulton formula}
+
+The Adam-Bashforth formulae are most often used in conjunction with
+other formulae to enhance their precision.  One such scheme can be set
+up by making use of the implicit version of equation~(\ref{adams}):
+%
+\begin{equation}
+  y_{n+1} = y_n + a f_{n+1} + b f_n + c f_{n-1} + \ldots
+\end{equation}
+%
+Following the same steps as in the derivation of the coefficients of
+the Adams-Bashforth formula we obtain the \textit{Adams-Moulton
+  formula} of order 5:
+%
+\begin{equation}
+  y_{n+1} = y_n + \frac{h}{720} [ 251 f_{n+1} + 646 f_n - 264 f_{n-1} +
+  106 f_{n-2} - 19 f_{n-3}].
+ \label{corr}
+\end{equation}
+%
+This cannot be used directly as $y_{n+1}$ occurs on both sides of the
+equation. However, we can set up a predictor-corrector algorithm that
+uses the Adam-Bashforth formula to predict a tentative value for
+$y^{(p)}_{n+1}$, and then the Adams-Moulton formula to compute a
+corrected value of $y_{n+1}$ using $y^{(p)}_{n+1}$ on the right hand
+side of~(\ref{corr}).  In other words, in~(\ref{corr}) we evaluate
+$f_{n+1}$ as $f_{n+1}(x_{n+1},y^{(p)}_{n+1})$ using the predicted
+value $y^{(p)}_{n+1}$ obtained from the Adam-Bashforth formula.
+
+The Adams-Moulton method is extremely efficient: only two function
+evaluations are needed per step for the former method, whereas six are
+needed for the Runge-Kutta-Fehlberg method.  All have similar error
+terms.  On the other hand changing the step size with the multistep
+methods is considerably more awkward than with single step methods.
+
+\subsection{Order of multistep methods}
+
+The \textit{order} of a multistep method is the number of terms in the
+Taylor expansion of the solution that are correctly represented by the
+method.  The accuracy of a numerical solution is largely determined by
+the order of the algorithm used to integrate the initial value
+problems.  To determine the order of a given multistep method we
+introduce the linear functional:
+%
+\begin{equation}
+  L(y) = \sum_{p=0}^k [a_p y(x_{n-k}+ p h) - h b_p y'(x_{n-k}+p h)].
+  \label{IVP.eq:46}
+\end{equation}
+%
+This is a direct representation of~(\ref{IVP.eq:45}) once we take into
+account that $y'=f(x,y)$.  If the method~(\ref{IVP.eq:45}) were exact
+then we should have $L(y)=0$.  The order of the lowest non-zero term
+in the Taylor expansion of~(\ref{IVP.eq:46}) is the order of the
+method.
+
+\noindent
+Using the Taylor series for $y(p h)$ and $y'(p h)$ with $p=0,1,...,k$
+we obtain:
+% 
+\begin{equation}
+  y(x_0+p h) = \sum_{j=0}^{+\infty} \frac{(p h)^j}{j!} y^{(j)} (x_0),
+  \qquad
+  y'(x_0+p h) = \sum_{j=0}^{+\infty} \frac{(p h)^j}{j!} y^{(j+1)}(x_0),
+\end{equation}
+%
+so that
+%
+\begin{equation}
+  L(y) = d_0 y(x_0) + d_1 h y'(x_0) + d_2 h^2 y''(x_0) + \ldots \, ,
+\end{equation}
+%
+where
+%
+\begin{equation}
+  d_0 = \sum_{p=0}^k a_p, \quad 
+  d_1 = \sum_{p=0}^k (p a_p-b_p), \quad
+  d_2 = \sum_{p=0}^k \left ( \frac{p^2}{2} a_p - p b_p \right ), \ldots
+\end{equation}
+%
+and, in general,
+%
+\begin{equation}
+  d_j = \sum_{p=0}^k \left( \frac{p^j}{j!} a_p -
+    \frac{p^{j-1}}{(j-1)!} b_p \right) , 
+  \qquad j \ge 2 .
+\end{equation}
+% 
+If $d_0=d_1=...=d_m=0$, then 
+%
+\begin{equation}
+  L(y) = d_{m+1} h^{m+1} y^{(m+1)}(x_0) + \order{h^{m+2}}
+\end{equation}
+%
+represents the local truncation error and the method has order $m$.
+
+\smallskip
+
+\noindent \textbf{Remark} - For the Adam-Bashforth method
+$d_0=\ldots=d_5 = 0$ and $d_6=95/288$.  Hence the method if of order
+five and the local error is $\order{h^6}$.
+
+\subsection[Convergence, stability and consistency]{Convergence, stability and consistency of multistep methods}
+
+A method to solve numerically initial value problems is
+\textit{convergent} if in the limit of infinitely small step size $h$
+the numerical solution converges to the exact solution:
+%
+\begin{equation}
+  \lim_{h \to 0} y(x;h) = y(x)
+\end{equation}
+%
+where $y(x)$ is the exact solution of
+%
+\begin{equation}
+  y' = f(x,y), \qquad y(x_0) = y_0 
+\end{equation}
+%
+and $y(h;x)$ is the numerical solution obtained using an integration
+step $h$.
+
+A method is called \textit{stable} if the numerical solutions are
+bounded at all iteration steps over a finite interval.  It is called
+\textit{consistent} if at lowest order it is a faithful representation
+of the differential equation we wish to integrate.
+
+Convergence, stability and consistency are related one to the other.
+In fact, one can show that \textit{a multistep method is convergent if
+  and only if it is stable and consistent}.
+
+It is fairly straightforward to determine the stability and
+consistency of a multistep method like~(\ref{IVP.eq:45}).  Construct
+the two polynomials:
+% 
+\begin{align}
+  p(z) &= a_k z^k + a_{k-1} z^{k-1} + \ldots ... + a_0,
+  \label{IVP.eq:47} \\
+  q(z) &= b_k z^k + b_{k-1} z^{k-1} + \ldots + b_0. \label{IVP.eq:48}
+\end{align}
+%
+The first polynomial is called the \textit{stability polynomial}.  One
+can show that a multistep method is consistent if $p(1)=0$ and
+$p'(1)=q(1)$.  The question of stability is more complex.
+
+A multi-step method is to all intents and purposes a difference
+equation that is (hopefully) based on the differential equation that
+we wish to solve, in the sense that as the integration step tends to
+zero the difference equation tends to the differential equation
+(i.e. that the difference equation is \textit{consistent} with the
+differential equation).  We expect that a consistent difference
+equation has a solution that is close to the solution of the original
+differential equation.  However, it is also possible that it has other
+solutions and that these may grow as the number of integration steps
+increases so that they swamp the ``right'' solution.  We can,
+therefore, consider two cases of stability: a method may be stable in
+the sense that it represents faithfully the solution of the
+differential equation over a finite interval.  However, as the size of
+the integration region increases the spurious solutions of the
+difference equation grow and the numerical solution no longer has much
+to do with the exact solution of the differential equation.  We can
+also require a stronger stability: we can, in fact, require that the
+spurious solutions tend to zero as the number of integration steps
+increases.  In this case we can use the method to integrate a given
+differential equation for as long as we wish (within the limits of the
+growth of the global integration error).
+
+Call $\{r_p\}$, $=0,1,\ldots,k$ the roots of $p(z)$.  The stability
+polynomial satisfies the \textit{root condition} if
+%
+\begin{equation*}
+  |r_p| \le 1, \qquad 0 \le p \le k ,
+\end{equation*}
+%
+and all roots that satisfy $|r_j|=1$ are simple.  The stability
+polynomial satisfies the \textit{strong root condition} if
+%
+\begin{equation*}
+  r_0 = 1, \, |r_p| < 1, \qquad 1 \le p \le k.
+\end{equation*}
+
+The root conditions are related to the stability of the multi-step
+method.
+
+\begin{enumerate}
+  % 
+\item If the stability polynomial satisfies the root condition, then
+  the method is stable, in the sense that for $h$ sufficiently small
+  it will deliver accurate results over a small interval.
+  % 
+\item If the stability polynomial satisfies the strong root condition,
+  then the method is \textit{relatively stable}, meaning that, for $h$
+  sufficiently small, the spurious solutions of the difference
+  equation go to zero.
+  % 
+\item A method that is stable, but not relatively stable is called
+  \textit{weakly stable} and may exhibit diverging solutions for long
+  integrations.
+  % 
+\end{enumerate}
+
+\medskip
+
+\section{Summary}
+
+Single-step (multi-stage) and multi-step methods have advantages and
+disadvantages.  The following table tries to summarise the main
+features of these methods.
+
+\smallskip
+
+\begin{center}
+  \begin{tabular}{l|c c}
+    & \textbf{Multi-Stage} & \textbf{Multi-Step} \\ \hline
+    Self-starting & Yes & No \\
+    Easy for variable steps & Yes & No \\
+    Computationally efficient & No & Yes \\
+    Theory ``intuitive'' & No & Yes
+  \end{tabular}
+\end{center}
+
+% \begin{center} \begin{tabular}{|p{35mm}|p{35mm}||p{35mm}|p{35mm}|} \hline
+%  \multicolumn{2}{|c||}{\textbf{Single-Step}} & 
+%  \multicolumn{2}{|c|}{\textbf{Multi-Step}} \\ \hline
+%  \multicolumn{1}{|c|}{\textbf{Pros}} & 
+%  \multicolumn{1}{|c||}{\textbf{Cons}} & 
+%  \multicolumn{1}{|c|}{\textbf{Pros}} & 
+%  \multicolumn{1}{|c|}{\textbf{Cons}} \\ \hline \hline
+%  The theory is intuitive & Computationally intensive &
+%  Computationally efficient & The theory is rather involved \\
+%  Self-starting & & & Not self-starting \\
+%  Easily adapted to variable step algorithms & & &
+%  Not easily adapted to variable step algorithms \\ \hline
+% \end{tabular} \end{center}
+
+\smallskip
+
+The following table, summarises the main numerical features of some of
+the algorithms that we have described.
+
+\smallskip
+
+\begin{center} \begin{tabularx}{1.1\textwidth}{llccccXc} \hline
+\textbf{Method} & \textbf{Type} & \parbox[b]{12mm}{\textbf{Local Error}} &
+\parbox[b]{12mm}{\textbf{Global Error}} &
+\parbox[b]{10mm}{\textbf{F.E. / Step\footnote{Function Evaluations per Step}}} &
+\textbf{Stability} & 
+\parbox[b]{15mm}{\textbf{Ease of changing step size}} &
+\parbox[b]{10mm}{\textbf{Recom-mended?}} \\*[2mm] \hline \\
+Modified Euler & Single-step & $\order{h^3}$ & $\order{h^2}$ & $2$ &
+ Good & Good & No \\*[3mm]
+\parbox[t]{25mm}{Fourth-order Runge-Kutta} & Single-step & $\order{h^5}$ & 
+$\order{h^4}$ & $4$ & Good & Good & Yes \\*[7mm]
+\parbox[t]{25mm}{Runge-Kutta-Fehlberg} & Single-step & $\order{h^6}$ & 
+$\order{h^5}$ & $6$ & Good & Good & Yes \\*[7mm]
+Milne & Multistep & $\order{h^5}$ & $\order{h^4}$ & 2 & Poor & Poor & No \\*[4mm]
+Adams-Moulton & Multistep & $\order{h^5}$ & $\order{h^4}$ & 2 & Good & Poor &
+Yes \\*[3mm] \hline
+\end{tabularx} \end{center}
+
+\section*{Further reading}
+
+Topics covered here are also covered in
+\begin{itemize}
+\item Chapter 10 of Linz \& Wang, \textit{Exploring Numerical Methods}
+  (QA297 LIN),
+\item Chapter 8 of Kincaid \& Cheney, \textit{Numerical Analysis}
+  (QA297 KIN),
+\item Chapter 12 of S{\"u}li \& Mayers, \textit{An Introduction to
+    Numerical Analysis} (not in library),
+\item Part I (especially chapters 1--3, but chapters 4 and 5 are also
+  useful) of Iserles, \textit{A First Course in the Numerical Analysis
+    of Differential Equations} (QA297 ISE).
+\end{itemize}
+Note that notation and implied motivation, particularly around the
+multistep methods, can be inconsistent with the presentation here.

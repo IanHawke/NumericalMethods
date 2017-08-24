@@ -1,0 +1,184 @@
+
+\chapter{Key Mathematical Results}
+
+There are a number of key results that you are expected to know. These
+will have been covered in previous courses. For rigorous statements
+and proofs you should consult books on the reading list or basic
+calculus or linear algebra texts.
+
+\section{Linear Algebra}
+
+A vector $\bv$ of length $N$ is a set of $N$ numbers ordered either as
+a row or column. In either case the notation $v_i$ is used to denote
+the coefficients. 
+
+The dot product of a row vector $\bx$ with a column vector $\by$ is
+given by
+%
+\begin{equation}
+  \label{eq:key_la1}
+  \bx \cdot \by = \sum_{i=1}^n x_i \cdot y_i.
+\end{equation}
+
+A matrix $A$ of size $N$ is a set of $N^2$ numbers ordered into $N$
+rows and $N$ columns. These numbers are called the coefficients,
+denoted $a_{ij}$, $i$ indicating the row and $j$ the column.
+
+Matrix-matrix multiplication written $A B = C$ defines the
+coefficients of the matrix $C$ in terms of the (given) matrix
+coefficients of $A$ and $B$ by
+%
+\begin{equation}
+  \label{eq:key_la2}
+  c_{ij} = \sum_{l = 1}^n a_{i l} b_{l j}.
+\end{equation}
+%
+In other words, the $c_{ij}$ coefficient is given by the dot product
+of the $i^{\text{th}}$ row of $A$ with the $j^{\text{th}}$ column of
+$B$.
+
+Matrix-vector multiplication $A \bx = \bb$ defines the coefficients of
+the column vector $\bb$ in terms of the gives matrix $A$ and column
+vector $\bx$; as expected this is given by
+%
+\begin{equation}
+  \label{eq:key_la3}
+  b_{i} = \sum_{l = 1}^n a_{i l} x_{l}.
+\end{equation}
+
+The system of linear equations $A \bx = \bb$ where $A, \bb$ are known
+and $\bx$ is unknown, has a unique solution if, and only if, the
+determinant of the matrix $A$ is non-zero.
+
+Eigenvectors of a matrix $A$ are any vector $\bx$ such that $A \bx =
+\lambda \bx$. The value $\lambda$ is called an eigenvalue. Eigenvalues
+can be found from the characteristic polynomial $\det(A - \lambda I) =
+0$, where $I$ is the $N \times N$ identity matrix (this is not a
+practical way of computing eigenvalues when $N$ is
+large). Eigenvectors are only defined up to a multiplicative constant
+(i.e., if $\bx$ is an eigenvector then $\alpha \bx$ is an eigenvector
+with the same eigenvalue, provided $\alpha \ne 0$).
+
+A \emph{basis} is a set of $N$ independent vectors $\be_i$ such that
+any vector $\bx$ can be expressed as a linear combination
+%
+\begin{equation}
+  \label{eq:key_la4}
+  \bx = \alpha_1 \be_1 + \dots \alpha_N \be_N.
+\end{equation}
+%
+A particularly useful case is when the eigenvectors of a matrix $A$
+form a basis.
+
+\section{Taylor's theorem}
+
+If $f$ is a continuous function on $x \in [a, b]$ and the
+$(n+1)^{\text{th}}$ derivative exists on $(a, b)$, then for any point
+$c \in [a, b]$, we can express $f(x)$ (for any point $x \in [a, b]$)
+as
+%
+\begin{equation}
+  \label{eq:key_taylor}
+  f(x) = \left\{\sum_{k=0}^n \frac{1}{k!} f^{(k)}(c) \, (x - c)^k
+  \right\} + E_n(x),
+\end{equation}
+%
+where, for some point $\xi$ between $c$ and $x$, the \emph{error} or
+\emph{remainder} $E_n$ can be expressed as
+%
+\begin{equation}
+  \label{eq:key_taylor2}
+  E_n(x) = \frac{1}{(n+1)!} f^{(n+1)}(\xi) \, (x - c)^{n+1}.
+\end{equation}
+%
+Here the notation $f^{(n)}$ means the $n^{\text{th}}$ derivative of
+$f$.
+
+For our purposes, the most useful way of writing this will be in the
+form of a Maclaurin series where $c=0$. We shall also often consider
+cases where $x \rightarrow h$, $|h| \ll 1$, leading to
+%
+\begin{equation}
+  \label{eq:key_taylor3}
+  f(h) = f(0) + h f^{(1)}(0) + \frac{h^2}{2} f^{(2)}(0) +
+  \frac{h^3}{3!} f^{(3)}(0) + \dots + {\cal O}(h^n).
+\end{equation}
+%
+The notation ${\cal O}(h^n)$ means that the remaining terms contain
+powers of $h$ at least as big as $n$; when $h$ is small it is usually
+reasonable to neglect these terms.
+
+\section{Triangle inequality}
+
+For any normed vector space $V$ with elements $\bx, \by \in V$, the
+triangle inequality states that
+%
+\begin{equation}
+  \label{eq:key_triangle}
+  \| \bx + \by \| \leq \| \bx \| + \| \by \|.
+\end{equation}
+
+For our purposes we will mostly be concerned with real numbers where
+$\| \bx \|$ has the simple interpretation as the absolute value of the
+number $x$. In this case the triangle inequality simply says that the
+sum of the lengths of any two sides of a triangle must be greater than
+or equal to the length of the remaining side.
+
+\section{Difference equations}
+
+For linear constant coefficient ODEs
+%
+\begin{equation}
+  \label{eq:key_DE}
+  a_n y^{(n)}(x) + \dots + a_1 y^{(1)}(x) + a_0 y(x) = 0
+\end{equation}
+%
+there is a simple solution method in terms of the \emph{characteristic
+polynomial}
+%
+\begin{equation}
+  \label{eq:key_DE2}
+  a_n \lambda^n + \dots + a_1 \lambda + a_0 = 0.
+\end{equation}
+%
+The characteristic polynomial follows from substituting the assumption
+$y(x) = \exp[\lambda x]$ into equation~(\ref{eq:key_DE}); $\lambda$ is
+then a root of the characteristic polynomial. The general solution is
+the general linear combination of all solutions found from the
+characteristic polynomial. Note that repeated roots complicate the
+analysis slightly.
+
+The same approach can be used for \emph{difference equations}. These
+are equations that define sequences (of e.g.\ real numbers or
+vectors), usually written in the form
+%
+\begin{equation}
+  \label{eq:key_DE3}
+  a_k y_n + \dots + a_1 y_{n-k+1} + a_0 y_{n-k} = 0.
+\end{equation}
+%
+Substituting the assumption $y_n = \lambda^n$ gives the characteristic
+polynomial
+%
+\begin{equation}
+  \label{eq:key_DE4}
+  a_n \lambda^n + \dots + a_1 \lambda + a_0 = 0.
+\end{equation}
+%
+Assuming all roots are distinct, the solution is a linear combination
+of the simple solutions $\lambda^n$. If $\mu$ is a root with
+multiplicity $k$ then the sequences
+%
+\begin{equation}
+  \label{eq:key_DE5}
+  y^{\{l\}}_n = \dv[(l-1)]{}{\lambda} \left[
+    \lambda^n \right], \quad l = 0, \dots, k
+\end{equation}
+%
+are all solutions.
+
+For our purposes the key is that for the solution of a difference
+equation to be \emph{bounded} (i.e., $y_n$ is bounded as $n \rightarrow
+\infty$) we need all roots $\lambda$ to satisfy $|\lambda| \le 1$ (and
+if the root is repeated we need $|\lambda| < 1$).
+

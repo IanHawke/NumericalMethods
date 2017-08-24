@@ -1,0 +1,1363 @@
+
+\chapter{Linear equations}
+
+\section{Introduction}
+
+The numerical solution of systems of linear equations can be a rather
+taxing problem.    Solving a system like 
+%
+\begin{align*}
+  \left\{
+    \begin{aligned}
+      2 x + 3 y & = 7, \\ 
+      x - y & = 1,
+    \end{aligned} \right.
+\end{align*}
+%
+is easy.  Subtract twice the second equation from the first and obtain
+$y=1$ and $x=2$.  This procedure is fine  for a small system of linear
+equations.  However,  there are many  numerical  problems that require
+the solution of linear systems with many equations.  For example, when
+integrating numerically a Partial Differential  Equation it is typical
+to have to solve a $10000 \times 10000$ system of linear equations.
+
+There are other, less obvious, snags in solving a linear system of
+equations.     Consider the linear system
+%
+\begin{align*}
+  \left\{
+    \begin{aligned}
+      x + y & = 1, \\
+      2 x + 2 y & = 3.
+    \end{aligned} \right.
+\end{align*}
+%
+The second equation is incompatible with the first one and, therefore,
+the system has no solution.    However, if the coefficients stored in
+the computer are ever so slightly altered, for example to
+%
+\begin{align*}
+  \left\{
+    \begin{aligned}
+      0.999999 \, x + y & = 0.999999, \\
+      2 x + 2 y &= 2.9999999 ,
+    \end{aligned} \right.
+\end{align*}
+%
+then the system will have a solution.    This is an example of an
+ill-conditioned system: a very small change in the matrix of the
+coefficients induces an enormous change in the solutions (from
+non-existence to existence in this case).
+
+From these two examples, we can see the problems that have to
+be solved in   devising  algorithms  for  solving systems  of   linear
+equations.  The algorithms  should be fast, so   that huge systems  of
+equations can be solved in a reasonable length of time and they should
+be accurate, i.e.\ they  should not introduce approximation errors that
+grow out of  bounds.  Moreover, if a linear  system cannot be  solved
+accurately (second example), we must be  able to find functions of the
+matrix coefficients that  can  be used as   an health warning  against
+putting too much trust in the solutions.
+
+If we want to know how close the  numerical solution is to the correct
+solution we  must    first define  the   concept  of  ``length''   and
+``distance'' for vectors  and matrices.  Once this is  done we will be
+able to find appropriate functions of  the matrix coefficients that we
+can use to  check the accuracy of  the numerical results.   Only after
+this ground work has been  carried out we will be  able to discuss how
+to solve a linear system of equations.
+
+\section{Some definitions}
+
+\subsection{Introduction}
+
+Unless otherwise stated, we plan to solve 
+%
+\begin{equation*}
+  A \bx = \bb ,
+\end{equation*}
+%
+where $A$ is a $n \times n$ real  matrix, $\bx = (x_1, \ldots, x_n)^T$
+is the vector of unknowns and $\bb = (b_1, \ldots,  b_n)^T$ is a given
+real vector.  Moreover,  we indicate with $I$  the identity matrix and
+with $0$ the zero matrix.
+
+The basic theory of systems of linear equations states that the
+equations $A \bx = \bb $ have a unique solution if and only if
+$\det(A) \ne 0$, that solution being $\bx = A^{-1} \bb$.  For the case
+$\det(A) = 0$, the equations either have no solutions (inconsistent
+set) or an infinite number of solutions (undetermined set).
+
+\smallskip
+
+\noindent {\bf Remark} - Numerically, finding $\bx$ using $\bx = 
+A^{-1} \bb$ is invariably bad: there are faster and more accurate
+methods to solve a linear system of equations.
+
+\subsection{Vector and matrix norms}
+
+\subsubsection{Vector norms}
+
+Let   $\bRn$ be  the   set of all    $n$-dimensional vectors with real
+components.   A \textit{norm}  on $\bRn$ is  a function  $\norm{\cdot}$
+which assigns a real value to each vector in $\bRn$ (the ``length'' of
+the vector) and satisfies
+%
+\begin{enumerate}
+\item $\norm{\bx} \ge 0 \, \, \forall \bx \in \bRn$, with $\norm{\bx} = 0$
+if and only if $\bx = 0$.
+\item $\norm{\alpha \bx} = | \alpha| \norm{\bx} \, \, \forall \bx \in \bRn,
+\, \forall \alpha \in \bR$.
+\item $\norm{\bx + \by} \le \norm{\bx} + \norm{\by}, \, \, \forall \bx, \by
+\in \bRn$.
+\end{enumerate}
+
+Some common norms are:
+%
+\begin{center}
+  \begin{tabular}{ll@{\hspace{5mm}}l}
+    $\displaystyle \norm{\bx}_1 \equiv \sum_{j=1}^n |x_j|$ , 
+    & & $\displaystyle \norm{\bx}_2 \equiv \left [ \sum_{j=1}^n (x_j)^2 \right ]^{1/2}$, \\
+    $\displaystyle \norm{\bx}_p \equiv \left [ \sum_{j=1}^n (x_j)^p \right ]^{1/p}
+    \, p>0$, 
+    & & $\displaystyle \norm{\bx}_\infty = \max_j |x_j|$ . 
+  \end{tabular}
+\end{center}
+
+\noindent {\bf Remark} - $\norm{\cdot}_2$ is called the
+\textit{Euclidean norm}: it is the generalisation to $n$-dimensional
+spaces of the distance between two points in the coordinate plane.
+
+
+\subsubsection{Matrix norms}
+
+Let $M_n$ denote the set of all real $n \times n$ matrices.   A
+\textit{norm} on $M_n$ is a function $\norm{ \cdot }$ which assigns a
+real value to each matrix in $M_n$ and that satisfies
+%
+\begin{enumerate}
+\item $\norm{ A } \ge 0 \, \, \, \forall A \in M_n$.  Moreover $\norm{ A } =
+  0$ if and only if $A = 0$.
+\item $\norm{ \alpha A } = | \alpha | \norm{ A } \, \, \, \forall A \in M_n
+  \, \, \, \forall \alpha \in \bR$.
+\item $\norm{A + B} \le \norm{A} + \norm{ B } \, \, \, \forall A,B \in
+  M_n$.
+\item $ \norm{ A B } \le \norm{ A } \norm{ B } $
+\end{enumerate}
+
+\smallskip
+
+Vector norms can be used to define a family of matrix norms, called
+\textit{induced norms}: these are the only ones used in this unit. The norm
+of a vector $\norm{ \bx }$ measures its length; therefore, $\norm{ A \bx }$
+is the length of the vector $\bx$ transformed by the matrix $A$.  We
+can define a matrix norm as the maximum relative ``stretching''
+induced by the matrix $A$.  More formally, if $\norm{ \cdot }$ is a norm
+defined in $\bRn$ then we a define a function (norm) $\norm{ \cdot }$ on
+the matrix space $M_n$ as
+%
+\begin{equation*}
+\norm{ A } \equiv \max_{\norm{ \bx } = 1} \norm{ A \bx } .
+\end{equation*}
+
+
+\smallskip
+
+These norms are said to be \textit{induced} by the corresponding
+vector norm and we use the same symbol for the matrix and the vector
+norm.   For example, 
+%
+\begin{align*}
+  \norm{ A }_1 & \equiv \max_{\norm{ \bx }_1 = 1} \norm{ A \bx }_1 , \\
+  \norm{ A }_p & \equiv \max_{\norm{ \bx }_p = 1} \norm{ A \bx }_p , \\
+  \norm{ A }_\infty & \equiv \max_{\norm{ \bx }_\infty = 1} \norm{ A \bx }_\infty .
+\end{align*}
+%
+\smallskip
+
+\noindent {\bf Remark 1} - The vector and matrix norms are compatible:
+%
+\begin{equation*}
+  \norm{ A \bx }_p \le \norm{ A }_p \norm{ \bx }_p .
+\end{equation*}
+%
+However, we cannot mix norms.  For example, it is \textbf{not} true in
+general that $\norm{ A \bx }_1 \le \norm{ A }_2 \norm{ \bx }_2$.
+
+\smallskip
+
+\noindent {\bf Remark 2} - The value of the matrix 1-norm is the
+maximum of the 1-norms of the column vectors of the matrix:
+%
+\begin{equation*}
+ \norm{ A }_1 = \max_{1 \le k \le n} \sum_{j=1}^n | a_{j k} | .
+\end{equation*}
+%
+
+\smallskip
+
+\noindent {\bf Remark 3} - The value of the matrix infinity-norm is
+the maximum of the 1-norms of the row vectors of the matrix:
+%
+\begin{equation*}
+  \norm{ A }_\infty = \max_{1 \le k \le n} \sum_{j=1}^n | a_{k j} | .
+\end{equation*}
+
+\subsection{The condition number}
+
+We  now  have the   tools  to assess  the reliability  of  a numerical
+solution of  a system of linear equations.    Given a system  $A \bx =
+\bb$ call $\bx_c$ the computed solution and $\bx_t$ the true solution.
+Define an additional vector $\br$ (\textit{residual}) as,
+%
+\begin{equation*}
+ \br = A \bx_c - \bb .
+\end{equation*}
+%
+Any numerical    method that attempts  to solve   the linear system of
+equations tries to  minimise the  vector $\br$: if  $\br =  0$ the
+problem is solved exactly.  We can rewrite $\br$ as
+%
+\begin{equation*}
+  \br = A \bx_c - A \bx_t \implies \bx_c - \bx_t = A^{-1} \br .
+\end{equation*}
+%
+We can  see from this expression  that if $A^{-1}$  is ``ill behaved''
+then  even   though $\br$  is very  small   the difference between the
+computed and the true solution  can be very  large.  The
+\textit{condition number of the matrix}, $K(A)$, is the
+quantity
+%
+\begin{equation*}
+  K(A) = \norm{ A } \, \norm{ A^{-1} },
+\end{equation*}
+%
+and we call ${\cal E}$ the \textit{weighted residual},
+%
+\begin{equation*}
+  {\cal E} = \frac{\norm{ \br }}{\norm{ \bb }} = 
+  \frac{\norm{ A \bx_c - \bb }}{\norm{ \bb }} .
+\end{equation*}
+%
+One can show that 
+%
+\begin{equation}
+ \frac{1}{K(A)} {\cal E} \le 
+      \frac{ \norm{ \bx_c - \bx_t }}{\norm{ \bx_t }} \le
+      K(A) {\cal E} .
+ \label{cond_and_res}
+\end{equation}
+%
+The condition number is always greater or equal to one, $K(A) \ge 1$.
+If $K(A) \simeq 1$ then the relative error is of the same order of the
+weighted residual: if the numerical method we have used has converged
+to a solution with small weighted residual we can be confident of the
+accuracy of the solution.  However, if the condition number is big,
+$K(A) \gg 1$, then, even though the weighted residual may be very
+small, the relative error in the solution may be extremely large.
+ 
+\subsection{Ill-conditioned systems}
+
+The condition number gives us a warning that the solution may not be
+accurate.     We must discuss a little bit more at length what this
+implies.     Consider the linear system
+%
+\begin{align}
+  \left\{
+    \begin{aligned}
+      x + 2 y & = 3 , \\ 
+      0.499 x + 1.001 y & = 1.5 .
+    \end{aligned} \right.
+ \label{ill_cond_1}
+\end{align}
+%
+The solution is $x = y = 1$.       Consider now a system with the same
+first equation and a slightly different second equation:
+%
+\begin{align}
+  \left\{
+    \begin{aligned}
+      x + 2 y & = 3 , \\ 
+      0.5 x + 1.001 y & = 1.5 .
+    \end{aligned} \right.
+ \label{ill_cond_2}
+\end{align}
+%
+The solution of this second system is $x = 3$ and $y=0$.    In other
+words, an extremely small change in one of the coefficients has
+produced an enormous change in the solution.
+
+We can analyse this result in terms of the condition number.   The
+matrix of the coefficients and its inverse are
+%
+\begin{equation*}
+  A = 
+  \left ( 
+   \begin{array}{c c}
+    1 & 2 \\*[3mm]
+    \dfrac{499}{1000} & \dfrac{1001}{1000} \\
+   \end{array}
+  \right )
+  \qquad
+  A^{-1} = 
+  \left ( 
+   \begin{array}{c c}
+     \dfrac{1001}{3} & \dfrac{-2000}{3} \\*[3mm]
+     \dfrac{-499}{3} & \dfrac{1000}{3} \\
+   \end{array}
+  \right )
+\end{equation*}
+% 
+with infinity norms (maximum of the 1-norm of the rows)
+%
+\begin{equation*}
+  \norm{ A }_\infty = 3 , \quad \norm{ A^{-1} }_\infty = \frac{3001}{3} 
+  \implies K(A) = 3001 .
+\end{equation*}
+%
+The condition number is big, as expected. To summarise this example,
+the following statements are roughly equivalent:
+%
+\begin{itemize}
+%
+\item The linear system is such that a small change in specification of
+the problem can lead to a large change in relative error; \par
+%
+\item The condition number is large, $K(A) \gg 1$; \par
+%
+\item The system is ill conditioned; \par
+%
+\item As for all ill-conditioned problems, the relative error may be
+disastrous even if the residual is very small.
+%
+\end{itemize}
+
+Being or not being ill-conditioned is a property of the linear system
+under study and cannot be eliminated by some cunning numerical
+algorithm. The best we can hope for is to have some warning that
+things may go horribly wrong: this is the purpose of the condition
+number.
+
+While there are techniques based on the Singular Value Decomposition
+that try to extract as much information as possible from an
+ill-conditioned system, they are well beyond the scope of this unit
+and from now on we will assume that the linear system we intend to
+solve is perfectly well behaved, i.e.\ has a condition number of the
+order of unity.
+
+\section{Direct methods}
+
+\subsection{Introduction}
+
+It is not  possible to  dwell  on all  the  techniques that have  been
+developed to  solve  linear  systems of  equations.    The most recent
+methods    can be  very  involved    and their  implementation may  be
+considered skilled craftsmanship.  Instead,  we introduce the simplest
+examples  of  the two  main  categories  of  methods to  solve  linear
+systems.  While it is  true that no present  day linear system  solver
+uses these methods as we describe them, it is also true that most
+of the present day techniques are deeply rooted in these methods.
+
+There are two big families of algorithms for solving linear systems:
+the first, the \textit{direct methods}, consist of a finite list of
+transformations of the original matrix of the coefficients that reduce
+the linear systems to one that is easily solved.  The second family,
+the \textit{indirect or iterative methods}, consists of algorithms
+that specify a series of steps that lead closer and closer to the
+solution without, however, ever exactly reaching it.  This may not
+seem a very desirable feature until we remember that we cannot in any
+case represent an exact solution: most iterative methods provide us
+with a highly accurate solution in relatively few iterations.
+
+\subsection{Gaussian elimination}
+
+The idea behind Gaussian elimination (and all direct methods) is that
+some linear systems of equations are very easy to solve.   Suppose for
+example, that we wish to solve the problem $A \bx = \bb$ where $A$ is
+an upper triangular matrix, i.e.\ $a_{i j} = 0$ if $j < i$.    This
+equation can be solved by simple back-substitution.   Consider, for
+example, the system
+%
+\begin{equation*}
+  A \bx =
+  \begin{pmatrix}
+    3 & 2 & 1 \\ 0 & 5 & 4 \\ 0 & 0 & 6
+  \end{pmatrix}
+  \begin{pmatrix}
+    x_1 \\ x_2 \\ x_3
+  \end{pmatrix}
+ = 
+ \begin{pmatrix}
+   1 \\ 2 \\ 3
+ \end{pmatrix}
+ = \bb .
+\end{equation*}
+%
+The last equation is trivial and we can easily obtain $x_3$.  Once
+$x_3$ is known it can be substituted in the second equation
+(back-substitution) and so on:
+%
+\begin{align*}
+ 6 x_3               & = 3 && \implies & x_3                 & = \frac{1}{2} , \\
+ 5 x_2 + 4 x_3       & = 2 && \implies & 5 x_2 + 2           & = 2 \\
+                     &     && \implies & x_2                 & = 0 , \\
+ 3 x_1 + 2 x_2 + x_3 & = 1 && \implies & 3 x_1 + \frac{1}{2} & = 1 \\
+                     &     && \implies & x_1                 & = \frac{1}{6} .   
+\end{align*}
+
+The Gauss elimination algorithm consists of a series of steps that
+transform a generic $n \times n$ matrix $A$ with elements $a_{i j}$
+into an upper triangular matrix so that the ensuing linear system can
+be solved by back substitution.  The algorithm is as follows:
+
+\begin{enumerate}
+
+\item Replace the $j$-th equation with
+%
+  \begin{equation*}
+    -\frac{a_{j 1}}{a_{1 1}} \times ( 1^{\rm st} \text{equation} ) +
+    ( j\text{-th equation} ) ,
+  \end{equation*}
+%
+where $j$ is an index that runs from 2 to $n$.  In implementing this
+algorithm by hand it is convenient to write $A$ and $\bb$ as a single
+$n \times (n+1)$ matrix called the \textit{augmented matrix}.
+Consider for example 
+%
+\begin{equation*}
+  A =
+  \begin{pmatrix}
+    1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 0
+  \end{pmatrix}
+ , \quad
+  \bb =
+  \begin{pmatrix}
+    10 \\ 11 \\ 12
+  \end{pmatrix},
+\end{equation*}
+%
+and write them as
+%
+\begin{equation*}
+\left (
+  \begin{array}{c c c|c}
+   1 & 2 & 3 & 10 \\ 4 & 5 & 6 & 11 \\ 7 & 8 & 0 & 12 \\
+  \end{array}
+ \right ) .
+\end{equation*}
+%
+By applying the first step of the algorithm to this matrix we obtain
+%
+\begin{equation*}
+  \left (
+  \begin{array}{c c c|c}
+   1 & 2 & 3 & 10 \\ 
+   0 & 5 - 4 \times 2 & 6 - 4 \times 3 & 11 - 4 \times 10 \\  
+   0 & 8 - 7 \times 2 & 0 - 7  \times 3 & 12 - 7 \times 10
+  \end{array}
+ \right ) =
+ \left (
+  \begin{array}{c c c|c}
+   1 & 2 & 3 & 10 \\ 
+   0 & -3 & -6 & -29 \\ 
+   0 & -6 & -21 & -58
+  \end{array}
+ \right )
+\end{equation*}
+%
+{\bf Remark} - If $a_{1 1}=0$ swap the first row with one whose first
+element is non zero.
+
+\item Repeat the previous step, but starting with the next row down
+and with $j$ greater than the row number.   If the current row is row
+$k$ then we must replace row $j$, $j > k$, with
+%
+%
+\begin{equation*}
+   -\frac{a_{j k}}{a_{k k}} \times ( k^{\rm th} \text{ equation} ) +
+   ( j^{\rm th}\text{ equation} ) ,
+ \end{equation*}
+%
+where $j$ is an index, $k < j \le n$.    The coefficient $a_{k k}$ is
+called the \textit{pivot}. In the case of our example system we have:
+%
+\begin{equation*}
+  \left (
+  \begin{array}{c c c|c}
+   1 & 2 & 3 & 10 \\ 
+   0 & -3 & -6 & -29 \\ 
+   0 & -6 - 2 (-3) & -21 - 2 (-6) & -58 - 2 (-29)
+  \end{array}
+ \right ) =
+ \left (
+  \begin{array}{c c c|c}
+   1 & 2 & 3 & 10 \\ 
+   0 & -3 & -6 & -29 \\  
+   0 & 0 & -9 & 0
+  \end{array}
+ \right ) .
+\end{equation*}
+
+
+\item When all the rows have been reduced, the matrix has been
+transformed in an upper triangular matrix and the linear system can be
+solved by back-substitution.
+
+\end{enumerate}
+
+\noindent {\bf Remark} - When designing an algorithm it is important
+to keep track of the number of operations required to solve the
+problem.   For example, an algorithm which involves a number of
+operations that increases exponentially with the problem size becomes
+very quickly useless (such problems are called non-polynomial and are
+some of toughest nuts to crack in numerical analysis.  The most famous
+example is the travelling salesman problem).    The Gauss elimination
+algorithm is an $n^3$ algorithm, i.e.\ it requires a number of floating
+point operations that grows with the cube of the problem size.
+
+\subsection{Pivoting strategies}
+
+The Gauss elimination method just outlined suffers from poor accuracy
+if the matrix coefficients are of very different size.   Consider, for
+example, the system
+%
+\begin{equation*}
+  \begin{cases}
+    10^{-5} x_1 + x_2 &= 1 , \\ x_1 + x_2 &= 2 .
+  \end{cases}
+\end{equation*}
+%
+The 1-norm of the matrix of coefficients, $A$, is $\norm{ A }_1 =
+2$.  The inverse of $A$ is
+%
+\begin{equation*}
+  A^{-1} = \frac{1}{10^{-5}-1}
+  \begin{pmatrix}
+    1 & -1 \\ -1 & 10^{-5}
+  \end{pmatrix} ,
+\end{equation*}
+%
+and has 1-norm $\norm{A^{-1}}_1 = 2/(1-10^{-5}) \simeq 2$ so that the
+matrix condition number is a most benign $K(A) \simeq 4$.   The problem
+is not ill-conditioned and we should not expect any problem in finding
+an accurate solution.
+
+We can solve the problem exactly using Gauss elimination.   By
+subtracting $10^5$ times the first equation from the second  we obtain
+the following augmented matrix and solution:
+%
+\begin{equation*}
+  \left (
+   \begin{array}{c c|c}
+    10^{-5} & 1 & 1 \\
+    0 & -99999 & -99998 
+   \end{array}
+  \right )
+  \implies
+  \begin{aligned}
+    x_2 &=  \dfrac{-99998}{-99999} &&= 0.9999899\ldots && \simeq 1 , \\*[2mm]
+    x_1 &=  \dfrac{10^5}{99999} &&= 1.00001000\ldots && \simeq 1 .
+  \end{aligned}
+\end{equation*}
+%
+If, however, we now solve the same problem using floating point
+notation and only four significant figures, i.e.\ $m=4$, we obtain a
+rather different result.    The augmented matrix is now
+%
+\begin{align}
+   \left (
+    \begin{array}{c c|c}
+      0.1000 \times 10^{-4} & 0.1000 \times 10 & 0.1000 \times 10 \\
+      0.1000 \times 10 & 0.1000 \times 10 & 0.2000 \times 10 
+    \end{array}
+  \right ) & \implies \\
+   \left (
+    \begin{array}{c c|c}
+      0.1000 \times 10^{-4} & 0.1000 \times 10 & 0.1000 \times 10 \\
+      0.0000 \times 10^{0} & -0.1000 \times 10^6 & -0.1000 \times 10^6 
+    \end{array}
+  \right ) & \implies
+  \begin{cases}
+    x_2 &= 1, \\ x_1 &= 0 .
+  \end{cases}
+\end{align}
+%
+This is an example of \textit{poor scaling}: whenever the coefficients
+of a linear system are of greatly varying sizes, we may expect that
+rounding errors may build up due to loss of significant figures.
+While ill-conditioning is an incurable ``illness'' because it is
+intrinsic to the matrix of coefficients, poor scaling is related
+to the algorithm and can be eliminated by suitably modifying the
+procedure to solve the linear system.     In the case of this example,
+everything works fine if we first exchange the two rows so that the
+first row is the one with the biggest coefficient.    In this case,
+the second row is transformed during Gaussian elimination by
+subtracting from it the first row multiplied by $10^{-5}$ and no
+rounding errors occur:
+%
+\begin{align}
+  \left (
+    \begin{array}{c c|c}
+      0.1000 \times 10 & 0.1000 \times 10 & 0.2000 \times 10 \\
+      0.1000 \times 10^{-4} & 0.1000 \times 10 & 0.1000 \times 10
+    \end{array}
+  \right ) & \implies \\
+  \left (
+    \begin{array}{c c|c}
+      0.1000 \times 10 & 0.1000 \times 10 & 0.2000 \times 10 \\
+      0.0000 \times 10^{0} & 0.1000 \times 10 & 0.1000 \times 10 
+    \end{array}
+  \right ) & \implies
+  \begin{cases}
+    x_2 &= 1, \\ x_1 &= 1 .
+  \end{cases}
+\end{align}
+%
+The solutions are very close to the exact solution as we would have
+expected from the analysis of the condition number.    
+
+The procedure of  exchanging rows  (or columns) in  order  to have the
+biggest pivot  (i.e.\ the first  coefficient of the  row that is  to be
+subtracted from all the  subsequent rows) is called \textit{pivoting}.
+From the above example we can conclude that, in the $k$-th step of the
+Gauss elimination algorithm, we want to replace row $j$ with
+%
+\begin{equation*}
+  \text{Row}_j \rightarrow \text{Row}_j - \varepsilon \, \text{Row}_k,
+\end{equation*}
+%
+where $\varepsilon$ is a small number, ideally as small as possible.
+This can be easily arranged: at each step of the algorithm we
+rearrange the set of equations so that we are eliminating using the
+largest pivot in modulus.  
+
+Notice that the factors that multiply the rows are always smaller than
+unity.    This procedure is called \textit{partial pivoting}.    
+
+An algorithm that is similar to the one above, but that exchanges both
+rows and columns in order that the biggest element in the matrix is
+the pivot is called \textit{total pivoting}.  However, total pivoting
+involves moving around huge chunks of computer memory and also doing
+an exhaustive search for the biggest matrix element.  This practical
+problems are such that Gaussian elimination with partial pivoting
+is preferred.
+
+\subsection{Decomposition methods}
+
+\subsubsection{Introduction}
+
+Decomposition methods attempt to rewrite the matrix of coefficients as
+the product of two matrices.  The advantage of this approach is that
+the solution of a linear system of equations is split into smaller and
+considerably easier tasks.  There are many decomposition techniques,
+but we are going to discuss only the simplest scheme, the $LU$
+decomposition, in order to understand the principles behind this
+approach to finding the solution of a linear system of equations.
+
+Suppose that we are able to write the matrix $A$ of coefficients of
+the linear system $A \bx = \bb$ as
+%
+\begin{equation*}
+  A = L U ,
+\end{equation*}
+%
+where  $L$ is lower  triangular   and $U$  is  upper triangular.   The
+solution  of the linear   system of equations becomes straightforward.
+We can write
+%
+\begin{equation*}
+  A \bx = \bb \implies ( L \, U ) \, \bx = \bb \implies
+  L \left ( U \bx \right ) = \bb .
+\end{equation*}
+%
+If we call $\by = U \bx $, then we have transformed the original
+linear system in two systems,
+%
+\begin{align}
+  L \by &= \bb , \label{L_eq} \\
+  U \bx &= \by . \label{U_eq}
+\end{align}
+%
+Each of these systems is triangular.  The system~(\ref{L_eq}) is lower
+triangular and can be solved by forward substitution while the
+system~(\ref{U_eq}) is upper triangular and can be solved by back
+substitution.   Therefore, even though we must solve two linear
+systems instead of only one, each of the two is very easy to solve.
+This is an advantage with respect to Gauss elimination especially if
+we have to solve $A \bx = \bb$ for many different values of the vector
+$\bb$: we need to factorise the matrix $A$ only once and then use the
+factorisation to find the solution vector $\bx$ for all the different
+values of the known vectors $\bb$.
+
+\medskip
+
+There are two questions that we must now answer: ``How can we
+factorise a matrix?'' and ``Is the factorisation possible?''  We will
+answer the first question first and then discuss at more length the
+answer to the second.
+
+\subsubsection{Factorisation of a matrix}
+
+A first thing to note is that the $L U$ factorisation as described
+above is not unique.   $A$ is a $n \times n$ matrix and has therefore
+$n^2$ coefficients.   $L$ and $U$ are both triangular and thus have
+$n(n+1)/2$ entries each for a total of $n^2 + n$ entries.
+In other words, $L$ and $U$ have together $n$ coefficients more than the
+original matrix $A$.  Therefore we can choose $n$ coefficients of $L$
+and $U$ to our own liking.    
+
+To derive a formula for the $LU$ factorisation we start by writing
+explicitly in terms of the components the decomposition $A = L U$.
+Call $a_{i j}$, $\ell_{i j}$ and $u_{i j}$ the elements respectively
+of $A$, $L$ and $U$.    The following relation must hold:
+%
+\begin{equation}
+  a_{i j} = \sum_{s=1}^n \ell_{i s} u_{s j} = 
+  \sum_{s=1}^{\min(i,j)} \ell_{i s} u_{s j} ,
+  \label{LU_fact}
+\end{equation}
+%
+where we have used the fact that $\ell_{i s} = 0$ for $s>i$ and $u_{s
+j}=0$ for $s > j$.
+
+Let us start with $i=j=1$.   Equation~(\ref{LU_fact}) reduces to
+%
+\begin{equation*}
+ a_{1 1} = \ell_{1 1} u_{1 1} .
+\end{equation*}
+%
+We can now make use of the freedom of choosing $n$ coefficients of $L$
+and $U$.     The most common choices are:
+%
+\begin{itemize}
+%
+\item \textit{Doolittle's factorisation} - Set $\ell_{i i} = 1$,
+i.e.\ the matrix $L$ is \textit{unit} lower triangular.
+%
+\item \textit{Crout's factorisation} - Set $u_{i i} = 1$, i.e.\ the
+matrix $U$ is \textit{unit} upper triangular.
+%
+\end{itemize}
+
+\begin{table}
+  \begin{center}
+    \fbox{
+      \parbox[t]{80mm}{ 
+        \setlength{\parindent}{0pt} \footnotesize
+        \textbf{for} $k = 1,2,\ldots,n$ \textbf{do} \par
+        \hspace{5mm}
+        Specify a nonzero value for either $\ell_{k k}$ (Doolittle) \par
+        \hspace{5mm}or $u_{k k}$ (Crout) and compute the other from 
+        \begin{equation*}
+          \ell_{k k} u_{k k} = 
+          a_{k k} - \sum_{s=1}^{k-1} \ell_{k s} u_{s k} .
+        \end{equation*}
+        
+        \hspace{5mm} Build the $k$-th row of $U$:\par
+        \hspace{5mm} \textbf{for} $j=k+1,k+2, \ldots, n$ \textbf{do} \par
+        \begin{equation*}
+          u_{k j} = \left( a_{k j} - 
+            \sum_{s=1}^{k-1} \ell_{k s} u_{s j} \right) / \ell_{k k}
+        \end{equation*}
+        \hspace{5mm} \textbf{end}
+        
+        \smallskip
+        
+        \hspace{5mm} Build the $k$-th column of $L$:\par
+        \hspace{5mm} \textbf{for} $i=k+1,k+2, \ldots, n$ \textbf{do} \par
+        \begin{equation*}
+          \ell_{i k} = \left( a_{i k} - 
+            \sum_{s=1}^{k-1} \ell_{i s} u_{s k} \right) / u_{k k}
+        \end{equation*}
+        \hspace{5mm} \textbf{end}
+        
+        \smallskip
+        
+        \textbf{end}
+      }
+    }
+  \end{center}
+  \caption{\label{doocrout} \it Algorithm for the Doolittle and Crout
+    factorisation methods.}
+\end{table}
+
+Following the Doolittle's factorisation we set $\ell_{1 1} = 1$ and
+obtain
+%
+\begin{equation*}
+  u_{1 1} = a_{1 1} . 
+\end{equation*}
+%
+We can now compute all the elements of the first row of $U$ and of the
+first column of $L$, by setting either $i=1$ or $j=1$:
+%
+\begin{align}
+  u_{1 j} & = a_{1 j} , & i & = 1, \, j > 1 \\
+  \ell_{i 1} &= a_{i 1} / u_{1 1} , & j & = 1, \, i > 1 .
+\end{align}
+%
+Consider now $a_{2 2}$.   Equation~(\ref{LU_fact}) becomes:
+%
+\begin{equation*}
+  a_{2 2} = \ell_{2 1} u_{1 2} + \ell_{2 2} u_{2 2} . 
+\end{equation*}
+%
+If, according to the Doolittle's scheme, we set $\ell_{2 2} = 1$ we
+have:
+%
+\begin{equation*}
+  u_{2 2} = a_{2 2} - \ell_{2 1} u_{1 2} , 
+\end{equation*}
+%
+where $\ell_{2 1}$ and $u_{1 2}$ are known from the previous steps.
+We can now compute the second row of $U$ and the second column of $L$
+by setting either $i=2$ or $j=2$:
+%
+\begin{align}
+  u_{2 j} & = a_{2 j} - \ell_{2 1} u_{1 j}, & i & = 2, \, j > 2 \\
+  \ell_{i 2} & = \left ( a_{i 2} - \ell_{i 1} u_{1 2} \right )/ u_{2
+    2} & j & = 2, \, i > 2.
+\end{align}
+%
+This procedure can be repeated for all the rows and columns of $U$ and
+$L$.   The compact version of the algorithm for $LU$ decomposition using
+either Doolittle's or Crout's method is listed in
+Table~\ref{doocrout}.
+
+
+\smallskip
+
+\noindent \textbf{Remark 1} - Notice that for the algorithm to work
+$\ell_{k k}$ and $u_{k k}$ must be different from zero.  However, this
+should not be interpreted as a condition for the matrix to have an
+$LU$ decomposition.   The following matrix,
+%
+\begin{equation*}
+  \begin{pmatrix}
+    2 & 1 & -2 \\ 4 & 2 & -1 \\ 6 & 3 & 11
+  \end{pmatrix}
+\end{equation*}
+%
+has $u_{2 2} =0 $, but it can be written as the product of
+%
+\begin{equation*}
+  L =
+  \begin{pmatrix}
+    1 & 0 & 0 \\ 2 & 1 & 0 \\ 3 & 0 & 1
+  \end{pmatrix}
+  \quad \text{and} \quad
+  U =
+  \begin{pmatrix}
+    2 & 1 & -2 \\ 0 & 0 & 3 \\ 0 & 0 & 17
+  \end{pmatrix} .
+\end{equation*}
+
+
+\noindent \textbf{Remark 2} - The $LU$ decomposition with $L$ unit
+triangular and  the  Gauss elimination algorithm are  closely related.
+The matrix $U$ is the matrix of the coefficients reduced to triangular
+form using Gaussian  elimination.  The matrix  $L$ can be obtained  by
+writing  each multiplier in   the location corresponding  to  the zero
+entry in the matrix it was responsible for creating.   Therefore one
+can use Gaussian elimination to find the $LU$ decomposition of a
+matrix.   The advantage of $LU$ decomposition over Gaussian elimination
+is that if we have to solve many linear systems $A \bx = \bb$ for many
+different values of $\bb$, we need to do only one $LU$ decomposition.
+
+\noindent \textbf{Remark 3} - Pivoting is essential for the accuracy
+of this algorithm.
+
+\subsubsection{Conditions for factorisation}
+
+We must now specify under what conditions a matrix can be decomposed
+as the product of two triangular matrices.  What follows is a list of
+sufficient conditions for the decomposition to be possible.  We start
+with a theorem that involves the minors of $A$.
+
+\smallskip
+
+\begin{theorem}
+\label{LUexists}
+If all $n-1$ leading principal minors\footnote{A principal minor of
+order $k$ is the minor
+%
+\begin{equation*}
+  \begin{pmatrix}
+    a_{1 1} & \cdots & a_{1 k} \\
+    \vdots & \ddots & \vdots \\
+    a_{k 1} & \cdots & a_{k k}
+  \end{pmatrix}
+\end{equation*}
+%
+} of the   $n \times n$  matrix  $A$ are nonsingular,  then  $A$ has an
+$LU$ decomposition.   If the $LU$ decomposition exists and $A$ is non
+singular, then the $LU$ decomposition is unique and $\det(A)=u_{11}
+u_{22} \ldots u_{nn}$ (assuming that the matrix has been decomposed
+according the the Doolittle method).
+\end{theorem}
+
+\noindent Proof: Golub \& Van Loan, \textit{Matrix computations}, page
+97 (Third edition, 1996)
+
+\smallskip
+
+\noindent
+\textbf{Remark 1} - This theorem is a consequence of the relation
+between Gaussian elimination and $LU$ decomposition.   It is possible to
+decompose the matrix in a lower and a upper triangular form if all the
+pivots in the Gaussian elimination are different from zero.   The
+hypotheses in the above theorem ensure that this is the case.
+
+\smallskip
+
+\noindent
+\textbf{Remark 2} - It is not sufficient for a matrix to be
+non-singular in order for it to have an $LU$ decomposition.  However, if
+the matrix is non singular then there exists a suitable permutation of
+its rows such that the permuted matrix has a (unique)
+$LU$ decomposition.
+
+A concept that is extremely useful in determining the behaviour and
+convergence of many algorithms to solve linear system is that of
+\textit{diagonal dominance}.   A matrix is strictly diagonally dominant if the
+modulus of each diagonal element is greater than the sum of the moduli
+of all the other elements in its row:
+%
+\begin{equation*}
+  | a_{i i} | > \sum_{\genfrac{}{}{0pt}{}{j=1}{j \ne i}}^n 
+  | a_{i j} |, \qquad (1 \le i \le n) .
+\end{equation*}
+%
+This may seem a rather peculiar condition to require on a matrix.   As
+a matter of fact, it is not so for many applications of practical
+interest.   For example, most algorithms that solve numerically
+partial differential equations using finite difference methods involve
+the solutions of large linear systems whose matrix of coefficients is
+diagonally dominant.
+
+The importance of diagonally dominance from the point of view of
+direct methods to solve linear systems of equations stems from the
+following theorems:
+
+\begin{theorem}
+\label{diagdom1}
+Every strictly diagonally dominant matrix is nonsingular and has an
+$LU$ decomposition.
+\end{theorem}
+
+\noindent Proof: Kincaid pages 190
+
+\begin{theorem}
+\label{diagdom2}
+Gaussian elimination of a diagonally dominant matrix does not require
+pivoting provided each row is first scaled with its maximum.
+\end{theorem}
+
+\noindent Proof: Kincaid page 190
+
+\subsection{Cholesky factorisation}
+
+In the case of a symmetric, positive definite matrix (i.e.\ such that
+$\bx^T A \bx > 0 \, \, \forall \bx \ne 0$) then it is possible to
+factorise the matrix as $A = L L^T$, in which $L$ is lower triangular with
+a positive diagonal (\textit{Cholesky factorisation}).
+
+To find the Cholesky decomposition of the matrix $A$ we can use an
+algorithm similar to that developed for the Doolittle and Crout
+methods and derived from it by assuming $U=L^T$.  Its description is
+in Table~\ref{cholesky}.
+
+\begin{table}
+  \begin{center}
+    \fbox{
+      \parbox[t]{80mm}{
+        \setlength{\parindent}{0pt}
+        \small
+        \textbf{for} $k = 1,2,\ldots,n$ \textbf{do} \par
+        \hspace{5mm} Compute the diagonal element \par
+        \begin{equation*}
+          \ell_{k k} = 
+          \left ( a_{k k} - \sum_{s=1}^{k-1} \ell_{k s}^2 \right )^{1/2} .
+        \end{equation*}
+        
+        \hspace{5mm} Build the $k$-th column of $L$:\par
+        \hspace{5mm} \textbf{for} $i=k+1,k+2, \ldots, n$ \textbf{do} \par
+        \begin{equation*}
+          \ell_{i k} = \left ( a_{i k} - 
+            \sum_{s=1}^{k-1} \ell_{i s} \ell_{k s} \right ) / \ell_{k k}
+        \end{equation*}
+        \hspace{5mm} \textbf{end}
+        
+        \smallskip
+        
+        \textbf{end}
+      }
+    }
+  \end{center}
+  \caption{\label{cholesky} \it Algorithm for the Cholesky
+    factorisation method}
+\end{table}
+
+\subsection{Tridiagonal systems}
+
+\noindent Consider a $4\times 4$ system 
+%
+\begin{equation*}
+  \left ( \begin{array}{cccc}
+      b_1 & c_1 & 0 & 0\\ a_1 & b_2 & c_2 & 0 \\
+      0 & a_2 & b_3 & c_3 \\ 0 & 0 & a_3 & b_4 
+    \end{array} \right ) 
+  \begin{pmatrix}
+    x_1 \\ x_2 \\ x_3 \\ x_4
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+    f_1 \\ f_2\\ f_3 \\ f_4
+  \end{pmatrix}.
+\end{equation*}
+%
+It is called a \textit{tridiagonal system}. Tridiagonal systems give
+rise to particularly simple results when using Gaussian elimination.
+Forward elimination at each step yields a system 
+%
+\begin{equation*}
+  \left ( \begin{array}{cccc} 
+      1 & c_1/d_1 & 0 & 0 \\ 0 & 1 & c_2/d_2 & 0 \\ 
+      0 & 0 & 1 & c_3/d_3 \\ 0 & 0 & 0 & 1 
+    \end{array} \right ) 
+  \begin{pmatrix}
+    x_1 \\ x_2 \\ x_3 \\ x_4
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+    y_1 \\ y_2\\ y_3 \\ y_4
+  \end{pmatrix},
+\end{equation*}
+%
+where 
+%
+\begin{equation*}
+  \begin{array}{ll@{\hspace{4mm}}l}
+    d_1=b_1, & & y_1=f_1/d_1, \\
+    d_2=b_2-a_1c_1/d_1, & & y_2=(f_2-y_1 a_1)/d_2, \\
+    d_3=b_3-a_2c_2/d_2, & & y_3=(f_3-y_2 a_2)/d_3, \\
+    d_4=b_4-a_3c_3/d_3, & & y_4=(f_4-y_3 a_3)/d_4.
+  \end{array}
+\end{equation*}
+%
+Finally, the backward substitution procedure gives the answer
+%
+\begin{equation*}
+  \left\{
+    \begin{array}{l}
+      x_4=y_4,\\
+      x_3=y_3-x_4 c_3/d_3,\\
+      x_2=y_2-x_3 c_2/d_2,\\
+      x_1=y_1-x_2 c_1/d_1.
+    \end{array} \right .
+\end{equation*}
+%
+It is clear what will happen in general case of $n\times n$
+tridiagonal system.  The forward elimination procedure is
+
+\begin{enumerate}
+  % 
+\item At the first step $d_1=b_1$ and $y_1=f_1/d_1$;
+  % 
+\item At the $k$-th step $d_k=b_k-a_{k-1}c_{k-1}/d_{k-1}$ and
+  $y_k=(f_k-y_{k-1} a_{k-1})/d_k$. 
+%
+\item Once all the $y_k$ have been computed, the $x_k$ can be
+  determined using backward substitution: $x_n = y_n$, \ldots,
+  $x_{k-1}=y_{k-1}-x_k c_{k-1}/d_{k-1}$, \ldots
+  % 
+\end{enumerate}
+
+\section{Iterative methods}
+
+\subsection{Introduction}
+
+The direct methods for solving linear systems of order $n$ require
+about $n^3/3$ operations.   In addition in practical computations with
+these methods, the errors which are necessarily introduced through
+rounding may become quite large for large $n$.   Now we consider
+iterative methods in which an approximate solution is sought by using
+fewer operations per iteration.   In general, these may be described
+as methods which proceed from some initial ``guess'', $\bx^{(0)}$, and
+define a sequence of successive approximations $\bx^{(1)}, \bx^{(2)},
+\ldots$ which, in principle, converge to the exact solution.    If the
+convergence is sufficiently rapid, the procedure may be terminated at
+an early stage in the sequence and will yield a good approximation.
+One of the intrinsic advantages of such methods is the fact that the
+errors, due to roundoff or even blunders, may be damped out as the
+procedure continues.   In fact, special iterative methods are
+frequently used to improve ``solutions'' obtained by direct methods.
+
+A large class of iterative methods may be defined as follows.   Let
+the system to be solved be
+%
+\begin{equation}
+ A \bx = \bb , \label{Axb}
+\end{equation}
+%
+where $\det(A) \ne 0$.   Then the coefficient matrix can be
+split, in an infinite number of ways, into the form
+%
+\begin{equation*}
+  A = N - P , 
+\end{equation*}
+%
+where $N$ and $P$ are matrices of the same order as $A$.    The
+system~(\ref{Axb}) is then written as
+%
+\begin{equation}
+  N \bx = P \bx + \bb. \label{NxPxb}
+\end{equation}
+%
+Starting from some \textit{arbitrary} vector $\bx^{(0)}$, we define a
+sequence of vectors $\{ \bx^{(n)}\}$, by the recursion
+%
+\begin{equation}
+  N \bx^{(n)} = P \bx^{(n-1)} + \bb, \quad n=1,2,3,\ldots 
+  \label{rec1}
+\end{equation}
+%
+The different iterative methods are characterised by their choice of
+$N$ and $P$.      By looking at~(\ref{rec1}) we can already find
+some restrictions on the choice of $N$:
+%
+\begin{enumerate}
+  % 
+\item The matrix $N$ should not be singular, i.e.\ $\det(N) \ne 0$. 
+  % 
+\item The matrix $N$ should be chosen such that a system of the form
+  $N \by = \bz$ is ``easily'' solved.
+  % 
+\end{enumerate}
+%
+One can show that an iterative method converges if and only
+if the matrix $M = N^{-1} P$ exists and has all eigenvalues
+$\lambda_i$ with modulus strictly less than 1:
+%
+\begin{equation*}
+  \varrho(M) \equiv \max_i | \lambda_i | < 1 \Longleftrightarrow
+  \text{Method converges}
+\end{equation*}
+%
+where the symbol $\varrho(M)$ is called the \textit{spectral radius}
+of $M$.  It is sometimes hard to verify whether this condition is
+satisfied.  A weaker, but more easily verifiable statement is that
+the method converges if at least one norm of the matrix $M$
+is strictly less than one:
+%
+\begin{equation*}
+  \norm{ M } < 1 \implies \text{Method converges.}
+\end{equation*}
+%
+However, the reverse is not true: a method may converge but some of
+the norms of $M$ may be larger than or equal to one.
+
+\subsection{Iteration schemes}
+
+To simplify the notation we will assume in what follows that all the
+diagonal elements of the matrix $A$ are one.   This can be done by
+dividing each row by its diagonal element.   If by chance, one row has
+a zero diagonal element we would just need to reorder the rows.
+
+\subsubsection{Jacobi's method}
+
+In Jacobi's method the matrix is split into diagonal and off-diagonal
+part:
+%
+\begin{equation*}
+  A = I - ( A_L + A_U ) , \implies
+  \begin{cases}
+    N &= I , \\ P &= A_L+A_U
+  \end{cases}
+\end{equation*}
+%
+where we have written the off-diagonal part as the sum of a lower and
+an upper triangular matrix, $A_L$ and $A_U$ respectively.   The iteration
+scheme is
+%
+\begin{equation*}
+  \bx^{(n+1)} = \bb + ( A_L + A_U ) \bx^{(n)}  
+\end{equation*}
+
+%
+and the convergence matrix is $M \equiv N^{-1} P = P$.
+
+\subsubsection{Gauss-Seidel's method}
+
+In Jacobi's method the old guess is used to estimate all the
+elements of the new guess.   In Gauss-Seidel's method each new iterate
+is used as soon as it becomes available.    The iteration scheme is as
+follows:
+%
+\begin{align}
+  A &= I - (A_L+A_U) , \nonumber \\
+  \bx^{(n+1)} &= \bb + A_L \bx^{(n+1)} + A_U \bx^{(n)} , \implies
+  \begin{cases}
+    N &= I - A_L , \\ P &= A_U ,
+  \end{cases}
+  \label{seidel}
+\end{align}
+%
+where $A_L$ and $A_U$ are respectively the  lower and upper triangular
+parts of $A$ with diagonal elements  set to zero.   Notice that if we
+start computing  the   elements   of $\bx^{(n+1)}$ from     the first,
+i.e.\ from  $x_1^{(n+1)}$, then all the  terms  on the  right hand side
+of~(\ref{seidel}) are known by the time they are used.
+
+\subsubsection{S.O.R. method}
+
+We can interpret the Gauss-Seidel algorithm as a method that applies
+at each guess $\bx^{(n)}$ a correction term $\bc$.  We can rewrite the
+Gauss-Seidel iteration scheme as:
+%
+\begin{align*}
+  && \bx^{(n+1)} & = \bb + A_L \bx^{(n+1)} + A_U \bx^{(n)} \\
+  \implies && \bx^{(n+1)} & = \bx^{(n)} + \left [ \bb + A_L \bx^{(n+1)}
+    + (A_U - I) \bx^{(n)} \right ] \\ 
+  &&             & = \bx^{(n)} + \bc,  
+\end{align*}
+%
+where the correction term is $\bc = \bb + A_L \bx^{(n+1)} + (A_U - I)
+\bx^{(n)}$.  The idea of the S.O.R. (Successive Over-Relaxation)
+method is that the convergence may be pushed to go a bit faster by
+using a slightly larger correction.  In other words, we introduce a
+parameter $\omega > 1$ (\textit{SOR parameter}) that multiplies the
+correction term and write the iteration scheme as
+%
+\begin{align*}
+  \bx^{(n+1)} & =  \bx^{(n)} + \omega \bc \\
+              & =  \bx^{(n)} + \omega
+        \left [ \bb + A_L \bx^{(n+1)} + (A_U - I) \bx^{(n)} \right ].
+\end{align*}
+
+\noindent \textbf{Remark 1} - The introduction of the relaxation
+parameter $\omega$ can speed up convergence, but may also promote
+divergence.    Moreover, it is not clear a priori what is the optimal
+value of $\omega$ to achieve convergence in the smallest number of
+iterations.    A typical choice is to set $\omega$ quite close to one.
+
+
+\subsection{Analysis of convergence}
+
+A concept that is extremely useful in determining the behaviour and
+convergence of many algorithms to solve linear system is that of
+\textit{diagonal dominance}.  A matrix is strictly diagonally dominant
+if the modulus of each diagonal element is greater than the sum of the
+moduli of all the other elements in its row:
+% 
+\begin{equation*}
+  | a_{i i} | > \sum_{\genfrac{}{}{0pt}{}{j=1}{j \ne i}}^n 
+  | a_{i j} |, \qquad (1 \le i \le n) .
+\end{equation*}
+% 
+This may seem a rather peculiar condition to require on a matrix.  As
+a matter of fact, it is not so for many applications of practical
+interest.  For example, most algorithms that solve numerically partial
+differential equations using finite difference methods involve the
+solutions of large linear systems whose matrix of coefficients is
+diagonally dominant.
+
+The importance of diagonally dominance from the point of view of
+direct methods to solve linear systems of equations stems from the
+following theorems:
+
+\begin{theorem}
+If the matrix of the coefficients $A$ is strictly diagonally dominant
+then the Jacobi method converges.
+\end{theorem}
+
+\medskip
+
+\begin{theorem}
+If the matrix of the coefficients $A$ is strictly
+diagonally dominant then the Gauss-Seidel method converges.
+\end{theorem}
+
+\noindent
+\textbf{Remark} - Note that diagonal dominance (i.e.\ the sum can be
+equal to the diagonal element) in itself does not ensure convergence.
+
+\smallskip
+
+\begin{theorem}
+If the matrix of the coefficients $A$ is
+symmetric and positive definite then Gauss-Seidel's method converges.
+\end{theorem}
+
+\noindent
+\textbf{Remark 1} - This theorem does not hold for Jacobi's method.
+
+\noindent
+\textbf{Remark 2} - Convergence theorem for the SOR methods are much
+harder to prove.
+
+\section{Determinants and inverses}
+
+The entire gist of this section on linear systems has been that we may
+not wish to know the inverse or the determinant of the matrix of the
+coefficients in order to solve a linear system of equations.
+However, sometimes we need to know these two quantities.  We can use
+the methods that we have listed to compute them accurately.
+
+The $LU$ decomposition offers the determinant as an easy to obtain side
+product.  If $A = L U$ then
+%
+\begin{equation*}
+  \det(A) = \det(L) \times \det(U).
+\end{equation*}
+%
+In the case of Doolittle's factorisation we have $\det(L) = 1$ and
+therefore
+%
+\begin{equation*}
+\det(A) = \det(U) = \prod_{i=1}^n u_{i i} . 
+\end{equation*}
+%
+If partial pivoting has been used for the Gaussian elimination then
+%
+\begin{equation*}
+  \det(A) = \pm \prod_{i=1}^n u_{i i} , 
+\end{equation*}
+%
+where the sign is positive or negative depending if the number of row
+permutations is even or odd.
+
+\noindent
+\textbf{Remark} - To find the determinant using Gaussian elimination
+requires a number of operations of the order of $n^3$.   The expansion
+in minors requires a number of operations of the order $n!$.
+
+\medskip
+
+Finally, to find the inverse we can solve $n$ systems of $n$ linear
+equations.  Let $\be_i$ denote the vector whose components are all
+zero except the $i$-th component that is, instead, equal to 1.   Let
+$\bc_i$ be the $i$-th column of $A^{-1}$.   Then
+%
+\begin{equation*}
+  A A^{-1} = I \implies A \bc_i = \be_i , \quad i=1,2,\ldots,n.
+\end{equation*}
+%
+Therefore for each value of $i$ we have to solve a system of $n$
+linear equations for the $i$-th column of the inverse of $A$.   This
+method is much faster than Cramer's rule, that requires the evaluation
+of $n+1$ determinants.
+
+\section*{Further reading}
+
+Topics covered here are also covered in
+\begin{itemize}
+\item Chapters 3 and 8 of Linz \& Wang, \textit{Exploring Numerical
+    Methods} (QA297 LIN),
+\item Chapter 4 (and extended through chapter 5) of Kincaid \& Cheney,
+  \textit{Numerical Analysis} (QA297 KIN),
+\item Chapters 2 and 3 of S{\"u}li \& Mayers, \textit{An Introduction
+    to Numerical Analysis} (not in library),
+\item throughout the extremely detailed Golub \& Van Loan,
+  \textit{Matrix Computations} (QA263 GOL).
+\end{itemize}

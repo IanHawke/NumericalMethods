@@ -1,0 +1,87 @@
+% Course notes for Numerical Methods, MATH3018 and MATH6141
+% Updated from the MATH3018 and MATH6111 Numerical Methods notes.
+% Original notes by Giampaolo d'Alessandro
+% Updated by Ian Hawke
+% Rewritten for new syllabus by Ian Hawke
+
+\documentclass[a4paper,12pt]{report}
+
+\usepackage{SULecturePhysics}
+\usepackage{tabularx}
+\usepackage[linktoc=all]{hyperref}
+\usepackage{textcomp}
+
+%\includeonly{Interpolation}
+
+%%%%%%%%%%%%%%%%%%%%
+% Particular theorems
+%%%%%%%%%%%%%%%%%%%%
+%\newtheorem*{ConvThm}{Convolution Theorem}
+%\newcounter
+\newtheorem{Properties}{Properties}
+
+%%%%%%%%%%%%%%%%%%%%
+% A general unnumbered theorem
+%%%%%%%%%%%%%%%%%%%%
+
+%\newtheorem*{thm}{Theorem}
+
+%%%%%%%%%%%%%%%%%%%%
+% Environments used as theorems....
+%%%%%%%%%%%%%%%%%%%%
+\newtheorem{corollary}{Corollary}[chapter]
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{Example}{Example}[chapter]
+%\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+
+\usepackage{color}
+
+%%%%%%%%%%%%%%%%%%%%
+% And here we go
+%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%
+% Title page
+%%%%%%%%%%%%%%%%%%%%
+
+\title{MATH3018 \& MATH6141 \\ Numerical Methods }
+%\author{Dr.~Ian~Hawke\\ Content provided under a \\Creative Commons attribution license, CC-BY 4.0. \\ \textcopyright\ 2014 Ian Hawke.}
+\author{Dr.~Ian~Hawke}
+\date{}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%
+% Table of Contents
+%%%%%%%%%%%%%%%%%%%%
+
+\begin{titlepage}
+%\fancyhf{}
+\newpage
+\mbox{}
+\end{titlepage}
+
+\tableofcontents
+
+\include{Error_analysis}
+
+\include{Linear_equations}
+\include{Nonlinear_equations}
+
+\include{Interpolation}
+
+\include{Quadrature}
+\include{IVP}
+\include{BVP}
+\include{PDE}
+
+\include{Eigenvalues}
+
+\appendix
+\include{KeyMaths}
+
+
+\end{document}

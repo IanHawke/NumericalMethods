@@ -1,0 +1,150 @@
+\chapter{Interpolation}
+
+\section{Introduction}
+
+In numerical methods we often have a limited amount of information about a function, and we want to use that information to estimate, predict or compute additional quantities. For example, we may know (or be able to compute) the values of a function $f(x)$ at two points, say $x_1$ and $x_2$, and want to use this information to estimate the value of the function at a third point $x_3$.
+
+This can be generalized to the idea of \emph{interpolation}. We assume, for example, that we know the value of a function at $N$ points $x_j$, with $j = 0, \dots, N-1$. We want to compute, or estimate, the value of the function at some other point $x$. This problem can be extended to multiple dimensions, or to vector functions component-by-component.
+
+We will see later that interpolation is one way of approaching considerably more complicated problems. For example, we will typically perform interpolation by approximating the function that we are interested in (but do not know how to compute in general), $f$, with a different function $g$ that approximates $f$ (for example, equals $f$ at specific points) and that we can easily compute everywhere. We can then perform \emph{operations} on $g$, and treat them as giving approximately the same results as operations performed on $f$. For example, the integral of $f$ can be approximated by the integral of $g$.
+
+\section{Polynomial interpolation}
+
+We start with the one dimensional problem. We assume we do \emph{not} know anything about the function $f(x)$ except for its values $f_j \equiv f(x_j)$ at the \emph{nodes} $\{ x_j \}$, where $j = 0, \dots, N$. We want to interpolate $f$ to the general location $x$.
+
+To do this we introduce an \emph{interpolating function} $g(x)$. The general form of the function $g$ will be given in advance: here it will be a polynomial,
+%
+\begin{align}
+  g(x) &= c_0 + c_1 x + c_2 x^2 + \dots \\ &= \sum_k c_k x^k.
+\end{align}
+%
+We will then fix the specific form -- that is, the range of the sum, and the value of the constants $\{ c_k \}$ -- by enforcing that $g(x_j) = f_j = f(x_j)$: i.e., the value of the interpolating function equals the value of the function being interpolated at the nodes. As we know $N+1$ pieces of information about the function $f$, we can fix $N+1$ coefficients of the polynomial $g$, meaning the sum should stop at $N$ (thanks to the $0$ power coefficient).
+
+Therefore our interpolation problem becomes: given $f_j \equiv f(x_j)$ at the \emph{nodes} $\{ x_j \}$, where $j = 0, \dots, N$, find the coefficients $c_k$ such that the polynomial
+%
+\begin{equation}
+  g(x) = \sum_{k=0}^{N} c_k x^k
+\end{equation}
+%
+matches $f$ at the nodes, i.e., $f(x_j) = g(x_j)$.
+
+We will use $g$ to interpolate, or approximate, $f$. Therefore we are also interested in the question of how accurately it does so: what is $g(x) - f(x)$?
+
+\subsection{Lagrange polynomials}
+
+The easiest polynomials to work with are the Lagrange basis polynomials. There are $N+1$ of these are polynomials, each of degree $N$, defined by their value at the nodes so that
+%
+\begin{equation}
+  l^{(\ell)}(x_j) = \begin{cases} 1 & x_j = x_\ell \\ 0 & x_j \ne x_\ell \end{cases}.
+\end{equation}
+%
+In words, the $\ell^{\text{th}}$ Lagrange basis polynomial has value $1$ at the $\ell^{\text{th}}$ node and vanishes at all other nodes. This immediately means that
+%
+\begin{equation}
+  g(x) = \sum_{\ell=0}^{N} f(x_{\ell}) l^{(\ell)}(x)
+\end{equation}
+%
+is \emph{an} interpolating polynomial: it is a polynomial of the right degree ($N$), and when evaluated at a node $x_j$ we have
+%
+\begin{align}
+  g(x_j) &= \sum_{\ell=0}^{N-1} f(x_{\ell}) l^{(\ell)}(x) \\
+  &= f_{j}
+\end{align}
+%
+as all the basis functions vanish at all the nodes \emph{except} for the $j^{\text{th}}$ one which has value $1$.
+
+Now that we know that the Lagrange basis functions $l^{(\ell)}(x)$ are what we want, we need an explicit way of constructing them. We know that they must be polynomials, so we can write them as products of the form $(x - a)$. We know that we want them to vanish at all the nodes (except one), so the obvious form of these individual terms would be $(x - x_j)$. Finally, we konw that at the $\ell^{th}$ node we do not want them to vanish (so there should be so term of the form $(x - x_\ell)$), but instead want the value to be one. This gives us the value of the overall scaling constant. From these considerations we see that
+%
+\begin{equation}
+  l^{(\ell)}(x) = \prod_{m=0, m \ne \ell}^{N} \frac{x - x_m}{x_{\ell} - x_m}.
+\end{equation}
+
+\subsection{Low order examples}
+
+Putting everything together we have that $f(x) \simeq g(x)$, where the Lagrange polynomial interpolating function is given by
+%
+\begin{equation}
+  g(x) = \sum_{j=0}^{N-1} f(x_{j}) \prod_{m=0, m \ne j}^{N-1} \frac{x - x_m}{x_j - x_m}.
+\end{equation}
+%
+We can explicitly check the simple examples.
+
+\subsubsection{Linear interpolation}
+
+To get a linear interpolating polynomial we need the interpolating polynomial to have two coefficients (the constant and the linear part), meaning we need $N=1$. Therefore we are assuming we know $f(x)$ at the two nodes $x_0$ and $x_1$.
+
+The Lagrange basis polynomials are
+%
+\begin{align}
+  l^{(0)}(x) &= \frac{x - x_1}{x_0 - x_1}, \\
+  l^{(1)}(x) &= \frac{x - x_0}{x_1 - x_0}.
+\end{align}
+%
+This gives the interpolating polynomial as
+%
+\begin{align}
+  g(x) &= f(x_0) \frac{x - x_1}{x_0 - x_1} + f(x_1) \frac{x - x_0}{x_1 - x_0}, \\
+  &= f(x_0) \left( 1 - \frac{x - x_0}{x_1 - x_0} \right) + f(x_1) \frac{x - x_0}{x_1 - x_0}.
+\end{align}
+%
+The final form of the equation can be written as $g(x) = f_0 (1 - \Delta) + f_1 \Delta$, where $\Delta$ is the distance between $x$ and $x_0$ relative to the distance between $x$ and $x_1$.
+
+\subsubsection{Quadratic interpolation}
+
+For quadratic interpolation we have $N=2$, which requires assuming knowledge of $f(x)$ at $x_0, x_1$ and $x_2$. The Lagrange basis polynomials are
+%
+\begin{align}
+  l^{(0)}(x) &= \frac{(x - x_1)(x - x_2)}{(x_0 - x_1)(x_0 - x_2)}, \\
+  l^{(1)}(x) &= \frac{(x - x_0)(x - x_2)}{(x_1 - x_0)(x_1 - x_2)}, \\
+  l^{(2)}(x) &= \frac{(x - x_0)(x - x_1)}{(x_2 - x_0)(x_2 - x_1)}.
+\end{align}
+%
+This gives the interpolating polynomial as
+%
+\begin{align}
+  g(x) &= f(x_0) \frac{(x - x_1)(x - x_2)}{(x_0 - x_1)(x_0 - x_2)} + f(x_1) \frac{(x - x_0)(x - x_2)}{(x_1 - x_0)(x_1 - x_2)} + f(x_2) \frac{(x - x_0)(x - x_1)}{(x_2 - x_0)(x_2 - x_1)}.
+\end{align}
+%
+In the special case where the points are equally spaced, $x_1 - x_0 = h = x_2 - x_1$, implying that $x_2 - x_0 = 2 h$, and using the coordinate $\hat{x} = x - x_1$, we get
+%
+\begin{equation}
+  g(x) = \frac{1}{2 h^2} \left( f_0 \hat{x} (\hat{x} - h) - 2 f_1 (\hat{x} + h) (\hat{x} - h) + f_2 (\hat{x} + h) \hat{x} \right).
+\end{equation}
+%
+This particular form is useful for integration and differentiation. For example,
+%
+\begin{align}
+  \eval{\dv{g}{x}}_{x = x_1} &= \eval{\dv{g}{x}}_{\hat{x} = 0} \\
+  &= \left. \frac{1}{2 h^2} \left( f_0 (2 \hat{x} - h) - 2 f_1 (2 \hat{x}) + f_2 (2 \hat{x} + h) \right) \right|_{\hat{x} = 0} \\
+  &= \frac{1}{2 h} \left( f_2 - f_0 \right).
+\end{align}
+
+\section{Accuracy}
+
+We want to know how close the interpolating polynomial $g(x)$ gets to the function $f$ that it is interpolating: that is, we want to know the size of the error $e(x) = f(x) - g(x)$. As $f$ is completely general, we will never know this exactly: however, we can make some general points.
+
+First, we have explicitly chosen $g$ such that it agrees with $f$ at all of the nodes. That means the error must have the form
+%
+\begin{equation}
+  e(x) = f(x) - g(x) = F(x) \prod_{j=0}^N (x - x_j).
+\end{equation}
+%
+That is, the error function vanishes at the nodes, $e(x_j) \equiv 0$.
+
+Second, we note that at any fixed point $X$, we can use a Taylor series expansion that matches the terms in the polynomial $g$. That is (under some assumptions), there is a value $\xi$ such that
+%
+\begin{equation}
+  e(X) = f(X) - g(X) = \frac{1}{(N+1)!} \eval{\dv[N+1]{f}{x}}_{x=\xi} \prod_{j=0}^N (X - x_j).
+\end{equation}
+%
+The precise form matters less than the interpretation. The important point is that the error depends on (a) the magnitude of the derivative of the function being interpolated, and (b) the magnitude of the product $\prod_{j=0}^N (x - x_j)$. The first cannot be controlled except by changing $N$. The second can be controlled both by changing $N$ and by changing the location of the nodes.
+
+We focus on the term $|\prod_{j=0}^N (x - x_j)|$. If we make the nodes equally spaced then each term $x - x_j \propto h$, where $h = x_{j+1} - x_j$. This means the error is $e(x) \propto h^{N+1}$ and we expect the error to decay rapidly if $h$ is sufficiently small. In particular this implies that the larger $N$ is, the faster the error will decay as we make $h$ smaller. Whilst this is usually true, by ignoring the other terms in the error we may be ignoring larger errors, and even ones that grow: the Runge phenomenon is one example of this.
+
+We also note (without proof!) that we can reduce the error by \emph{not} choosing the nodes to be equally spaced. For example, if we restrict the nodes to lie within $(-1, 1)$, by choosing the Chebyshev nodes
+%
+\begin{equation}
+  x_j = \cos \left( \frac{2 j + 1}{2 (N + 1)}) \pi \right)
+\end{equation}
+%
+the error $e(x)$ will behave as $e(x) \propto 2^{-N} / N!$. Using appropriate non-equally spaced nodes is often better in terms of accuracy, but may be more work to set up for integration and differentiation.

@@ -1,0 +1,863 @@
+
+\chapter[Eigenvalues]{Eigenvalues}
+
+\section{Introduction}
+
+The eigenvalues and eigenvectors of a matrix are of fundamental
+importance in many matrix problems: for example, in matrix
+descriptions of physical models they often represent fundamental
+physical quantities, like the energy levels of an atom or the
+frequency of vibrations of a string.  In numerical analysis problems,
+the eigenvalues determine the convergence conditions of many
+iterations schemes, like Jacobi and Gauss-Seidel.
+
+It is, therefore, important to be able to compute quickly and
+accurately the eigenvalues and, eventually, the eigenvectors of a
+square matrix.  This is an apparently simple problem that could be
+tackled using standard nonlinear equations techniques.  In fact, the
+eigenvalues $\lambda$ of a $n \times n$ square matrix $A$ are the $n$
+roots of the characteristic polynomial of $A$,
+%
+\begin{equation*}
+ \text{det}(A - \lambda \text{Id}) = 0 .
+\end{equation*}
+%
+We could envisage using a root finding algorithm to detect all the
+roots of the polynomial and, hence, all the eigenvalues of the matrix
+$A$.  This is the procedure that is used in analytical calculations
+when finding the eigenvalues of small ($2 \times 2$ or $3 \times 3$)
+matrices.  However, roots of high order polynomials may be very
+sensitive to the values of the coefficients: therefore, all the
+unavoidable numerical errors involved in the lengthy calculation of
+the coefficients of the characteristic polynomial of $A$ may well be
+amplified at the stage of computing the roots and produce estimates
+that bear very little relation to the eigenvalues of $A$.
+
+\begin{Example}
+  Polynomials may be badly conditioned, in the sense that a small
+  change in the values of just one coefficient changes considerably
+  the values of the roots.
+\end{Example}
+
+Consider the polynomial
+%
+\begin{align*}
+ p(z) &= (z-1)\,(z-2)\,(z-3)\,(z-4)\,(z-5) \\
+      &= -120 + 274 z - 225 z^2 + 85 z^3 - 15 z^4 + z^5 . 
+\end{align*}
+%
+The roots of this fifth order polynomial are quite obviously
+$\{1,2,3,4,5\}$.  The roots of
+%
+\begin{equation*}
+  p(z) = -120 + 274 z - 225 z^2 + 85 z^3 - 15 z^4 + 1.01 z^5 
+\end{equation*}
+%
+are $\{ 0.999, 2.067, 2.624, 4.580 \pm 0.966 \, i \, \}$ . \hfill
+\rule{3mm}{3mm} 
+
+\smallskip
+
+It is therefore necessary to develop techniques to identify the
+eigenvalues of a matrix $A$ that do not rely on finding the roots of
+the characteristic polynomial.
+
+If we are interested in just a few eigenvalues then we can use one of
+the many variations of the \textit{power method}.  Obtaining the full
+spectrum is a much harder problem; an efficient algorithm to do so,
+the $QR$-algorithm, was developed by J.G.F. Francis in 1961.  We
+describe the power method first and give a relatively simple account
+of the $QR$-algorithm after.  The chapter is based in its entirety on
+the book by Kincaid and Cheney (chapter 5).%~\cite[Ch.~5]{kincaid96a}.
+
+\section{The power method}
+
+\subsection{The method}
+
+The power method is an iterative procedure designed to compute the
+dominant eigenvalue of a matrix and its corresponding eigenvector.
+The method is based on two assumptions:
+
+\begin{enumerate}
+  % 
+\item There is a single eigenvalue of maximum modulus.
+  % 
+\item There is a linearly independent set of $n$ eigenvectors, where
+  $n$ is the size of the matrix.
+  % 
+\end{enumerate}
+
+According to the first assumption the eigenvalues of $A$ can be
+labelled so that
+%
+\begin{equation*}
+ |\lambda_1| > | \lambda_2 | \ge | \lambda_3 | \ge \ldots |\lambda_n|
+\end{equation*}
+%
+According to the second assumption there is a basis of eigenvectors
+$\{\bu_1, \bu_2, \ldots, \bu_n\}$ in $\bCn$ such that:
+%
+\begin{equation*}
+ A \bu_j = \lambda_j \bu_j , \qquad 1 \le j \le n .
+\end{equation*}
+
+To start the iteration we need to define an initial vector $\bx^{(0)}$
+and we have to require that its component along the eigenvector
+$\bu_1$ is not zero:
+%
+\begin{equation*}
+ \bx^{(0)} = \sum_{j=1}^n a_j \bu_j , \qquad a_1 \neq 0 .
+\end{equation*}
+%
+Consider now the vector
+%
+\begin{equation*}
+ \bx^{(k)} = A \bx^{(k-1)} = \ldots = A^k \bx^{(0)}.
+\end{equation*}
+%
+Its decomposition on the basis of the eigenvectors is
+%
+\begin{equation*}
+ \bx^{(k)} = \sum_{j=1}^n \lambda_j^k \bu_j = 
+             \lambda_1^k \left [ a_1 \bu_1 + 
+             \left ( \frac{\lambda_2}{\lambda_1} \right )^k a_2 \bu_2 +
+             \left ( \frac{\lambda_3}{\lambda_1} \right )^k a_3 \bu_3 +
+             \ldots
+             \left ( \frac{\lambda_n}{\lambda_1} \right )^k a_n \bu_n 
+              \right ] .
+\end{equation*} 
+%
+We note that all the terms $\lambda_j/\lambda_1$, $j=2,3,\ldots,n$,
+have modulus strictly smaller than one.  We can write this expression
+as
+%
+\begin{equation}
+  \bx^{(k)} = \lambda_1^k ( a_1 \bu_1 + \boldsymbol{\varepsilon}^{(k)} )
+  \label{eq:Ev3}
+\end{equation}
+%
+where 
+%
+\begin{equation}
+  \boldsymbol{\varepsilon}^{(k)} \equiv  \sum_{j=2}^n 
+  \left ( \frac{\lambda_j}{\lambda_1} \right )^k a_j \bu_j
+  \label{eq:Ev5}
+\end{equation}
+%
+is such that
+%
+\begin{equation}
+  \| \boldsymbol{\varepsilon}^{(k)} \| = 
+  O \left ( \left | \frac{\lambda_j}{\lambda_1} \right |^k \right )
+  \implies 
+  \lim_{k \to \infty} \| \boldsymbol{\varepsilon}^{(k)} \| = 0.
+  \label{eq:Ev2}
+\end{equation}
+%
+As we have assumed that $a_1 \neq 0$ we can write
+%
+\begin{equation}
+  \bx^{(k)} = \lambda_1^k a_1 \bu_1 + 
+  O \left ( \left | \frac{\lambda_2}{\lambda_1} \right |^k \right ) .
+  \label{eq:Ev6}
+\end{equation}
+%
+This expression is at the heart of the power method: at each iteration
+the vector $\bx^{(k)}$ aligns itself more and more along the
+eigenvector $\bu_1$ and is multiplied by a (complex) number that gets
+closer and closer to the eigenvalue $\lambda_1$.  In order to obtain a
+quantitative estimate of the eigenvalue we need to pass from vectors
+to numbers. As a simple example, we define the ratio
+%
+\begin{equation*}
+ r_k = \frac{\| \bx^{(k+1)} \|}{\| \bx^{(k)} \|} = | \lambda_1 | 
+        \frac{\| a_1 \bu_1 + \boldsymbol{\varepsilon}^{(k+1)} \|}
+             {\| a_1 \bu_1 + \boldsymbol{\varepsilon}^{(k)} \|} .
+\end{equation*}
+%
+Using equation~(\ref{eq:Ev2}) we then have that
+%
+\begin{equation*}
+ \lim_{k \to \infty} r_k = | \lambda_1 | .
+\end{equation*}
+
+\noindent
+Therefore, a first approximate algorithm to implement the power method
+is as follows:
+
+\begin{enumerate}
+  % 
+\item Chose an initial vector $\bx^{(0)}$ such that its component
+  along $\bu_1$ is not zero.
+  % 
+\item From the vector at iteration $k$, $\bx^{(k)}$, compute the
+  vector at iteration $k+1$, $\bx^{(k+1)} = A \bx^{(k)}$.
+  % 
+\item Compute the ratio $r_k = \| \bx^{(k+1)}\|/\| \bx^{(k)} \|$.
+  % 
+\item If the ratio $r_k$ has converged to $| \lambda_1|$ stop;
+  otherwise repeat from step 2.
+  % 
+\end{enumerate}
+
+\noindent 
+\textbf{Remark 1} - In practice, it is impossible to know a priori
+that the vector $\bx_0$ satisfies the condition that its component
+along $\bu_1$ is not zero.  However, a random choice of vector will,
+with great probability, satisfy it.  In general, however, this is a
+moot point: numerical errors will always induce a non-zero coefficient
+$a_1$ that will be amplified at each iteration and the method will
+ultimately converge to the dominant eigenvalue.
+
+\smallskip
+
+\noindent
+\textbf{Remark 2} - From equation~(\ref{eq:Ev3}) we see that $\|
+\bx^{(k)} \| \simeq | \lambda_1|^k$.  Therefore if $| \lambda_1 | > 1$
+we have that $\| \bx^{(k)} \| \to \infty$ as $k \to \infty$.  This may
+induce an overflow problem for sufficiently large $k$.  If, on the
+other hand, $| \lambda_1 | < 1$, then $\| \bx^{(k)} \| \to 0$ as $k
+\to \infty$.  This may induce an underflow problem for sufficiently
+large $k$.  To avoid either pitfall it is convenient to normalise the
+vectors $\bx^{(k)}$ at each iteration (or after a small number of
+iterations).  A suitable algorithm is:
+
+\begin{enumerate}
+  % 
+\item Chose an initial vector $\bx^{(0)}$ such that its
+  component along $\bu_1$ is not zero and $\| \bx^{(0)} \| = 1$.
+  % 
+\item From the vector at iteration $k$, $\bx^{(k)}$, compute the
+  vector at iteration $k+1$, $\bx^{(k+1)} = A \bx^{(k)}$.
+  % 
+\item Compute  $r_k = \| \bx^{(k+1)}\|$ and assign $\|
+  \bx^{(k+1)}\|/r_k \to \| \bx^{(k+1)}\|$.
+  % 
+\item If the ratio $r_k$ has converged to $|\lambda_1|$ stop;
+  otherwise repeat from step 2.
+  % 
+\end{enumerate}
+
+\smallskip
+
+\noindent
+\textbf{Remark 3} - The method as described so far returns only the
+modulus of the eigenvalue.  However, it is fairly simple to modify it
+so that it returns the eigenvalue itself.  We lose information on the
+phase of the eigenvalue when we compute the ratio $r_k$ using the norm
+of $\| \bx^{(k+1)}\|$ and $\| \bx^{(k)}\|$. We could use, instead, a
+linear function $\phi$ from $\bC^n \to \bC$, that is, $\phi(\alpha \bx
++ \beta \by) = \alpha \phi(\bx) + \beta \phi(\by)$. (Note that
+$\|\bx\|$ is not linear!)  A possible choice for $\phi(\bx)$ is, for
+example, the sum of the components of $\bx$.  We can define the ratio
+$r_k$ in terms of the functional $\phi(\bx)$ as
+%
+\begin{equation}
+ r_k = \frac{\phi( \bx^{(k+1)} )}{\phi(\bx^{(k)})} = \lambda_1 
+        \frac{a_1 \phi(\bu_1) + \phi(\boldsymbol{\varepsilon}^{(k+1)})}
+             {a_1 \phi(\bu_1) + \phi(\boldsymbol{\varepsilon}^{(k)})} .
+ \label{eq:Ev7}
+\end{equation}
+%
+Using equation~(\ref{eq:Ev2}) and the fact that $\lim_{\| \bx \| \to
+  0} \phi(\bx) = 0$ we then have that
+%
+\begin{equation*}
+ \lim_{k \to \infty} r_k = \lambda_k.
+\end{equation*}
+%
+The algorithm that implements this scheme is as follows:
+
+\begin{enumerate}
+  % 
+\item Chose an initial vector $\bx^{(0)}$ such that its
+  component along $\bu_1$ is not zero.
+  % 
+\item At each iteration $k=0,1,2,\ldots$ compute $d_k = \|
+  \bx^{(k)}\|$ and assign $\| \bx^{(k)}\|/d_k \to \| \bx^{(k)}\|$.
+  % 
+\item From the vector at iteration $k$, $\bx^{(k)}$, compute the
+  vector at iteration $k+1$, $\bx^{(k+1)} = A \bx^{(k)}$.
+  % 
+\item Compute  $r_k = \phi(\bx^{(k+1)})/\phi(\bx^{(k)})$.
+  % 
+\item If the ratio $r_k$ has converged to $\lambda_1$ stop;
+  otherwise repeat from step 2.
+  % 
+\end{enumerate}
+
+\subsection{Rate of convergence}
+
+We now show that the power method converges linearly.  We define $\mu
+= {\lambda_2}/{\lambda_1}$.  This parameter controls the convergence
+rate of the method.  We apply Taylor's theorem to
+equation~(\ref{eq:Ev7}) and use equation~(\ref{eq:Ev2}) to obtain
+%
+\begin{equation*}
+ r_k = \lambda_1 
+        \frac{a_1 \phi(\bu_1) + \phi(\boldsymbol{\varepsilon}^{(k+1)})}
+             {a_1 \phi(\bu_1) + \phi(\boldsymbol{\varepsilon}^{(k)})} 
+     = \lambda_1 
+        \left [ 1 - \frac{\phi (\boldsymbol{\varepsilon}^{(k)} )}{a_1 \phi(\bu_1)}\right ] \,
+        + O(\mu^{k+1}) .
+\end{equation*}
+%
+Therefore the relative error of the approximation, defined as
+%
+\begin{equation}
+  \epsilon^{(k)} \equiv \left |
+    \frac{r_k - \lambda_1}{\lambda_1} \right | ,
+  \label{eq:Ev4}
+\end{equation}
+%
+is given by
+%
+\begin{equation}
+  \epsilon^{(k)} = 
+  \left | \frac{\phi (\boldsymbol{\varepsilon}^{(k)} )}{a_1 \phi(\bu_1)} \right|  + O(\mu^{k+1}) =  c_k \mu^k 
+  \label{eq:Ev9}
+\end{equation}
+%
+where $\{c_k\}$ is a bounded sequence.  Note that this equation
+implies that $\epsilon^{(k)} \propto \mu \epsilon^{(k+1)}$, i.e. that
+the rate of decrease of the error is linear.  In fact one can show
+that
+%
+\begin{equation*}
+  \frac{r^{(k+1)} - \lambda_1}{\lambda_1} = (c + \delta_k) 
+  \frac{r^{(k)} - \lambda_1}{\lambda_1} 
+\end{equation*}
+%
+where $|c| < 1$ and $\lim_{k \to \infty} \delta_k = 0$.
+
+\smallskip
+
+\smallskip
+
+\noindent \textbf{Remark 1} - The condition that there should be a
+single eigenvalue of maximum modulus should be qualified.  If the
+eigenvalue is multiple then the power method will converge to it, but
+it will not be able to return the eigenvectors associated to the
+(multiple) eigenvalue; it will just return a random vector in the
+eigenspace of the eigenvalue of maximum modulus.  If, on the other
+hand, the matrix has distinct eigenvalues all with the same maximum
+modulus (a rather common situation in problems with symmetry), the
+method may fail to converge.
+
+\smallskip 
+
+\noindent \textbf{Remark 2} - The convergence can be improved using
+Aitken's acceleration, a technique similar to Richardson's
+extrapolation  that uses the fact that the error decreases linearly to
+improve the convergence.
+
+\subsection{Variations on the power method}
+
+\subsubsection{The inverse power method}
+
+We can use a variation of the power method, called the \textit{inverse
+power method}, to compute the smallest eigenvalue of a non singular
+(and well conditioned) matrix.  The algorithm is based on the result
+of linear algebra that if $\lambda$ is an eigenvalue of a nonsingular
+matrix $A$, then $\lambda^{-1}$ is an eigenvalue of $A^{-1}$.
+
+We assume as before that the eigenvectors of $A$ form a basis for
+$\bC^n$, but we now require that the eigenvalue of smallest modulus is
+isolated, i.e. that we can label the eigenvalues of $A$ so that
+%
+\begin{equation*}
+  |\lambda_1| \ge |\lambda_2| \ge \ldots \ge |\lambda_{n-1}| > 
+  |\lambda_n| > 0 .
+\end{equation*}
+%
+Therefore the eigenvalues of $A^{-1}$ are ordered as
+%
+\begin{equation*}
+  |\lambda_n^{-1}| > |\lambda_{n-1}^{-1}| \ge \ldots \ge 
+  |\lambda_{1}^{-1}| > 0 .
+\end{equation*}
+%
+We are now in the position to compute $\lambda_n^{-1}$ using the power
+method applied to $A^{-1}$.
+
+\smallskip
+
+\noindent
+\textbf{Remark} - It is \underline{not} a good idea to compute
+$A^{-1}$ first and then use $\bx^{(k+1)} = A^{-1} \bx^{(k)}$.   It is
+better to obtain $\bx^{(k+1)}$ by solving the linear system
+%
+\begin{equation*}
+  A \bx^{(k+1)} = \bx^{(k)} 
+\end{equation*}
+%
+using an efficient (and accurate) linear solver.   The $LU$
+decomposition is an excellent candidate for this problem.
+
+\subsection{The shifted inverse power method}
+
+The shifted inverse power method is used to compute the eigenvalue of
+$A$ closest to a given complex number $\nu$.   Suppose that there is a
+real number $\epsilon$ such that there is only one eigenvalue of $A$, 
+$\lambda_j$, such that
+%
+\begin{equation}
+  |\lambda_j - \nu| \le \epsilon \quad \text{and} \quad
+  |\lambda_i - \nu| > \epsilon \; \forall \, i \ne j.
+  \label{eq:Ev10}
+\end{equation}
+
+Consider now the ``shifted'' matrix $A - \nu \text{Id}$: its
+eigenvalues are given by $\lambda_i - \nu$.  Equation~(\ref{eq:Ev10})
+implies that we can find $\lambda_j - \nu$ by applying the inverse
+power method to the matrix $A - \nu \text{Id}$.  This algorithm is
+called the shifted inverse power method.
+
+\section{The \texorpdfstring{$QR$}{QR}-algorithm}
+
+\subsection{Introduction}
+
+The methods to compute the full spectrum of a matrix are based on the
+idea that finding the eigenvalues is an easy problem for certain
+classes of matrices, e.g. diagonal and triangular matrices: their
+eigenvalues are the elements along the diagonal.  The trick
+is to find operations that transform a matrix in an ``easy'' form
+while not altering the spectrum.    The first step in doing so is to
+identify classes of matrices that have the same spectrum and classes
+of operations that do not alter the spectrum.
+
+\begin{definition}
+Two square matrices are similar if there exists a nonsingular matrix
+$P$ such that $B = P A P^{-1}$.   We say that $B$ is obtained from $A$
+using a similarity transformation.   If $P$ is unitary, i.e. $P =
+P^\dagger$, the two matrices are unitary similar.
+\end{definition}
+
+\begin{theorem}
+  \label{thr:1}
+  Similar matrices have the same eigenvalues.
+\end{theorem}
+\noindent 
+\textbf{Proof}
+
+\begin{equation*}
+  A \bx = \lambda \bx \quad \Leftrightarrow \quad
+  (P A P^{-1}) (P \bx) = P A \bx = \lambda (P \bx).
+\end{equation*}
+So if $\bx$ is an eigenvector of with eigenvalue $\lambda$ then $A$ $P
+\bx$ is an eigenvector of $P A P^{-1}$ with the same
+eigenvalue. Moreover, $P$ provides a bijection between the
+eigenvectors of $A$ and the eigenvectors of $P A P^{-1}$. \hfill
+\rule{3mm}{3mm}
+
+\noindent
+In other words, similar matrices have the same spectrum and similarity
+transformations do not change the spectrum of a matrix.
+
+\subsection{Schur's theorem}
+
+Theorem~\ref{thr:1} suggests a strategy to find the eigenvalues of
+matrix: find a similarity transformation $B = P A P^{-1}$ such that
+$B$ is triangular.  The following theorem states that this strategy is
+always (theoretically) possible.
+
+\begin{theorem}[Schur]
+  Every square matrix is unitary similar to a triangular matrix.
+\end{theorem}
+
+\noindent
+In order to prove this theorem we need the following two lemmas. In
+the remainder of this section, we always use the inner product
+$(\bu,\bv)=\bu^\dagger\bv$ on $\bC^n$ and the associated norm
+$\|\bu\|=\sqrt{\bu^\dagger\bu}$.
+
+\begin{lemma}
+  \label{ax:1}
+  The matrix $\Id - \bu \bu^{\dagger}$ is unitary if and only if
+  $\|\bu\| = \sqrt{2}$ or $\bu=0$.
+\end{lemma}
+\noindent 
+\textbf{Proof}
+
+\begin{equation*}
+  (\Id - \bu \bu^{\dagger})(\Id - \bu \bu^{\dagger})^\dagger
+  = (\Id - \bu \bu^{\dagger})^2 = \Id - 2 \bu \bu^{\dagger}
+  + \bu \bu^{\dagger} \bu \bu^{\dagger}
+  = \Id +(\bu^{\dagger} \bu - 2) \bu \bu^{\dagger}
+\end{equation*}
+\null \hfill \rule{3mm}{3mm}
+
+\begin{lemma}
+  \label{ax:2}
+  Let $\bx$ and $\by$ be two vectors such that $\|\bx\| = \|\by\|$ and
+  $(\bx,\by)$ is real.  Then there exists an unitary matrix $U = \Id -
+  \bu \bu^{\dagger}$ such that $U \bx = \by$.  The vector $\bu$ is
+  given by:
+  \begin{equation*}
+    \bu = \sqrt{2} \frac{\bx - \by}{\|\bx - \by\|} .
+  \end{equation*}
+\end{lemma}
+\noindent 
+\textbf{Proof}
+
+\begin{align*}
+  U \bx &= \left(\Id - \frac{2}{\|\bx - \by\|^2}(\bx - \by)(\bx - \by)^\dagger
+  \right) \bx \\
+  &= \bx - \frac{2 (\|\bx\|^2 - (\by,\bx))}{
+    \|\bx\|^2 - (\bx,\by) - (\by,\bx) + \|\by\|^2} (\bx - \by) = \by
+\end{align*}
+\null \hfill \rule{3mm}{3mm}
+
+\noindent
+\textbf{Remark} - The matrix $U$ is called a \textit{Householder
+  reflection} and its action can be interpreted geometrically as:
+``the vector $\by$ can be obtained by reflecting the vector $\bx$ with
+respect to a plane orthogonal to the vector $\bu$''.
+
+\noindent 
+\textbf{Proof of Schur's theorem} - We prove this theorem for two
+reasons: firstly, the proof is an example of the techniques used to
+transform a given matrix in an ``easy'' matrix.  Secondly, the proof
+clearly shows why this theorem is of little practical use.
+
+In a nutshell the proof consists in constructing a succession of
+unitary transformations that change the given $n \times n$ matrix $A$
+in upper triangular form, one row and column at a time.
+
+The proof of the theorem is by induction on the size $n$ of the
+matrix.  The theorem is clearly true for $n=1$.  We now suppose that
+it is true for all matrices of order $n-1$ and prove that it must also
+hold for any matrix $A$ of order $n$.  The idea of the proof is to use
+Lemma~\ref{ax:2} to find a unitary transformation $U$ that acts on the
+first column of $A$ and transforms it in a scalar multiple of the
+vector $\be_1 = (1,0,0,\ldots,0)$, i.e.
+%
+\begin{equation}
+  U \left ( \begin{array}{c|ccc}
+      a_{1 1} & a_{1 2} & \ldots & a_{1 n} \\ \hline
+      a_{2 1} & a_{2 2} & \ldots & a_{2 n} \\
+      \vdots & & \ddots & \\
+      a_{n 1} & a{_n 2} & \ldots & a_{n n} \\ 
+    \end{array} \right ) U^{\dagger} =
+  \left ( \begin{array}{c|ccc}
+      \mu & & \bw & \\ \hline
+      0 & & & \\
+      \vdots & & A_{n-1} & \\
+      0 & & & \\ 
+    \end{array} \right )
+  \label{eq:Ev13}
+\end{equation}
+% 
+where $A_{n-1}$ is an $(n-1) \times (n-1)$ matrix, $\bw$ is a row
+vector of dimension $n-1$ and $\mu$ is a number.  Unfortunately, in
+order to build the transformation matrix $U$ we need one eigenvalue
+$\lambda$ of $A$ with the corresponding eigenvector $\bv=(v_1, v_2,
+\ldots, v_n)$, chosen such that $\| \bv \|=1$.  Following
+Lemma~\ref{ax:2} we define the (complex) number
+%
+\begin{equation*}
+  \beta =
+  \begin{cases}
+    \dfrac{v_1}{|v_1|} & v_1 \neq 0 \\*[4mm] 1 & v_1 = 0
+  \end{cases}
+\end{equation*}
+%
+and the vector 
+%
+\begin{equation*}
+  \bu = \frac{\sqrt{2}}{\|\bv - \beta \be_1\|} (\bv - \beta \be_1) .
+\end{equation*}
+%
+Note that $(\bv, \beta \be_1) = v_1^{*} v_1/|v_1|=|v_1| \in \bR$ and
+that $\|\bv\| = \|\beta \be_1\| = 1$ so that both the hypotheses of
+Lemma~\ref{ax:2} are satisfied.  Therefore, the matrix
+%
+\begin{equation}
+  U = \text{Id} - \bu \bu^{\dagger}
+  \label{eq:Ev11}
+\end{equation}
+%
+is unitary and such that 
+%
+\begin{equation}
+  U \bv = \beta \be_1 \implies U^{\dagger} \be_1 = \frac{1}{\beta} \, \bv .
+  \label{eq:Ev12}
+\end{equation}
+%
+The matrix defined by this equation is the transformation required
+for~(\ref{eq:Ev13}) to be valid.  To verify that this is the case we
+note that the product of any $n \times n$ matrix with $\be_1$ is its
+first column vector.  We therefore proceed to verify that the first
+column vector of $U A U^{\dagger}$ is a scalar multiple of $\be_1$:
+%
+\begin{equation*}
+  U A U^{\dagger} \, \be_1 = U A \, \frac{1}{\beta} \bv =
+  \frac{1}{\beta} U \lambda \bv = \frac{\lambda}{\beta} U \bv = 
+  \lambda \be_1 .
+\end{equation*}
+%
+Hence the application of $U$ defined in~(\ref{eq:Ev11}) to $A$ reduces
+this matrix to the form~(\ref{eq:Ev13}) with $\mu = \lambda$.
+
+To complete the proof we note that by the induction hypothesis there
+is a unitary matrix $Q_{n-1}$ such that $Q_{n-1} A_{n-1}
+Q^{\dagger}_{n-1}$ is triangular.  Therefore, the unitary
+transformation that reduces $A$ to triangular form is
+%
+\begin{equation*}
+  V = 
+  \left ( \begin{array}{c|ccc}
+      1 & & 0 \ldots 0 & \\ \hline
+      0 & & & \\
+      \vdots & & Q_{n-1} & \\
+      0 & & & \\ 
+    \end{array} \right ) \, U 
+\end{equation*}
+\null \hfill \rule{3mm}{3mm}
+
+\smallskip
+
+\noindent
+At each step of the proof we assume that the eigenvalues exist and use
+them, but we do not address the question of how to compute them.  In
+other words, if we know the eigenvalues then we can apply the method
+described in the proof to find the unitary transformation required to
+put $A$ in upper triangular form.  However, if we do not know them we
+cannot apply the procedure and we are no nearer to solving the
+original eigenvalue problem.
+
+\noindent 
+\textbf{Remark} - One could think of using the power method to find
+one eigenvalue of $A$ and thus build $U$ and $A_{n-1}$, and then apply
+the same trick to $A_{n-1}$ and so on.  This method is called
+\textit{deflation} and it works, but is rather sensitive to numerical
+errors.
+
+\begin{corollary}
+  Every Hermitian matrix is unitary similar to a diagonal matrix.
+\end{corollary}
+
+\noindent
+\textbf{Proof} - If $A$ is Hermitian then $A = A^{\dagger}$.  Let $U$
+be the unitary matrix such that $U A U^{\dagger}$ is upper triangular.
+Then $(U A U^{\dagger})^{\dagger}$ is lower triangular.  But
+%
+\begin{equation*}
+  (U A U^{\dagger})^{\dagger} = 
+  (U^{\dagger})^{\dagger} A^{\dagger} U^{\dagger} = 
+  U A U^{\dagger} .
+\end{equation*}
+% 
+Thus, the matrix $U A U^{\dagger}$ is both upper and lower triangular;
+hence, it must be a diagonal matrix.
+
+\subsection{Householder's \texorpdfstring{$QR$}{QR}-factorisation}
+
+In order to introduce the $QR$-algorithm of Francis to find the
+eigenvalues of a matrix, we must first take a detour and discuss
+\textit{orthogonal factorisations} of a matrix.  An orthogonal
+factorisation consists in writing a given matrix $A$ as the product of
+other matrices, some of which are orthogonal.  The most useful
+orthogonal factorisation if the $QR$-factorisation developed by Alston
+Householder: its objective is to factor an $m \times n$ matrix $A$
+into a product
+%
+\begin{equation}
+  A = Q \, R
+  \label{eq:Ev15}
+\end{equation}
+%
+where $Q$ is an $m \times m$ unitary matrix and $R$ is an $m \times n$
+upper triangular matrix.
+
+The $QR$-factorisation is used not only to find the eigenvalues of a
+matrix, but also to solve least-squares problems and ill-posed
+problems.  The algorithm produces the factorisation
+%
+\begin{equation}
+  Q^{\dagger} A = R
+  \label{eq:Ev16}
+\end{equation}
+%
+where $Q^{\dagger}$ is built step by step as the product of unitary
+matrices that at step $k=0,1,\ldots,m-1$ have the form
+%
+\begin{equation}
+  U_k =
+  \begin{pmatrix}
+    \Id_{k-1} & 0 \\ 0 & \Id_{m-k+1} - \bu \bu^{\dagger}
+  \end{pmatrix},
+  \quad k = 1,2, \ldots, n-1,
+  \label{eq:Ev17}
+\end{equation}
+% 
+with $\Id_k$ the $k \times k$ identity matrix and $\bu \in
+\bC^{m-k+1}$.  These matrices are called \textit{reflections} or
+\textit{Householder transformations}: the aim of each of them is to
+transform the matrix $A$ into a matrix that looks more and more like
+$R$, in a similar way that a triangular matrix is constructed in the
+proof of Schur's theorem.
+
+At the first step we wish to determine a vector $\bu \in \bC^m$ such
+that $\Id_m - \bu^{\dagger} \bu$ is unitary and $(\Id_m -
+\bu^{\dagger} \bu) A$ has first column of the form suitable for an
+upper triangular matrix, i.e. of the type $(\beta, 0, \ldots, 0)^T$.
+We indicate with $\ba_1$ the first column of $A$ and with $\be_1$ the
+vector $(1,0,\ldots,0)$.  Following Lemma~\ref{ax:2} we define the
+(complex) number
+%
+\begin{equation*}
+  \beta =
+  \begin{cases}
+    -\dfrac{a_{11}}{|a_{11}|} \|\ba_1\|_2 & a_{11} \neq 0 \\*[4mm]
+    \| \ba_1 \|_2 & a_{11} = 0
+  \end{cases}
+\end{equation*}
+%
+and the vector 
+%
+\begin{equation*}
+  \bu = \frac{\sqrt{2}}{\|\ba_1 - \beta \be_1\|} (\ba_1 - \beta \be_1) .
+\end{equation*}
+% 
+By Lemma~\ref{ax:2} the matrix 
+% 
+\begin{equation}
+  U_1 = \text{Id} - \bu \bu^{\dagger}
+  \label{eq:Ev18}
+\end{equation}
+% 
+is unitary and such that 
+% 
+\begin{equation}
+  U_1 \ba_1 = \beta \be_1 .
+  \label{eq:Ev19}
+\end{equation}
+% 
+Using the unitary matrix $U$ defined in equation~(\ref{eq:Ev18}) we
+have that the matrix $U_0 A$ has form:
+%
+\begin{equation*}
+  U_1 A = 
+  \left ( \begin{array}{c|ccc}
+      \beta & & \bw_1 & \\ \hline
+      0 & & & \\
+      \vdots & & \tilde{A_1} & \\
+      0 & & & \\ 
+    \end{array} \right )  \equiv R_1
+\end{equation*}
+% 
+We can now repeat the same procedure for the first column of the
+matrix $A_1$ and build the unitary operator $U_k$ defined in
+equation~(\ref{eq:Ev17}) with $k=2$ and so on.  At stage $k$ in the
+process, we shall have multiplied $A$ on the left by $k$ unitary
+matrices and the result will be a matrix having its first $k$ columns
+of the correct form, i.e. with $0$'s below the diagonal:
+%
+\begin{equation*}
+  U_k \, U_{k-1} \, U_{k-2} \, \ldots \, U_1 A = 
+  \left ( \begin{array}{c|c} J & H \\ \hline 0 & W \end{array} \right )
+\end{equation*}
+% 
+where $J$ is an upper triangular $k \times k$ matrix, $0$ is an $(m-k)
+\times k$ null matrix, $H$ is $k \times (n-k)$ and $W$ is $(m-k)
+\times (m-k)$.
+
+The process terminates at $k=(n-1)$ when $R_{n-1}$ is in the correct
+form for equation~(\ref{eq:Ev15}), i.e. $R= R_{n-1}$.  Moreover,
+% 
+\begin{equation*}
+  Q^{\dagger} = U_{n-1} \ldots U_{1} \implies
+  Q = U_1 \ldots U_{n-1} .
+\end{equation*}
+
+\subsection{The \texorpdfstring{$QR$}{QR}-Algorithm of Francis}
+
+\subsubsection{The basic algorithm}
+
+The $QR$-Algorithm of Francis is an iterative procedure that uses a
+variant of the $QR$-factorisation to find the eigenvalues of a $n
+\times n$ matrix $A$ by reducing to triangular form.
+
+We can interpret the $QR$-algorithm as an extension of the power
+method - from Epperson (2002):%~\cite{epperson02a}:
+
+\begin{quote}
+  One of the primary drawbacks to the power methods is that they work
+  on a single vector at a time; if we want all the eigenpairs of a
+  matrix, then we spend a lot of computation time in deflation [...].
+  Why not do the power method on several vectors at once?  Let $Z_0$
+  be an initial guess matrix and do the computation
+  % 
+  \begin{equation*}
+    Y_{k+1} = A Z_k, \qquad Z_{k+1} = Y_{k+1} D_{k+1}
+  \end{equation*}
+  % 
+  where $D_{k+1}$ is some properly chosen diagonal scaling matrix.
+  The problem is that this won't work; the repeated multiplications by
+  $A$ will simply cause all of the columns of $Y_{k+1}$ to line up on
+  the direction of the dominant eigenvalue and so we will converge to
+  $n$ copies of the dominant eigenpair - hardly an improvement on the
+  power method.
+
+  This algorithm does have something to recommend it, though.  If the
+  $Z_k$ matrices are all \textit{orthogonal} matrices, then we get
+  something that might work, because the orthogonality of the columns
+  of $Z_k$ would prevent the columns of $Y_{k+1}$ from all lining up
+  in the same direction.
+\end{quote}
+
+The $QR$-algorithm implements this idea using the $QR$ factorisation.
+Additional information on its relation to the power method and
+deflation techniques can be found in Burden \& Faires (2005,
+$8^{\textrm{th}}$ ed.).
+
+The $QR$-algorithm consists of the following steps:
+
+\begin{enumerate}
+  % 
+\item Start the iteration - Iteration index $k=1$, working matrix $A_k
+  = A$.
+  %
+\item Compute the $QR$ factorisation of $A_k = Q_k R_k$, where $Q_k$
+  is unitary and $R$ is upper triangular with non-negative diagonal.
+  % 
+\item Compute $A_{k+1} = R_k Q_k$.  Under appropriate hypotheses, the
+  matrix $A_{k+1}$ tends, as $k \to \infty$, to an upper triangular
+  matrix whose diagonal elements are the eigenvalues of $A$ .  The
+  procedure is repeated from step (2) until convergence has been
+  attained.
+\end{enumerate}
+
+\noindent 
+\textbf{Remark 1} - All the matrices $A_k$ are similar to $A$:
+% 
+\begin{equation*}
+  A_k = Q_k R_k = (Q_k R_k) \, (Q_k Q_k^{\dagger}) = 
+  Q_k \, ( R_k Q_k) \, Q_k^{\dagger} = 
+  Q_k A_{k+1} Q_k^{\dagger} .
+\end{equation*}
+
+\noindent
+\textbf{Remark 2} - If the matrix $A$ is real, then all the matrices
+$A_k$ are real.  Therefore, if $A$ has non-real eigenvalues then at
+most $A_k$ will converge to a ``triangular'' matrix with $2 \times 2$
+minors on its diagonal.
+
+\noindent
+\textbf{Remark 3} - In order to reduce the burden of computation and
+increase the speed of convergence the $QR$-algorithm is coupled with
+other techniques, namely the reduction to upper Hessenberg form and an
+origin shift (\textit{Shifted $QR$-factorisation}).
+
+\section*{Further reading}
+
+Topics covered here are also covered in
+\begin{itemize}
+\item Chapter 9 of Linz \& Wang, \textit{Exploring Numerical Methods}
+  (QA297 LIN),
+\item Chapter 5 of S{\"u}li \& Mayers, \textit{An Introduction to
+    Numerical Analysis} (not in library),
+\item Chapters 7 and 8 of the extremely detailed Golub \& Van Loan,
+  \textit{Matrix Computations} (QA263 GOL).
+\end{itemize}

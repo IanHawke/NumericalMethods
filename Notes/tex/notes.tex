@@ -1,0 +1,63 @@
+%--------------------------------------------------------------
+% LaTeX file.
+% Lecture notes for Introduction to Numerical Analysis
+%--------------------------------------------------------------
+\documentclass[11pt]{report}
+\input ma_no_html_header
+\newcommand {\dsp}{\displaystyle}
+\newcommand {\mybig}{\rule[-1mm]{0mm}{5mm}}
+\newcommand {\td}{\text{d}}
+%
+% Theorems
+%
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{corollary}{Corollary}[chapter]
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{Example}{Example}[chapter]
+%
+\pagestyle{myheadings}
+\markright{\rlap{\protect\rule[-1.0mm]{\textwidth}{0.1mm}}
+Maths -- 3018/6111 - Numerical methods \hfill } 
+%
+%\includeonly{PDE}
+%
+%==============================================================
+\begin{document}
+\thispagestyle{empty}
+
+\begin{titlepage}
+
+  \begin{center}
+    {\huge \bf Maths -- 3018/6111 \\*[4mm]
+     Numerical methods} \\*[.8cm]
+     \large I. Hawke \\
+     based on notes by
+     \large G. D'Alessandro
+  \end{center}
+
+\end{titlepage}
+
+\mbox{}
+\thispagestyle{empty}
+\newpage
+
+\tableofcontents
+
+%============================================================
+
+\include{Error_analysis}
+
+\include{Linear_equations}
+\include{Quadrature}
+\include{IVP}
+\include{BVP}
+\include{PDE}
+
+\include{Nonlinear_equations}
+\include{Eigenvalues}
+
+\appendix
+\include{KeyMaths}
+
+\end{document}

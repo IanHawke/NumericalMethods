@@ -1,0 +1,431 @@
+\chapter{Error analysis}
+
+\section{Introduction}
+
+Numerical analysis is mathematics brought down to earth.  In the world
+of mathematics   numbers   are exact:   $\pi$ is  the   ratio  of  the
+circumference to its radius and it is known exactly, each single digit
+after  the other.  Numerical analysis teaches  humbleness: it tells us
+that in  the real world  we cannot know numbers  exactly, we  can only
+know 2, 20, a million of the digits that form the number $\pi$, but in
+no way we can know any non-rational number exactly.  This may not seem
+a serious problem: does it really matter that we cannot represent more
+than 10 of the  first digits of  $\pi$?   The answer to  this specific
+question is that generally it does not matter.  However, if we were to
+rephrase the question as: ``Does it  matter that we cannot represent a
+number with infinite  precision?'' then the answer  would have to  be:
+``Yes, it does matter''.  Small approximations caused  by the fact the
+we  represent numbers  using  ``only'' a finite set  of  digits can be
+amplified in the process of solving a given mathematical problem up to
+a point where they make the entire result meaningless.
+
+It is in this sense that numerical analysis  teaches us humbleness: it
+forces us to  realise our limitations  in representing  numbers and to
+ask ourselves the question of whether the results obtained by applying
+exact mathematical procedures to  these inexact representations can be
+considered accurate.
+
+This chapter is an introduction to numerical methods.   Its aims are
+to highlight the consequences of finite precision representation of
+numbers on numerical calculations.
+
+\section{Floating point representation}
+
+Real    numbers are represented     in   digital  computers   using  a
+\textit{normalised scientific   notation} or   \textit{floating  point
+notation}: the  decimal point is shifted  and appropriate powers of 10
+are  supplied so that  all the digits are to  the right of the decimal
+point and the first digit displayed is not zero.  For example,
+%
+\begin{align*}
+  8491.2913 & = 0.84912913 \times 10^4 , \\
+  -12.32 & = -0.1232 \times 10^2 , \\
+  0.00321 & = 0.321 \times 10^{-2} .
+\end{align*}
+%
+The general notation for a floating point number (in base $10$) is 
+%
+\begin{equation*}
+ \pm \, 0.a_1 a_2 a_3 a_4 \ldots a_m \times 10^c ,
+\end{equation*}
+
+%
+where $0.a_1 a_2 a_3 a_4 \ldots a_m$ is the \textit{mantissa}, the
+integer $c$ is the \textit{exponent} and the integer $10$ is
+called the \textit{base} of this representation.  The number $m$ of
+digits in the mantissa is a measure of the precision of the
+representation: the bigger $m$ the more digits are stored in the
+computer and the more accurately the real number is approximated.  The
+digits $a_i$ are called ``significant digits'': $a_1$ is the most
+significant digit and $a_m$ is the least significant digit.  The size
+of the mantissa is also referred to as ``the number of significant
+digits''.
+
+\section{Absolute and relative errors}
+
+Before discussing how the errors introduced in the representations of
+numbers affect numerical calculations we must define ways of measuring
+the size of the error.  There are two standard definitions.    We define
+the \textit{absolute error} in representing the number $x$ with a
+finite precision representation $\bar{x}$ as the quantity
+%
+\begin{equation*}
+  E_a = x - \bar x.
+\end{equation*}
+
+%
+We define the \textit{relative error} as the quantity
+%
+\begin{equation*}
+  E_r = \frac{x - \bar x}{x} .
+\end{equation*}
+%
+The absolute error is independent of the size of the number $x$, while
+the relative error is essentially a measure of the size of the error
+in comparison with the quantity measured.
+
+\medskip
+
+\noindent {\bf Example} 
+
+\smallskip
+
+Suppose that $x=1322$ and $\bar x = 1000$.  The absolute and relative
+errors are respectively:
+%
+\begin{align*}
+  E_a &= 1322 - 1000 = 322, \\
+  E_r &= \dfrac{1322 - 1000}{1322} = 0.24 .
+\end{align*}
+%
+Now suppose that $x=1000322$ and $\bar x = 1000000$.   The two errors
+are:
+%
+\begin{align*}
+  E_a &= 1000322 - 1000000 = 322, \\
+  E_r &= \dfrac{1000322 - 1000000}{1000322} = 0.0032 = 0.32
+  \times 10^{-2} .
+\end{align*}
+%
+The absolute error is the same in both cases, but the relative errors
+are completely different.    The choice between the two errors is
+problem dependent.
+
+\medskip
+
+One of the aims of numerical analysis is to control the growth of the
+errors that occur naturally while solving a given mathematical
+problem.     In other words, it is the \textit{total error from all
+sources} which is of most interest.   Normally, we try, when examining
+a method, to prove a theorem of the form
+
+\begin{quotation}
+  \textit{If we apply method X to solve problem Y then $ | x - \bar x | \le \varepsilon \quad \forall x$.}
+\end{quotation}
+
+The crux of numerical analysis is that some problems are such that
+even a small amount of rounding or initial error causes a large
+inaccuracy in the answer: these are known as \textit{ill-conditioned
+problems}. 
+
+\section{Errors and simple mathematical operations}
+
+Before studying algorithms to solve typical numerical problems, like
+finding the roots of a nonlinear equation, we must understand how
+numerical errors affect and are affected by simple operations.
+
+\subsection{Addition}
+
+The error in computing the addition of two real numbers by adding up
+two floating point numbers is given by
+%
+\begin{equation*}
+  x + y = \overline{x} + \overline{y} + e(x) + e(y),
+\end{equation*}
+%
+where $e(x)$ and $e(y)$ are respectively the errors in the floating
+point representation of $x$ and $y$.
+
+The addition of two floating point numbers loses most of the
+properties of the standard addition.   In the examples that follow
+assume that the size of the mantissa is $m=3$:
+
+\begin{enumerate}
+  % 
+\item In general, the sum of two floating point numbers is not the
+  floating point representation of the sum:
+  % 
+  \begin{equation*}
+    \overline{x+y} \ne \bar x + \bar y. 
+  \end{equation*}
+  
+  % 
+  For example,
+  % 
+  \begin{align*}
+    x = 1.007, \, y = 2.005 &\implies \bar x = 1.00, \,
+    \bar y = 2.00, \\
+    \intertext{whilst}
+    \overline{x+y} = \overline{3.012} = 3.01 & \ne \bar x
+    + \bar y = 3.00
+  \end{align*} 
+  % 
+\item The sum of two numbers may be too big to be represented in the
+  computer, i.e.\ the result of the addition is a numerical overflow.
+
+\item Order matters, i.e.\ the addition of floating point numbers is
+  not associative:
+  % 
+  \begin{equation*}
+    \overline{\overline{(\overline{x} + \overline{y})} + \overline{z}} \ne
+    \overline{\overline{x} + \overline{(\overline{y} + \overline{z})}}.
+  \end{equation*}
+  % 
+  As a matter of fact, it is always better to add in ascending order
+  of magnitude.
+  % 
+  \begin{equation*}
+    \left\{ 
+      \begin{aligned}
+        \overline{x} &= 1.00, \\
+        \overline{y} &= 0.007, \\
+        \overline{z} &= 0.006, \\
+      \end{aligned}
+    \right. \implies 
+    \left\{
+      \begin{aligned}
+        \overline{\overline{(\overline{x} + \overline{y})} +
+          \overline{z}} = \overline{\overline{(1.00+0.007)} +
+          0.006} =
+        \overline{1.00 + 0.006} = 1.00, \\
+        \overline{\overline{x} + \overline{( \overline{y} +
+            \overline{z} )}} = \overline{ 1.00 +
+          \overline{(0.007+0.006)}} = \overline{1.00 + 0.013} =
+        1.01
+      \end{aligned}
+    \right.
+  \end{equation*}
+  % 
+  The second result is more accurate than the first.  If each small
+  number is added separately to a big number then they may be all
+  ``chopped off''.  However, if all the small numbers are added
+  together their sum may be sufficiently big not to suffer such fate.
+
+\end{enumerate}
+
+\subsection{Subtraction}
+
+The error in computing the difference of two real numbers by subtracting
+two floating point numbers is given by
+%
+\begin{equation*}
+  x - y = \overline{x} - \overline{y} + e(x) - e(y),
+\end{equation*}
+
+%
+where $e(x)$ and $e(y)$ are respectively the errors in the floating
+point representation of $x$ and $y$.
+
+The subtraction of two floating point numbers is a very delicate
+operation that can lead to an outstanding loss of significant digits
+especially when the numbers to be subtracted are nearly equal.
+If, for example, $x = 42.345$ and $y = 42.287$ then we have:
+%
+\begin{align*}
+  x - y &= 0.058 , \\
+  \overline{x} - \overline{y} &= 42.3 - 42.2 = 0.100
+\end{align*}
+
+\subsection{Multiplication}
+
+The error in computing the product of two real numbers by multiplying
+two floating point numbers is given by
+%
+\begin{equation*}
+  x \, y = \overline{x} \, \overline{y} + \overline{y} e(x) + 
+  \overline{x} e(y) + e(x) e(y), 
+\end{equation*}
+%
+where $e(x)$ and $e(y)$ are respectively the errors in the floating
+point representation of $x$ and $y$.   The last term in this
+expression is usually negligible.
+
+Note that on an $m$ digit computer,  $\overline{x} \, \overline{y}$ is at
+most $2 m$ digit long.  This is the main reason why most computers use
+$2 m$ digits for calculations on $m$-digit numbers.  The result is cut
+back to $m$ digits once the calculation is completed.
+
+\subsection{Division}
+
+The error in computing the ratio of two real numbers by dividing
+two floating point numbers is given by
+%
+\begin{equation*}
+  \frac{x}{y} = 
+  \frac{\overline{x} + e(x)}{\overline{y} + e(y)} =
+  \frac{\overline{x}}{\overline{y}} + \frac{e(x)}{\overline{y}} -
+  \frac{\overline{x} e(y)}{\overline{y}^2} + O [e(x) e(y)],
+\end{equation*}
+%
+where $e(x)$ and $e(y)$ are respectively the errors in the floating
+point representation of $x$ and $y$.   The last term in this
+expression is usually negligible.   Clearly the error increases
+dramatically if $y \simeq 0$.
+
+% The symbol $O(\varepsilon)$ [big oh of  $\varepsilon$] is a short hand
+% notation for ``terms that decrease to zero as fast as $\varepsilon$''.
+% More formally, a function  $f(\varepsilon)$ is $O(\varepsilon)$ if the
+% ratio  $f(\varepsilon)/\varepsilon$ is  finite  and bounded  away from
+% zero as $\varepsilon$ tends to zero:
+% %
+% \Be 
+%   0 < \left | \frac{f(\varepsilon)}{\varepsilon} \right | < \infty ,
+%   \qquad \varepsilon \to 0 .
+% \Ee
+% %
+% For example, $\sin(x) = O(x)$ because
+% %
+% \Be \lim_{x \to 0} \frac{\sin(x)}{x} = 1 . \Ee
+% 
+% There is a similar symbol, $o(\varepsilon)$ [little oh of
+% $\varepsilon$]: it is a short hand notation for ``terms that decrease
+% to zero faster than $\varepsilon$''.  More formally a function
+% $f(\varepsilon)$ is $o(\varepsilon)$ if
+% %
+% \Be
+%    \lim_{\varepsilon \to 0} \frac{f(\varepsilon)}{\varepsilon} = 0.
+% \Ee
+% %
+% For example, $\sinh^2(x) = o(x)$ because
+% %
+% \Be \lim_{x \to 0} \frac{\sinh^2(x)}{x} = 0 . \Ee
+
+\noindent 
+\textbf{Remark} - The errors introduced by the basic arithmetical
+operations can be combined when studying more complicated operations.
+For example, one can show that in the dot product of two vectors the
+error is roughly $n \varepsilon$, where $n$ is the size of the two vectors and
+$\varepsilon$ is an upper bound on the error of the representation of each
+component of the vectors.
+
+\section{Stable and unstable computations}
+
+The procedure to solve numerically a mathematical problem involves a
+series of operations that, quite often, must be repeated over and over
+again.    It may happen that a small error gets amplified in the
+course of the iteration procedure until it dominates the numerical
+solution and makes it totally unreliable.    
+
+A numerical process is \textit{unstable} if small errors made at one
+stage of the process are magnified in subsequent stages and seriously
+degrade the accuracy of the overall solution.
+
+Consider for example the sequence of real numbers defined by
+%
+\begin{equation}
+  \label{unstable}
+  \left\{
+    \begin{aligned}
+      x_0 & = 1, \\
+      x_1 & = \dfrac{1}{3}, \\
+      x_{n+1} & = \dfrac{13}{3} x_n - \dfrac{4}{3} x_{n-1}, \quad n \ge 1 .
+    \end{aligned}
+  \right.
+\end{equation}
+%
+One can show by induction that this recurrence relation generates the
+sequence
+%
+\begin{equation*}
+  x_n = \left ( \frac{1}{3} \right )^n . 
+\end{equation*}
+%
+However, if we compute~(\ref{unstable}) numerically using 8
+significant digits we obtain the results shown in Table~\ref{unst1}.
+The absolute and relative error increase with the iterations until
+after the seventh iteration the result is completely unreliable.
+The algorithm is therefore \textit{unstable}.    
+
+\begin{table}
+ \begin{center}
+  \begin{tabular}{|c|c|c|c|} \hline
+   $n$ & $x_n$ & Abs. err. & Rel. err. \\ \hline \hline
+    0 & +1.0000000e+00 & +0.0000000e-01 & +0.0000000e-01 \\ \hline 
+    1 & +3.3333333e-01 & +0.0000000e-01 & +0.0000000e-01 \\ \hline 
+    2 & +1.1111110e-01 & +1.0000000e-08 & +9.0000000e-08 \\ \hline 
+    3 & +3.7036990e-02 & +4.7000000e-08 & +1.2690000e-06 \\ \hline 
+    4 & +1.2345490e-02 & +1.8900000e-07 & +1.5309000e-05 \\ \hline 
+    5 & +4.1144710e-03 & +7.5530000e-07 & +1.8353790e-04 \\ \hline 
+    6 & +1.3687210e-03 & +3.0211000e-06 & +2.2023819e-03 \\ \hline 
+    7 & +4.4516310e-04 & +1.2084270e-05 & +2.6428298e-02 \\ \hline 
+    8 & +1.0407880e-04 & +4.8336990e-05 & +3.1713899e-01 \\ \hline 
+    9 & -1.4254266e-04 & +1.9334792e-04 & +3.8056671e+00 \\ \hline 
+   10 & -7.5645659e-04 & +7.7339168e-04 & +4.5668005e+01 \\ \hline 
+   11 & -3.0879216e-03 & +3.0935666e-03 & +5.4801604e+02 \\ \hline 
+   12 & -1.2372384e-02 & +1.2374266e-02 & +6.5761923e+03 \\ \hline 
+   13 & -4.9496435e-02 & +4.9497062e-02 & +7.8914304e+04 \\ \hline 
+   14 & -1.9798804e-01 & +1.9798825e-01 & +9.4697166e+05 \\ \hline 
+   15 & -7.9195293e-01 & +7.9195300e-01 & +1.1363660e+07 \\ \hline 
+  \end{tabular}
+ \end{center}
+ \caption{\label{unst1} \it Iterations of the unstable
+   map~(\ref{unstable}) with initial conditions $x_0=1$ and
+   $x_1=1/3$.   The correct value of the $n$-th iterate is $x_n=(1/3)^n$.}
+\end{table}
+
+The instability of this algorithm is caused by the fact that an error
+present in $x_n$ is multiplied by 13/3 in computing $x_{n+1}$ (the
+proof of instability is more complicated than this, but this statement
+is essentially correct).  Hence there is a possibility that the error
+in $x_1$ will be propagated into $x_{15}$, for example, with a factor
+$(13/3)^{14}$.    Since the absolute error in $x_1$ is approximately
+$10^{-8}$ and since $(13/4)^{14}$ is roughly $10^9$, the error in
+$x_{15}$ due solely to the error in $x_1$ could be as much as 10.   
+
+Whether a process is numerically stable or unstable should be decided
+on the basis of \textit{relative} errors.  Thus if there are large
+errors in the computations, that situation maybe quite acceptable if
+the answers are large.  In the preceding example, let us start with
+initial values $x_0=1$ and $x_1=4$.  The recurrence
+relation~(\ref{unstable}) is unchanged and therefore errors will still
+be propagated and magnified as before.  But the correct solution is
+now $x_n=4^n$ and the results of the computation are correct to seven
+significant figures (see Table~\ref{unst2}).  In this case the correct
+values are large enough to overwhelm the errors.  The absolute errors
+are undoubtedly large (as before), but they are relatively negligible.
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{|c|c|c|c|} \hline
+      $n$ & $x_n$ & Abs. err. & Rel. err. \\ \hline \hline
+      0 & +1.0000000e+00 & +0.0000000e-01 & +0.0000000e-01 \\ \hline 
+      1 & +4.0000000e+00 & +0.0000000e-01 & +0.0000000e-01 \\ \hline 
+      2 & +1.6000000e+01 & +0.0000000e-01 & +0.0000000e-01 \\ \hline 
+      3 & +6.4000000e+01 & +0.0000000e-01 & +0.0000000e-01 \\ \hline 
+      4 & +2.5600000e+02 & +0.0000000e-01 & +0.0000000e-01 \\ \hline 
+      \vdots & \vdots & \vdots & \vdots \\ \hline
+      15 & +1.0737418e+09 & +0.0000000e-01 & +0.0000000e-01 \\ \hline 
+      16 & +4.2949672e+09 & +1.0000000e+02 & +2.3283064e-08 \\ \hline 
+      17 & +1.7179868e+10 & +1.0000000e+03 & +5.8207661e-08 \\ \hline 
+      18 & +6.8719471e+10 & +6.0000000e+03 & +8.7311490e-08 \\ \hline 
+      19 & +2.7487788e+11 & +3.0000000e+04 & +1.0913936e-07 \\ \hline 
+      20 & +1.0995115e+12 & +1.0000000e+05 & +9.0949470e-08 \\ \hline 
+    \end{tabular}
+  \end{center}
+  \caption{\label{unst2} \it Iterations of the unstable
+    map~(\ref{unstable}) with initial conditions $x_0=1$ and
+    $x_1=4$.   The correct value of the $n$-th iterate is $x_n=4^n$.}
+\end{table}
+
+\smallskip
+
+\noindent
+\textbf{Remark} - The errors we have discussed until now are
+independent of the mathematical problem we wish to solve and are
+inherent to the numerical procedure that we are using.   However,
+there are mathematical problems that are intrinsically ``difficult'',
+in the sense that a small alteration of one of the parameters of the
+problem (for example, one of the coefficients of a system of linear
+equations) alters dramatically the value of the solution.   Such
+problems are called \textit{ill conditioned} and we will discuss them
+as we encounter them.
