@@ -1,6 +1,7 @@
 
 worksheets: W*.ipynb
 	cp *.tplx _build/
+	cp W*ipynb _build/
 	make -C _build Worksheet1_Notebook.pdf
 	make -C _build Worksheet2_Notebook.pdf
 	make -C _build Worksheet3_Notebook.pdf
