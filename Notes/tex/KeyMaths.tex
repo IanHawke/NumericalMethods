@@ -10,7 +10,7 @@ calculus or linear algebra texts.
 
 A vector $\bv$ of length $N$ is a set of $N$ numbers ordered either as
 a row or column. In either case the notation $v_i$ is used to denote
-the coefficients. 
+the coefficients.
 
 The dot product of a row vector $\bx$ with a column vector $\by$ is
 given by
@@ -101,10 +101,10 @@ cases where $x \rightarrow h$, $|h| \ll 1$, leading to
 \begin{equation}
   \label{eq:key_taylor3}
   f(h) = f(0) + h f^{(1)}(0) + \frac{h^2}{2} f^{(2)}(0) +
-  \frac{h^3}{3!} f^{(3)}(0) + \dots + {\cal O}(h^n).
+  \frac{h^3}{3!} f^{(3)}(0) + \dots + \order{h^n}.
 \end{equation}
 %
-The notation ${\cal O}(h^n)$ means that the remaining terms contain
+The notation $\order{h^n}$ means that the remaining terms contain
 powers of $h$ at least as big as $n$; when $h$ is small it is usually
 reasonable to neglect these terms.
 
@@ -181,4 +181,3 @@ For our purposes the key is that for the solution of a difference
 equation to be \emph{bounded} (i.e., $y_n$ is bounded as $n \rightarrow
 \infty$) we need all roots $\lambda$ to satisfy $|\lambda| \le 1$ (and
 if the root is repeated we need $|\lambda| < 1$).
-
