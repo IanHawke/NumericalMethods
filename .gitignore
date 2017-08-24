@@ -8,3 +8,4 @@
 */_build/*.tplx
 */_build/figs
 Notes/tex/CourseNotes*pdf
+*/.ipynb_checkpoints
