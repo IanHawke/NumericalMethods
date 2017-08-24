@@ -84,9 +84,9 @@ We assume that we can evaluate the function at a finite set of points,
 called \textit{nodes}, $\{x_j\}$, with $j=0,\ldots, N$ in the interval
 $[a,b]$ and we want to estimate~(\ref{Qua:eq:1}).  The idea behind all
 the methods based on polynomial interpolation is that we can replace
-the function $f(x)$ with a simpler function $g(x)$, i.e. a function
+the function $f(x)$ with a simpler function $g(x)$, i.e.\ a function
 whose integral we can evaluate analytically.  We require that the
-function $g(x)$ \textit{interpolates} the function $f(x)$, i.e. that
+function $g(x)$ \textit{interpolates} the function $f(x)$, i.e.\ that
 it has the same value as $f(x)$ at the nodes:
 %
 \begin{equation}
@@ -112,7 +112,7 @@ generic name of \textit{Newton-Cotes formulae}.
 \end{figure}
 
 The simplest case results if we choose an interpolating polynomial of
-order one, i.e. we replace the function with a straight line that
+order one, i.e.\ we replace the function with a straight line that
 interpolates the function at the end points of the integration range
 (see left panel of Figure~\ref{fig:trapez}).   The area under the line
 is given by
@@ -146,7 +146,7 @@ By summing all the areas we obtain the composite trapezoidal rule:
   \label{Qua:eq:5}
 \end{equation}
 %
-If the nodes are equally spaced, i.e. if $(x_{j}-x_{j-1}) = h$ for all
+If the nodes are equally spaced, i.e.\ if $(x_{j}-x_{j-1}) = h$ for all
 $j=1, \ldots, N$, this formula reduces to:
 %
 \begin{equation}
@@ -466,7 +466,7 @@ However, there is no obligation to fix the nodes.  As a matter of fact
 we could fix the coefficients (called \textit{weights}) $w_i$, for
 example set them all to one, or we could not fix anything.  The
 general criterion to find nodes and weights is to require that
-equation~(\ref{Qua:eq:18}) is as accurate as possible, i.e. that it is
+equation~(\ref{Qua:eq:18}) is as accurate as possible, i.e.\ that it is
 exact for polynomials of degree as high as possible.  In other words,
 we require that the nodes and weights are such that
 %
@@ -503,7 +503,7 @@ fixed we can therefore immediately compute the weights as
 
 If neither the nodes nor the weights are fixed we have $N$ nonlinear
 equations for $2n$ unknowns $x_1,...,x_n$ and $w_1,...,w_n$.  One can
-show that this problem has a unique solution if $N=2n-1$, i.e. that it
+show that this problem has a unique solution if $N=2n-1$, i.e.\ that it
 is possible to compute exactly the integrals of polynomials of degree
 up to $2 n - 1$.  The resulting algorithm is called a {\bf Gaussian
   quadrature}.  There are many formulae for Gaussian quadrature that

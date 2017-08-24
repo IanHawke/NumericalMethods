@@ -43,18 +43,18 @@ Consider the polynomial
 %
 \begin{align*}
  p(z) &= (z-1)\,(z-2)\,(z-3)\,(z-4)\,(z-5) \\
-      &= -120 + 274 z - 225 z^2 + 85 z^3 - 15 z^4 + z^5 . 
+      &= -120 + 274 z - 225 z^2 + 85 z^3 - 15 z^4 + z^5 .
 \end{align*}
 %
 The roots of this fifth order polynomial are quite obviously
 $\{1,2,3,4,5\}$.  The roots of
 %
 \begin{equation*}
-  p(z) = -120 + 274 z - 225 z^2 + 85 z^3 - 15 z^4 + 1.01 z^5 
+  p(z) = -120 + 274 z - 225 z^2 + 85 z^3 - 15 z^4 + 1.01 z^5
 \end{equation*}
 %
 are $\{ 0.999, 2.067, 2.624, 4.580 \pm 0.966 \, i \, \}$ . \hfill
-\rule{3mm}{3mm} 
+\rule{3mm}{3mm}
 
 \smallskip
 
@@ -79,12 +79,12 @@ dominant eigenvalue of a matrix and its corresponding eigenvector.
 The method is based on two assumptions:
 
 \begin{enumerate}
-  % 
+  %
 \item There is a single eigenvalue of maximum modulus.
-  % 
+  %
 \item There is a linearly independent set of $n$ eigenvectors, where
   $n$ is the size of the matrix.
-  % 
+  %
 \end{enumerate}
 
 According to the first assumption the eigenvalues of $A$ can be
@@ -118,14 +118,14 @@ Consider now the vector
 Its decomposition on the basis of the eigenvectors is
 %
 \begin{equation*}
- \bx^{(k)} = \sum_{j=1}^n \lambda_j^k \bu_j = 
-             \lambda_1^k \left [ a_1 \bu_1 + 
+ \bx^{(k)} = \sum_{j=1}^n \lambda_j^k \bu_j =
+             \lambda_1^k \left [ a_1 \bu_1 +
              \left ( \frac{\lambda_2}{\lambda_1} \right )^k a_2 \bu_2 +
              \left ( \frac{\lambda_3}{\lambda_1} \right )^k a_3 \bu_3 +
              \ldots
-             \left ( \frac{\lambda_n}{\lambda_1} \right )^k a_n \bu_n 
+             \left ( \frac{\lambda_n}{\lambda_1} \right )^k a_n \bu_n
               \right ] .
-\end{equation*} 
+\end{equation*}
 %
 We note that all the terms $\lambda_j/\lambda_1$, $j=2,3,\ldots,n$,
 have modulus strictly smaller than one.  We can write this expression
@@ -136,10 +136,10 @@ as
   \label{eq:Ev3}
 \end{equation}
 %
-where 
+where
 %
 \begin{equation}
-  \boldsymbol{\varepsilon}^{(k)} \equiv  \sum_{j=2}^n 
+  \boldsymbol{\varepsilon}^{(k)} \equiv  \sum_{j=2}^n
   \left ( \frac{\lambda_j}{\lambda_1} \right )^k a_j \bu_j
   \label{eq:Ev5}
 \end{equation}
@@ -147,9 +147,9 @@ where
 is such that
 %
 \begin{equation}
-  \| \boldsymbol{\varepsilon}^{(k)} \| = 
+  \| \boldsymbol{\varepsilon}^{(k)} \| =
   O \left ( \left | \frac{\lambda_j}{\lambda_1} \right |^k \right )
-  \implies 
+  \implies
   \lim_{k \to \infty} \| \boldsymbol{\varepsilon}^{(k)} \| = 0.
   \label{eq:Ev2}
 \end{equation}
@@ -157,7 +157,7 @@ is such that
 As we have assumed that $a_1 \neq 0$ we can write
 %
 \begin{equation}
-  \bx^{(k)} = \lambda_1^k a_1 \bu_1 + 
+  \bx^{(k)} = \lambda_1^k a_1 \bu_1 +
   O \left ( \left | \frac{\lambda_2}{\lambda_1} \right |^k \right ) .
   \label{eq:Ev6}
 \end{equation}
@@ -170,7 +170,7 @@ quantitative estimate of the eigenvalue we need to pass from vectors
 to numbers. As a simple example, we define the ratio
 %
 \begin{equation*}
- r_k = \frac{\| \bx^{(k+1)} \|}{\| \bx^{(k)} \|} = | \lambda_1 | 
+ r_k = \frac{\| \bx^{(k+1)} \|}{\| \bx^{(k)} \|} = | \lambda_1 |
         \frac{\| a_1 \bu_1 + \boldsymbol{\varepsilon}^{(k+1)} \|}
              {\| a_1 \bu_1 + \boldsymbol{\varepsilon}^{(k)} \|} .
 \end{equation*}
@@ -186,21 +186,21 @@ Therefore, a first approximate algorithm to implement the power method
 is as follows:
 
 \begin{enumerate}
-  % 
+  %
 \item Chose an initial vector $\bx^{(0)}$ such that its component
   along $\bu_1$ is not zero.
-  % 
+  %
 \item From the vector at iteration $k$, $\bx^{(k)}$, compute the
   vector at iteration $k+1$, $\bx^{(k+1)} = A \bx^{(k)}$.
-  % 
+  %
 \item Compute the ratio $r_k = \| \bx^{(k+1)}\|/\| \bx^{(k)} \|$.
-  % 
+  %
 \item If the ratio $r_k$ has converged to $| \lambda_1|$ stop;
   otherwise repeat from step 2.
-  % 
+  %
 \end{enumerate}
 
-\noindent 
+\noindent
 \textbf{Remark 1} - In practice, it is impossible to know a priori
 that the vector $\bx_0$ satisfies the condition that its component
 along $\bu_1$ is not zero.  However, a random choice of vector will,
@@ -223,19 +223,19 @@ vectors $\bx^{(k)}$ at each iteration (or after a small number of
 iterations).  A suitable algorithm is:
 
 \begin{enumerate}
-  % 
+  %
 \item Chose an initial vector $\bx^{(0)}$ such that its
   component along $\bu_1$ is not zero and $\| \bx^{(0)} \| = 1$.
-  % 
+  %
 \item From the vector at iteration $k$, $\bx^{(k)}$, compute the
   vector at iteration $k+1$, $\bx^{(k+1)} = A \bx^{(k)}$.
-  % 
+  %
 \item Compute  $r_k = \| \bx^{(k+1)}\|$ and assign $\|
   \bx^{(k+1)}\|/r_k \to \| \bx^{(k+1)}\|$.
-  % 
+  %
 \item If the ratio $r_k$ has converged to $|\lambda_1|$ stop;
   otherwise repeat from step 2.
-  % 
+  %
 \end{enumerate}
 
 \smallskip
@@ -253,7 +253,7 @@ example, the sum of the components of $\bx$.  We can define the ratio
 $r_k$ in terms of the functional $\phi(\bx)$ as
 %
 \begin{equation}
- r_k = \frac{\phi( \bx^{(k+1)} )}{\phi(\bx^{(k)})} = \lambda_1 
+ r_k = \frac{\phi( \bx^{(k+1)} )}{\phi(\bx^{(k)})} = \lambda_1
         \frac{a_1 \phi(\bu_1) + \phi(\boldsymbol{\varepsilon}^{(k+1)})}
              {a_1 \phi(\bu_1) + \phi(\boldsymbol{\varepsilon}^{(k)})} .
  \label{eq:Ev7}
@@ -269,21 +269,21 @@ Using equation~(\ref{eq:Ev2}) and the fact that $\lim_{\| \bx \| \to
 The algorithm that implements this scheme is as follows:
 
 \begin{enumerate}
-  % 
+  %
 \item Chose an initial vector $\bx^{(0)}$ such that its
   component along $\bu_1$ is not zero.
-  % 
+  %
 \item At each iteration $k=0,1,2,\ldots$ compute $d_k = \|
   \bx^{(k)}\|$ and assign $\| \bx^{(k)}\|/d_k \to \| \bx^{(k)}\|$.
-  % 
+  %
 \item From the vector at iteration $k$, $\bx^{(k)}$, compute the
   vector at iteration $k+1$, $\bx^{(k+1)} = A \bx^{(k)}$.
-  % 
+  %
 \item Compute  $r_k = \phi(\bx^{(k+1)})/\phi(\bx^{(k)})$.
-  % 
+  %
 \item If the ratio $r_k$ has converged to $\lambda_1$ stop;
   otherwise repeat from step 2.
-  % 
+  %
 \end{enumerate}
 
 \subsection{Rate of convergence}
@@ -294,10 +294,10 @@ rate of the method.  We apply Taylor's theorem to
 equation~(\ref{eq:Ev7}) and use equation~(\ref{eq:Ev2}) to obtain
 %
 \begin{equation*}
- r_k = \lambda_1 
+ r_k = \lambda_1
         \frac{a_1 \phi(\bu_1) + \phi(\boldsymbol{\varepsilon}^{(k+1)})}
-             {a_1 \phi(\bu_1) + \phi(\boldsymbol{\varepsilon}^{(k)})} 
-     = \lambda_1 
+             {a_1 \phi(\bu_1) + \phi(\boldsymbol{\varepsilon}^{(k)})}
+     = \lambda_1
         \left [ 1 - \frac{\phi (\boldsymbol{\varepsilon}^{(k)} )}{a_1 \phi(\bu_1)}\right ] \,
         + O(\mu^{k+1}) .
 \end{equation*}
@@ -313,19 +313,19 @@ Therefore the relative error of the approximation, defined as
 is given by
 %
 \begin{equation}
-  \epsilon^{(k)} = 
-  \left | \frac{\phi (\boldsymbol{\varepsilon}^{(k)} )}{a_1 \phi(\bu_1)} \right|  + O(\mu^{k+1}) =  c_k \mu^k 
+  \epsilon^{(k)} =
+  \left | \frac{\phi (\boldsymbol{\varepsilon}^{(k)} )}{a_1 \phi(\bu_1)} \right|  + O(\mu^{k+1}) =  c_k \mu^k
   \label{eq:Ev9}
 \end{equation}
 %
 where $\{c_k\}$ is a bounded sequence.  Note that this equation
-implies that $\epsilon^{(k)} \propto \mu \epsilon^{(k+1)}$, i.e. that
+implies that $\epsilon^{(k)} \propto \mu \epsilon^{(k+1)}$, i.e.\ that
 the rate of decrease of the error is linear.  In fact one can show
 that
 %
 \begin{equation*}
-  \frac{r^{(k+1)} - \lambda_1}{\lambda_1} = (c + \delta_k) 
-  \frac{r^{(k)} - \lambda_1}{\lambda_1} 
+  \frac{r^{(k+1)} - \lambda_1}{\lambda_1} = (c + \delta_k)
+  \frac{r^{(k)} - \lambda_1}{\lambda_1}
 \end{equation*}
 %
 where $|c| < 1$ and $\lim_{k \to \infty} \delta_k = 0$.
@@ -344,7 +344,7 @@ hand, the matrix has distinct eigenvalues all with the same maximum
 modulus (a rather common situation in problems with symmetry), the
 method may fail to converge.
 
-\smallskip 
+\smallskip
 
 \noindent \textbf{Remark 2} - The convergence can be improved using
 Aitken's acceleration, a technique similar to Richardson's
@@ -363,17 +363,17 @@ matrix $A$, then $\lambda^{-1}$ is an eigenvalue of $A^{-1}$.
 
 We assume as before that the eigenvectors of $A$ form a basis for
 $\bC^n$, but we now require that the eigenvalue of smallest modulus is
-isolated, i.e. that we can label the eigenvalues of $A$ so that
+isolated, i.e.\ that we can label the eigenvalues of $A$ so that
 %
 \begin{equation*}
-  |\lambda_1| \ge |\lambda_2| \ge \ldots \ge |\lambda_{n-1}| > 
+  |\lambda_1| \ge |\lambda_2| \ge \ldots \ge |\lambda_{n-1}| >
   |\lambda_n| > 0 .
 \end{equation*}
 %
 Therefore the eigenvalues of $A^{-1}$ are ordered as
 %
 \begin{equation*}
-  |\lambda_n^{-1}| > |\lambda_{n-1}^{-1}| \ge \ldots \ge 
+  |\lambda_n^{-1}| > |\lambda_{n-1}^{-1}| \ge \ldots \ge
   |\lambda_{1}^{-1}| > 0 .
 \end{equation*}
 %
@@ -388,7 +388,7 @@ $A^{-1}$ first and then use $\bx^{(k+1)} = A^{-1} \bx^{(k)}$.   It is
 better to obtain $\bx^{(k+1)}$ by solving the linear system
 %
 \begin{equation*}
-  A \bx^{(k+1)} = \bx^{(k)} 
+  A \bx^{(k+1)} = \bx^{(k)}
 \end{equation*}
 %
 using an efficient (and accurate) linear solver.   The $LU$
@@ -398,7 +398,7 @@ decomposition is an excellent candidate for this problem.
 
 The shifted inverse power method is used to compute the eigenvalue of
 $A$ closest to a given complex number $\nu$.   Suppose that there is a
-real number $\epsilon$ such that there is only one eigenvalue of $A$, 
+real number $\epsilon$ such that there is only one eigenvalue of $A$,
 $\lambda_j$, such that
 %
 \begin{equation}
@@ -419,7 +419,7 @@ called the shifted inverse power method.
 
 The methods to compute the full spectrum of a matrix are based on the
 idea that finding the eigenvalues is an easy problem for certain
-classes of matrices, e.g. diagonal and triangular matrices: their
+classes of matrices, e.g.\ diagonal and triangular matrices: their
 eigenvalues are the elements along the diagonal.  The trick
 is to find operations that transform a matrix in an ``easy'' form
 while not altering the spectrum.    The first step in doing so is to
@@ -429,7 +429,7 @@ of operations that do not alter the spectrum.
 \begin{definition}
 Two square matrices are similar if there exists a nonsingular matrix
 $P$ such that $B = P A P^{-1}$.   We say that $B$ is obtained from $A$
-using a similarity transformation.   If $P$ is unitary, i.e. $P =
+using a similarity transformation.   If $P$ is unitary, i.e.\ $P =
 P^\dagger$, the two matrices are unitary similar.
 \end{definition}
 
@@ -437,7 +437,7 @@ P^\dagger$, the two matrices are unitary similar.
   \label{thr:1}
   Similar matrices have the same eigenvalues.
 \end{theorem}
-\noindent 
+\noindent
 \textbf{Proof}
 
 \begin{equation*}
@@ -476,7 +476,7 @@ $\|\bu\|=\sqrt{\bu^\dagger\bu}$.
   The matrix $\Id - \bu \bu^{\dagger}$ is unitary if and only if
   $\|\bu\| = \sqrt{2}$ or $\bu=0$.
 \end{lemma}
-\noindent 
+\noindent
 \textbf{Proof}
 
 \begin{equation*}
@@ -497,7 +497,7 @@ $\|\bu\|=\sqrt{\bu^\dagger\bu}$.
     \bu = \sqrt{2} \frac{\bx - \by}{\|\bx - \by\|} .
   \end{equation*}
 \end{lemma}
-\noindent 
+\noindent
 \textbf{Proof}
 
 \begin{align*}
@@ -514,7 +514,7 @@ $\|\bu\|=\sqrt{\bu^\dagger\bu}$.
 ``the vector $\by$ can be obtained by reflecting the vector $\bx$ with
 respect to a plane orthogonal to the vector $\bu$''.
 
-\noindent 
+\noindent
 \textbf{Proof of Schur's theorem} - We prove this theorem for two
 reasons: firstly, the proof is an example of the techniques used to
 transform a given matrix in an ``easy'' matrix.  Secondly, the proof
@@ -537,17 +537,17 @@ vector $\be_1 = (1,0,0,\ldots,0)$, i.e.
       a_{1 1} & a_{1 2} & \ldots & a_{1 n} \\ \hline
       a_{2 1} & a_{2 2} & \ldots & a_{2 n} \\
       \vdots & & \ddots & \\
-      a_{n 1} & a{_n 2} & \ldots & a_{n n} \\ 
+      a_{n 1} & a{_n 2} & \ldots & a_{n n} \\
     \end{array} \right ) U^{\dagger} =
   \left ( \begin{array}{c|ccc}
       \mu & & \bw & \\ \hline
       0 & & & \\
       \vdots & & A_{n-1} & \\
-      0 & & & \\ 
+      0 & & & \\
     \end{array} \right )
   \label{eq:Ev13}
 \end{equation}
-% 
+%
 where $A_{n-1}$ is an $(n-1) \times (n-1)$ matrix, $\bw$ is a row
 vector of dimension $n-1$ and $\mu$ is a number.  Unfortunately, in
 order to build the transformation matrix $U$ we need one eigenvalue
@@ -562,7 +562,7 @@ Lemma~\ref{ax:2} we define the (complex) number
   \end{cases}
 \end{equation*}
 %
-and the vector 
+and the vector
 %
 \begin{equation*}
   \bu = \frac{\sqrt{2}}{\|\bv - \beta \be_1\|} (\bv - \beta \be_1) .
@@ -577,7 +577,7 @@ Lemma~\ref{ax:2} are satisfied.  Therefore, the matrix
   \label{eq:Ev11}
 \end{equation}
 %
-is unitary and such that 
+is unitary and such that
 %
 \begin{equation}
   U \bv = \beta \be_1 \implies U^{\dagger} \be_1 = \frac{1}{\beta} \, \bv .
@@ -592,7 +592,7 @@ column vector of $U A U^{\dagger}$ is a scalar multiple of $\be_1$:
 %
 \begin{equation*}
   U A U^{\dagger} \, \be_1 = U A \, \frac{1}{\beta} \bv =
-  \frac{1}{\beta} U \lambda \bv = \frac{\lambda}{\beta} U \bv = 
+  \frac{1}{\beta} U \lambda \bv = \frac{\lambda}{\beta} U \bv =
   \lambda \be_1 .
 \end{equation*}
 %
@@ -605,13 +605,13 @@ Q^{\dagger}_{n-1}$ is triangular.  Therefore, the unitary
 transformation that reduces $A$ to triangular form is
 %
 \begin{equation*}
-  V = 
+  V =
   \left ( \begin{array}{c|ccc}
       1 & & 0 \ldots 0 & \\ \hline
       0 & & & \\
       \vdots & & Q_{n-1} & \\
-      0 & & & \\ 
-    \end{array} \right ) \, U 
+      0 & & & \\
+    \end{array} \right ) \, U
 \end{equation*}
 \null \hfill \rule{3mm}{3mm}
 
@@ -626,7 +626,7 @@ put $A$ in upper triangular form.  However, if we do not know them we
 cannot apply the procedure and we are no nearer to solving the
 original eigenvalue problem.
 
-\noindent 
+\noindent
 \textbf{Remark} - One could think of using the power method to find
 one eigenvalue of $A$ and thus build $U$ and $A_{n-1}$, and then apply
 the same trick to $A_{n-1}$ and so on.  This method is called
@@ -643,11 +643,11 @@ be the unitary matrix such that $U A U^{\dagger}$ is upper triangular.
 Then $(U A U^{\dagger})^{\dagger}$ is lower triangular.  But
 %
 \begin{equation*}
-  (U A U^{\dagger})^{\dagger} = 
-  (U^{\dagger})^{\dagger} A^{\dagger} U^{\dagger} = 
+  (U A U^{\dagger})^{\dagger} =
+  (U^{\dagger})^{\dagger} A^{\dagger} U^{\dagger} =
   U A U^{\dagger} .
 \end{equation*}
-% 
+%
 Thus, the matrix $U A U^{\dagger}$ is both upper and lower triangular;
 hence, it must be a diagonal matrix.
 
@@ -690,7 +690,7 @@ matrices that at step $k=0,1,\ldots,m-1$ have the form
   \quad k = 1,2, \ldots, n-1,
   \label{eq:Ev17}
 \end{equation}
-% 
+%
 with $\Id_k$ the $k \times k$ identity matrix and $\bu \in
 \bC^{m-k+1}$.  These matrices are called \textit{reflections} or
 \textit{Householder transformations}: the aim of each of them is to
@@ -701,7 +701,7 @@ proof of Schur's theorem.
 At the first step we wish to determine a vector $\bu \in \bC^m$ such
 that $\Id_m - \bu^{\dagger} \bu$ is unitary and $(\Id_m -
 \bu^{\dagger} \bu) A$ has first column of the form suitable for an
-upper triangular matrix, i.e. of the type $(\beta, 0, \ldots, 0)^T$.
+upper triangular matrix, i.e.\ of the type $(\beta, 0, \ldots, 0)^T$.
 We indicate with $\ba_1$ the first column of $A$ and with $\be_1$ the
 vector $(1,0,\ldots,0)$.  Following Lemma~\ref{ax:2} we define the
 (complex) number
@@ -714,58 +714,58 @@ vector $(1,0,\ldots,0)$.  Following Lemma~\ref{ax:2} we define the
   \end{cases}
 \end{equation*}
 %
-and the vector 
+and the vector
 %
 \begin{equation*}
   \bu = \frac{\sqrt{2}}{\|\ba_1 - \beta \be_1\|} (\ba_1 - \beta \be_1) .
 \end{equation*}
-% 
-By Lemma~\ref{ax:2} the matrix 
-% 
+%
+By Lemma~\ref{ax:2} the matrix
+%
 \begin{equation}
   U_1 = \text{Id} - \bu \bu^{\dagger}
   \label{eq:Ev18}
 \end{equation}
-% 
-is unitary and such that 
-% 
+%
+is unitary and such that
+%
 \begin{equation}
   U_1 \ba_1 = \beta \be_1 .
   \label{eq:Ev19}
 \end{equation}
-% 
+%
 Using the unitary matrix $U$ defined in equation~(\ref{eq:Ev18}) we
 have that the matrix $U_0 A$ has form:
 %
 \begin{equation*}
-  U_1 A = 
+  U_1 A =
   \left ( \begin{array}{c|ccc}
       \beta & & \bw_1 & \\ \hline
       0 & & & \\
       \vdots & & \tilde{A_1} & \\
-      0 & & & \\ 
+      0 & & & \\
     \end{array} \right )  \equiv R_1
 \end{equation*}
-% 
+%
 We can now repeat the same procedure for the first column of the
 matrix $A_1$ and build the unitary operator $U_k$ defined in
 equation~(\ref{eq:Ev17}) with $k=2$ and so on.  At stage $k$ in the
 process, we shall have multiplied $A$ on the left by $k$ unitary
 matrices and the result will be a matrix having its first $k$ columns
-of the correct form, i.e. with $0$'s below the diagonal:
+of the correct form, i.e.\ with $0$'s below the diagonal:
 %
 \begin{equation*}
-  U_k \, U_{k-1} \, U_{k-2} \, \ldots \, U_1 A = 
+  U_k \, U_{k-1} \, U_{k-2} \, \ldots \, U_1 A =
   \left ( \begin{array}{c|c} J & H \\ \hline 0 & W \end{array} \right )
 \end{equation*}
-% 
+%
 where $J$ is an upper triangular $k \times k$ matrix, $0$ is an $(m-k)
 \times k$ null matrix, $H$ is $k \times (n-k)$ and $W$ is $(m-k)
 \times (m-k)$.
 
 The process terminates at $k=(n-1)$ when $R_{n-1}$ is in the correct
-form for equation~(\ref{eq:Ev15}), i.e. $R= R_{n-1}$.  Moreover,
-% 
+form for equation~(\ref{eq:Ev15}), i.e.\ $R= R_{n-1}$.  Moreover,
+%
 \begin{equation*}
   Q^{\dagger} = U_{n-1} \ldots U_{1} \implies
   Q = U_1 \ldots U_{n-1} .
@@ -788,11 +788,11 @@ method - from Epperson (2002):%~\cite{epperson02a}:
   matrix, then we spend a lot of computation time in deflation [...].
   Why not do the power method on several vectors at once?  Let $Z_0$
   be an initial guess matrix and do the computation
-  % 
+  %
   \begin{equation*}
     Y_{k+1} = A Z_k, \qquad Z_{k+1} = Y_{k+1} D_{k+1}
   \end{equation*}
-  % 
+  %
   where $D_{k+1}$ is some properly chosen diagonal scaling matrix.
   The problem is that this won't work; the repeated multiplications by
   $A$ will simply cause all of the columns of $Y_{k+1}$ to line up on
@@ -815,13 +815,13 @@ $8^{\textrm{th}}$ ed.).
 The $QR$-algorithm consists of the following steps:
 
 \begin{enumerate}
-  % 
+  %
 \item Start the iteration - Iteration index $k=1$, working matrix $A_k
   = A$.
   %
 \item Compute the $QR$ factorisation of $A_k = Q_k R_k$, where $Q_k$
   is unitary and $R$ is upper triangular with non-negative diagonal.
-  % 
+  %
 \item Compute $A_{k+1} = R_k Q_k$.  Under appropriate hypotheses, the
   matrix $A_{k+1}$ tends, as $k \to \infty$, to an upper triangular
   matrix whose diagonal elements are the eigenvalues of $A$ .  The
@@ -829,12 +829,12 @@ The $QR$-algorithm consists of the following steps:
   attained.
 \end{enumerate}
 
-\noindent 
+\noindent
 \textbf{Remark 1} - All the matrices $A_k$ are similar to $A$:
-% 
+%
 \begin{equation*}
-  A_k = Q_k R_k = (Q_k R_k) \, (Q_k Q_k^{\dagger}) = 
-  Q_k \, ( R_k Q_k) \, Q_k^{\dagger} = 
+  A_k = Q_k R_k = (Q_k R_k) \, (Q_k Q_k^{\dagger}) =
+  Q_k \, ( R_k Q_k) \, Q_k^{\dagger} =
   Q_k A_{k+1} Q_k^{\dagger} .
 \end{equation*}
 

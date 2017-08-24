@@ -56,22 +56,22 @@ Solving for $f'(x_0)$ we obtain the \textit{forward difference
 \noindent
 \textbf{Remark 1} - In other words the slope of the tangent to $f(x)$ at
 $x_0$ is approximated with that of the line through $[x_0,f(x_0)]$ and
-$[x_0+h,f(x_0+h)]$.   
+$[x_0+h,f(x_0+h)]$.
 
 \noindent
 \textbf{Remark 2} - The symbol $\order{h}$ on the far right of
 equation~(\ref{IVP.eq:2}) indicates that the error of this estimate
-decreases linearly with the step size $h$. 
+decreases linearly with the step size $h$.
 
 Another estimate of the derivative can be obtained by taking a step
 backward:
-% 
+%
 \begin{equation}
   f(x_0-h) = f(x_0) - h f'(x_0) + \frac{h^2}{2} f''(x_0) -
   \frac{h^3}{6} f'''(x_0) + \order{h^4} .
   \label{IVP.eq:3}
 \end{equation}
-% 
+%
 Solving for $f'(x_0)$ we obtain the \textit{backward difference
   estimate of the derivative}:
 %
@@ -122,17 +122,17 @@ arise.  These are classified as follows:
 %
 \begin{enumerate}
   \itemsep 0pt
-  % 
+  %
 \item Local truncation error
-  % 
+  %
 \item Local roundoff error
-  % 
+  %
 \item Global truncation error
-  % 
+  %
 \item Global roundoff error
-  % 
+  %
 \item Total error
-  % 
+  %
 \end{enumerate}
 %
 The \textbf{roundoff error} is caused by the limited precision of
@@ -163,7 +163,7 @@ involved.
 Consider the initial value problem
 %
 \begin{equation}
-  y'=f(x,y), \qquad y(0)=s, \qquad 0\le x\le X>0. 
+  y'=f(x,y), \qquad y(0)=s, \qquad 0\le x\le X>0.
   \label{IVP.eq:30}
 \end{equation}
 %
@@ -179,7 +179,7 @@ We assume that $f_y=\pdv{f}{y}(x,y)$ is continuous
 and satisfies the condition $f_y\le \lambda$ for $0\le x\le X>0$. The
 solution is $y=y(x,s)$. We would like to know how the solution depends
 on $s$. Define
-% 
+%
 \begin{equation}
   u(x)=\pdv{y}{s}(x,s) \, .
  \label{IVP.eq:58}
@@ -190,10 +190,10 @@ $u$ by differentiating with respect to $s$ in the initial value
 problem~(\ref{IVP.eq:30}) to get
 %
 \begin{equation}
-  u'(x) = \pdv{u}{x} = \pdv{y'}{s} = \pdv{f}{s} = f_y(x,y) u, \qquad u(0)=1, \qquad 0 \le x \le X > 0. 
+  u'(x) = \pdv{u}{x} = \pdv{y'}{s} = \pdv{f}{s} = f_y(x,y) u, \qquad u(0)=1, \qquad 0 \le x \le X > 0.
   \label{IVP.eq:31}
 \end{equation}
-% 
+%
 Note that if $f_y \le \lambda$ for $0 \le x \le X > 0$, then the solution
 of the variational equation satisfies the inequality
 %
@@ -202,7 +202,7 @@ of the variational equation satisfies the inequality
   \label{IVP.eq:33}
 \end{equation}
 %
-{\it Proof}: we have 
+{\it Proof}: we have
 %
 \begin{equation}
   u' / u = f_y = \lambda-\alpha(x), \qquad \alpha(x)\ge 0.
@@ -212,12 +212,12 @@ of the variational equation satisfies the inequality
 Integrating this inequality, we obtain
 %
 \begin{equation}
-  \log|u| = \lambda x - \mint{0}{x}{\alpha(\tau)}{\tau}, \implies 
+  \log|u| = \lambda x - \mint{0}{x}{\alpha(\tau)}{\tau}, \implies
   |u(x)| = e^{\lambda x} - \mint{0}{x}{\alpha(\tau)}{\tau} \le e^{\lambda x}.
   \label{IVP.eq:34}
 \end{equation}
 %
-The last inequality is justified because 
+The last inequality is justified because
 %
 \begin{equation}
   \mint{0}{x}{\alpha(\tau)}{\tau} \ge 0.
@@ -242,11 +242,11 @@ magnitude, then the global truncation error does not exceed
 \begin{equation}
  \delta \frac{1-e^{n\lambda h}}{1-e^{\lambda h}}  .
  \label{IVP.eq:37}
-\end{equation} 
+\end{equation}
 
 \noindent
 {\it Proof}: In computing $y_1$ there was an error $|\delta_1|$.  In
-computing $y_2$ the global error is  
+computing $y_2$ the global error is
 %
 \begin{equation}
  |\delta_1| e^{\lambda h} + |\delta_2|,
@@ -297,7 +297,7 @@ $x_1 = x_0 + h$ using Taylor's theorem, exactly as we had done for the
 forward difference estimate of the derivative.  We obtain
 %
 \begin{equation}
-  y(x_1) \equiv y(x_0+h) = y(x_0) + y'(x_0) h + \order{h^2} = 
+  y(x_1) \equiv y(x_0+h) = y(x_0) + y'(x_0) h + \order{h^2} =
   y(x_0) + h f(x_0,y(x_0)) + \order{h^2} .
   \label{IVP.eq:7}
 \end{equation}
@@ -318,7 +318,7 @@ $h$ is used.  Its geometrical interpretation is that we use the slope
 of the function $y(x_n)$ at the beginning of the interval
 $[x_n,x_{n+1}]$ to estimate the value of $y(x_{n+1})$.  This suggests
 that we can obtain a better estimate using an ``average'' of the slope
-over the same interval, i.e. if we could compute
+over the same interval, i.e.\ if we could compute
 %
 \begin{equation}
   y_{n+1} = y_n + h \frac{f(x_n,y_n) + f(x_{n+1},y_{n+1})}{2} .
@@ -335,7 +335,7 @@ summarised as:
 \begin{equation}
   \begin{array}{ll}
     y^{(p)}_{n+1} = y_n + h f(x_n,y_n) & \text{Predictor step} \\*[3mm]
-    y_{n+1} = y_n + \displaystyle \frac{h}{2} 
+    y_{n+1} = y_n + \displaystyle \frac{h}{2}
     \left [f(x_n,y_n) + f(x_{n+1},y^{(p)}_{n+1}) \right ] &
     \text{Corrector step}.
   \end{array}
@@ -354,10 +354,10 @@ writing the Taylor expansion of equation~(\ref{IVP.eq:6}):
 \begin{equation}
   y_{n+1} = y_n + y'_n h+ \frac{1}{2} y''_n h^2 + \order{h^3}.
   \label{IVP.eq:11}
-\end{equation} 
+\end{equation}
 %
 Replacing the second derivative by the forward-difference
-approximation, we obtain 
+approximation, we obtain
 %
 \begin{equation}
   y_{n+1} = y_n + y'_n h + \frac{1}{2} h^2 \frac{y'_{n+1}-y'_n}{h} + \order{h^3},
@@ -459,26 +459,26 @@ to the algorithm
   y_{n+1} = y_n + \frac{1}{6}(k_1+2k_2+2k_3+k_4),
   \label{IVP.eq:22}
 \end{equation}
-% 
+%
 with
 %
 \begin{equation}
-  \begin{array}{ll@{\hspace{5mm}}l} 
-    k_1=hf(x_n,y_n), & & 
+  \begin{array}{ll@{\hspace{5mm}}l}
+    k_1=hf(x_n,y_n), & &
     k_2=hf(x_n+\frac{1}{2}h,y_n+\frac{1}{2}k_1), \\
-    k_3=hf(x_n+\frac{1}{2}h,y_n+\frac{1}{2}k_2), & & 
+    k_3=hf(x_n+\frac{1}{2}h,y_n+\frac{1}{2}k_2), & &
     k_4=hf(x_n+h,y_n+k_3).
   \end{array}
   \label{IVP.eq:23}
 \end{equation}
-% 
+%
 The local error term for the fourth-order Runge-Kutta methods is
 $\order{h^5}$; the global error is $\order{h^4}$.
 
 \section{Error in Runge-Kutta methods}
 
 Whatever the method used one needs to check whether the results of the
-integration are reliable, i.e. one would like an estimate of the local
+integration are reliable, i.e.\ one would like an estimate of the local
 truncation error.  Moreover, the knowledge of this quantity would
 allow us to use a variable step in integrating the differential
 equation: if the local error is much smaller than a predefined
@@ -494,12 +494,12 @@ initial value problem
 %
 and indicate with $y_h(x_0+h)$ the solution obtained using a fourth
 order Runge-Kutta method with step $h$.  By construction we have that
-% 
+%
 \begin{equation}
   |y_e(x_0+h) - y_h(x_0+h)| = C h^5.
   \label{IVP.eq:41}
 \end{equation}
-% 
+%
 Here $C$ is a number independent of $h$ but dependent on $x_0$ and on
 the function $y_e$.  To estimate $C h^5$ and, hence, the local error
 we assume that $C$ does not change as $x$ changes from $x_0$ to $x_0 +
@@ -511,15 +511,15 @@ that
 \begin{equation}
   \begin{array}{l}
     y_e(x_0+h) = y_{h}(x_0+h) + C h^5 , \\
-    y_e(x_0+h) = y_{h/2}(x_0+h) + 2 C (h/2)^5 . 
+    y_e(x_0+h) = y_{h/2}(x_0+h) + 2 C (h/2)^5 .
   \end{array}
   \label{IVP.eq:42}
 \end{equation}
-% 
+%
 By subtraction we obtain from these two equations that
-% 
+%
 \begin{equation}
-  \text{Local truncation error} = C h^5 = 
+  \text{Local truncation error} = C h^5 =
   \frac{y_h - y_{h/2}}{1-2^{-4}} .
   \label{IVP.eq:43}
 \end{equation}
@@ -529,7 +529,7 @@ Thus the local truncation error is approximately $y_h - y_{h/2}$.
 This estimate of the local error is rather expensive if used in a
 variable step algorithm, because it requires two integrations to be
 run at the same time for a total of 12 function evaluations.
-  
+
 A second and more efficient method is to compare the result of the
 fourth order with those of a fifth order Runge-Kutta method.  As we
 have seen in the derivation of the Runge-Kutta method of order 2, a
@@ -544,7 +544,7 @@ of the Runge-Kutta methods:
   \begin{tabular}{l|llllllll}
     Number of function evaluations & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\ \hline
     Maximum order of Runge-Kutta method & 1 & 2 & 3 & 4 & 4 & 5 & 6 & 6
-  \end{tabular} 
+  \end{tabular}
 \end{center}
 
 \noindent
@@ -598,10 +598,10 @@ The general form of a multistep method to solve an initial value problem
   \label{IVP.eq:44}
 \end{equation}
 %
-is 
+is
 %
 \begin{equation}
-  a_k y_{n+1} + a_{k-1} y_{n} + \ldots  + a_0 y_{n+1-k} = 
+  a_k y_{n+1} + a_{k-1} y_{n} + \ldots  + a_0 y_{n+1-k} =
   h [ b_k f_{n+1} + b_{k-1} f_{n} + \ldots + b_0 f_{n+1-k}]
   \label{IVP.eq:45}
 \end{equation}
@@ -650,12 +650,12 @@ basis the following five polynomials:
   \begin{array}{l}
     p_0(x)=1, \\ p_1(x)=x, \\
     p_2(x)=x(x+1), \\ p_3(x)=x(x+1)(x+2), \\
-    p_4(x)=x(x+1)(x+2)(x+3) \\  
+    p_4(x)=x(x+1)(x+2)(x+3) \\
   \end{array}
   \label{IVP.eq:27}
 \end{equation}
 %
-When these are substituted in the equation 
+When these are substituted in the equation
 %
 \begin{equation}
   \mint{0}{1}{p_m(x)}{x} \approx A p_m(0)+B p_m(-1)+C p_m(-2)+D p_m(-3)+E p_m(-4)
@@ -664,7 +664,7 @@ When these are substituted in the equation
 %
 for $m=0,1,2,3,4$, we obtain the system for determination of
 $A,B,C,D,E$
-% 
+%
 \begin{equation}
   \left\{
     \begin{aligned}
@@ -689,7 +689,7 @@ $y_4$.
 
 \smallskip
 
-\noindent \textbf{Remark 2} - The method is order five, i.e. the local
+\noindent \textbf{Remark 2} - The method is order five, i.e.\ the local
 error is $\order{h^6}$ and the global error is $\order{h^5}$.
 
 \subsection{Adams-Moulton formula}
@@ -750,7 +750,7 @@ method.
 \noindent
 Using the Taylor series for $y(p h)$ and $y'(p h)$ with $p=0,1,...,k$
 we obtain:
-% 
+%
 \begin{equation}
   y(x_0+p h) = \sum_{j=0}^{+\infty} \frac{(p h)^j}{j!} y^{(j)} (x_0),
   \qquad
@@ -766,7 +766,7 @@ so that
 where
 %
 \begin{equation}
-  d_0 = \sum_{p=0}^k a_p, \quad 
+  d_0 = \sum_{p=0}^k a_p, \quad
   d_1 = \sum_{p=0}^k (p a_p-b_p), \quad
   d_2 = \sum_{p=0}^k \left ( \frac{p^2}{2} a_p - p b_p \right ), \ldots
 \end{equation}
@@ -775,11 +775,11 @@ and, in general,
 %
 \begin{equation}
   d_j = \sum_{p=0}^k \left( \frac{p^j}{j!} a_p -
-    \frac{p^{j-1}}{(j-1)!} b_p \right) , 
+    \frac{p^{j-1}}{(j-1)!} b_p \right) ,
   \qquad j \ge 2 .
 \end{equation}
-% 
-If $d_0=d_1=...=d_m=0$, then 
+%
+If $d_0=d_1=...=d_m=0$, then
 %
 \begin{equation}
   L(y) = d_{m+1} h^{m+1} y^{(m+1)}(x_0) + \order{h^{m+2}}
@@ -806,7 +806,7 @@ the numerical solution converges to the exact solution:
 where $y(x)$ is the exact solution of
 %
 \begin{equation}
-  y' = f(x,y), \qquad y(x_0) = y_0 
+  y' = f(x,y), \qquad y(x_0) = y_0
 \end{equation}
 %
 and $y(h;x)$ is the numerical solution obtained using an integration
@@ -824,7 +824,7 @@ In fact, one can show that \textit{a multistep method is convergent if
 It is fairly straightforward to determine the stability and
 consistency of a multistep method like~(\ref{IVP.eq:45}).  Construct
 the two polynomials:
-% 
+%
 \begin{align}
   p(z) &= a_k z^k + a_{k-1} z^{k-1} + \ldots ... + a_0,
   \label{IVP.eq:47} \\
@@ -839,7 +839,7 @@ A multi-step method is to all intents and purposes a difference
 equation that is (hopefully) based on the differential equation that
 we wish to solve, in the sense that as the integration step tends to
 zero the difference equation tends to the differential equation
-(i.e. that the difference equation is \textit{consistent} with the
+(i.e.\ that the difference equation is \textit{consistent} with the
 differential equation).  We expect that a consistent difference
 equation has a solution that is close to the solution of the original
 differential equation.  However, it is also possible that it has other
@@ -875,20 +875,20 @@ The root conditions are related to the stability of the multi-step
 method.
 
 \begin{enumerate}
-  % 
+  %
 \item If the stability polynomial satisfies the root condition, then
   the method is stable, in the sense that for $h$ sufficiently small
   it will deliver accurate results over a small interval.
-  % 
+  %
 \item If the stability polynomial satisfies the strong root condition,
   then the method is \textit{relatively stable}, meaning that, for $h$
   sufficiently small, the spurious solutions of the difference
   equation go to zero.
-  % 
+  %
 \item A method that is stable, but not relatively stable is called
   \textit{weakly stable} and may exhibit diverging solutions for long
   integrations.
-  % 
+  %
 \end{enumerate}
 
 \medskip
@@ -912,11 +912,11 @@ features of these methods.
 \end{center}
 
 % \begin{center} \begin{tabular}{|p{35mm}|p{35mm}||p{35mm}|p{35mm}|} \hline
-%  \multicolumn{2}{|c||}{\textbf{Single-Step}} & 
+%  \multicolumn{2}{|c||}{\textbf{Single-Step}} &
 %  \multicolumn{2}{|c|}{\textbf{Multi-Step}} \\ \hline
-%  \multicolumn{1}{|c|}{\textbf{Pros}} & 
-%  \multicolumn{1}{|c||}{\textbf{Cons}} & 
-%  \multicolumn{1}{|c|}{\textbf{Pros}} & 
+%  \multicolumn{1}{|c|}{\textbf{Pros}} &
+%  \multicolumn{1}{|c||}{\textbf{Cons}} &
+%  \multicolumn{1}{|c|}{\textbf{Pros}} &
 %  \multicolumn{1}{|c|}{\textbf{Cons}} \\ \hline \hline
 %  The theory is intuitive & Computationally intensive &
 %  Computationally efficient & The theory is rather involved \\
@@ -936,14 +936,14 @@ the algorithms that we have described.
 \textbf{Method} & \textbf{Type} & \parbox[b]{12mm}{\textbf{Local Error}} &
 \parbox[b]{12mm}{\textbf{Global Error}} &
 \parbox[b]{10mm}{\textbf{F.E. / Step\footnote{Function Evaluations per Step}}} &
-\textbf{Stability} & 
+\textbf{Stability} &
 \parbox[b]{15mm}{\textbf{Ease of changing step size}} &
 \parbox[b]{10mm}{\textbf{Recom-mended?}} \\*[2mm] \hline \\
 Modified Euler & Single-step & $\order{h^3}$ & $\order{h^2}$ & $2$ &
  Good & Good & No \\*[3mm]
-\parbox[t]{25mm}{Fourth-order Runge-Kutta} & Single-step & $\order{h^5}$ & 
+\parbox[t]{25mm}{Fourth-order Runge-Kutta} & Single-step & $\order{h^5}$ &
 $\order{h^4}$ & $4$ & Good & Good & Yes \\*[7mm]
-\parbox[t]{25mm}{Runge-Kutta-Fehlberg} & Single-step & $\order{h^6}$ & 
+\parbox[t]{25mm}{Runge-Kutta-Fehlberg} & Single-step & $\order{h^6}$ &
 $\order{h^5}$ & $6$ & Good & Good & Yes \\*[7mm]
 Milne & Multistep & $\order{h^5}$ & $\order{h^4}$ & 2 & Poor & Poor & No \\*[4mm]
 Adams-Moulton & Multistep & $\order{h^5}$ & $\order{h^4}$ & 2 & Good & Poor &
