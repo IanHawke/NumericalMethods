@@ -2,4 +2,5 @@
 *.log
 *.out
 *.toc
-
+*/_build/*.{ipynb,pdf,py,tplx}
+Notes/tex/CourseNotes*pdf
