@@ -1,0 +1,13 @@
+((*- extends 'article.tplx' -*))
+
+((* block input_group *))
+    ((*- if not (cell.metadata.get('nbconvert', {}).get('hide_code', False) or cell.metadata.get('nbconvert', {}).get('hide_solution', False)) -*))
+        ((( super() )))
+    ((*- endif -*))
+((* endblock input_group *))
+
+((* block output_group *))
+    ((*- if not cell.metadata.get('nbconvert', {}).get('hide_solution', False) -*))
+        ((( super() )))
+    ((*- endif -*))
+((* endblock output_group *))
