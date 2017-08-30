@@ -1,5 +1,9 @@
 ((*- extends 'article.tplx' -*))
 
+((* block date *))
+\date{}
+((* endblock date *))
+
 ((* block input_group *))
     ((*- if not cell.metadata.get('nbconvert', {}).get('hide_code', False) -*))
         ((( super() )))
