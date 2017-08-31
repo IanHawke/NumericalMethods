@@ -1,41 +1,7 @@
-% $Header: /cvsroot/latex-beamer/latex-beamer/solutions/conference-talks/conference-ornate-20min.en.tex,v 1.6 2004/10/07 20:53:08 tantau Exp $
-
 \documentclass{beamer}
-%\documentclass[handout]{beamer}
-%\usepackage{pgfpages}
-%\pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
-
-% This file is a solution template for:
-
-% - Talk at a conference/colloquium.
-% - Talk length is about 20min.
-% - Style is ornate.
-
-
-
-% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
-%
-% In principle, this file can be redistributed and/or modified under
-% the terms of the GNU Public License, version 2.
-%
-% However, this file is supposed to be a template to be modified
-% for your own needs. For this reason, if you use this file as a
-% template and not specifically distribute it as part of a another
-% package/program, I grant the extra permission to freely copy and
-% modify this file as you see fit and even to delete this copyright
-% notice.
-
 
 \mode<presentation>
 {
-%  \usetheme{Warsaw}
-%  \usetheme{Boadilla}
-%  \usetheme{Goettingen}
-%  \usetheme{Hannover}
-%  \usetheme{Madrid}
-%  \usetheme{Marburg}
-%  \usetheme{Montpellier}
-%  \usetheme{Pittsburgh}
   \usetheme{Hawke}
   % or ...
 
@@ -45,16 +11,9 @@
 
 
 \usepackage[english]{babel}
-% or whatever
-
 \usepackage[latin1]{inputenc}
-% or whatever
-
 \usepackage{times}
 \usepackage[T1]{fontenc}
-% Or whatever. Note that the encoding and the font should match. If T1
-% does not look nice, try deleting the line with the fontenc.
-
 \usepackage{multimedia}
 
 
@@ -62,7 +21,6 @@
 % My Commands
 %%%%%%
 
-\newcommand{\ml}{{\sc matlab}}
 \newcommand{\bb}{{\boldsymbol{b}}}
 \newcommand{\bx}{{\boldsymbol{x}}}
 \newcommand{\by}{{\boldsymbol{y}}}
@@ -75,14 +33,8 @@
 \title[Lecture 20] % (optional, use only with long paper titles)
 {Lecture 20 - Finite difference methods for Boundary Value Problems}
 
-% \subtitle
-% {Include Only If Paper Has a Subtitle}
-
 \author[I. Hawke] % (optional, use only with lots of authors)
 {I.~Hawke}
-% - Give the names in the same order as the appear in the paper.
-% - Use the \inst{?} command only if the authors have different
-%   affiliation.
 
 \institute[University of Southampton] % (optional, but mostly needed)
 {
@@ -90,39 +42,15 @@
   School of Mathematics, \\
   University of Southampton, UK
 }
-% - Use the \inst command only if there are several affiliations.
-% - Keep it simple, no one is interested in your street address.
 
 \date[Semester 1] % (optional, should be abbreviation of conference name)
 {MATH3018/6141, Semester 1}
-% - Either use conference name or its abbreviation.
-% - Not really informative to the audience, more for people (including
-%   yourself) who are reading the slides online
 
 \subject{Numerical methods}
-% This is only inserted into the PDF information catalog. Can be left
-% out.
-
-
-
-% If you have a file called "university-logo-filename.xxx", where xxx
-% is a graphic format that can be processed by latex or pdflatex,
-% resp., then you can add a logo as follows:
 
 \pgfdeclareimage[height=0.5cm]{university-logo}{mathematics_7469}
 \logo{\pgfuseimage{university-logo}}
 
-
-
-% Delete this, if you do not want the table of contents to pop up at
-% the beginning of each subsection:
-%  \AtBeginSubsection[]
-%  {
-%    \begin{frame}<beamer>
-%      \frametitle{Outline}
-%      \tableofcontents[currentsection,currentsubsection]
-%    \end{frame}
-%  }
 \AtBeginSection[]
 {
   \begin{frame}<beamer>
@@ -130,12 +58,6 @@
     \tableofcontents[currentsection]
   \end{frame}
 }
-
-
-% If you wish to uncover everything in a step-wise fashion, uncomment
-% the following command:
-
-%\beamerdefaultoverlayspecification{<+->}
 
 
 \begin{document}
@@ -591,181 +513,6 @@
 
 \end{frame}
 
-
-\section{Nonlinear problems}
-
-\subsection{Nonlinear problems}
-
-
-\begin{frame}
-  \frametitle{Nonlinear problems}
-
-  In linear case
-  \begin{equation*}
-    y'' + p(x) y' + q(x) y =  f(x), \quad y(a) = A, \,\, y(b) = B,
-    \quad x \in [a,b]
-  \end{equation*}
-  have approximate solution on grid after solving one linear
-  system. In nonlinear case
-  \begin{equation*}
-    y'' = f(x, y, y'), \quad y(a) = A, \,\, y(b) = B, \quad x \in [a,b]
-  \end{equation*}
-  as the $f$ depends on unknowns cannot directly write BVP as a linear
-  system. \pause
-
-  \vspace{1ex}
-
-  Instead guess solution $\by^{(k)}$. Then compute $f$ on grid using
-  old guess $\by^{(k)}$ which is \emph{known}, giving linear system
-  for $\by^{(k+1)}$. \pause
-
-  \vspace{1ex}
-
-  This process of computing a sequence of guesses, each of which
-  requires the solution of a linear system, is called
-  \emph{relaxation}.
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{Newton relaxation}
-
-  Approximate nonlinear problem using
-  \begin{equation*}
-    y_{i-1} + y_{i+1} - 2 y_i - h^2 f \left( x_i, y_i, \frac{y_{i+1} -
-      y_{i-1}}{2 h} \right) = r_i.
-  \end{equation*}
-  The $r_i$ are the \emph{residuals} to minimize. \pause Nonlinear
-  root finding problem -- $\bfm{r}$ is a function of $\by$, want to
-  solve $\bfm{r}(\bfm{y}) = \bfm{0}$. \pause
-
-  \vspace{1ex}
-
-  \begin{overlayarea}{\textwidth}{0.6\textheight}
-    \only<3-4|handout:1>
-    {
-      Imagine doing Newton's method
-      \begin{equation*}
-        \by^{(k+1)} = \by^{(k)} - \frac{\bfm{r^{(k)}}}{\bfm{r^{(k)}}'}.
-      \end{equation*}
-    }
-    \only<4|handout:1>
-    {
-      Meaningless as a vector equation. The equivalent is
-      \begin{equation*}
-        \pda{r_i^{(k)}}{y_j^{(k)}} \left( \by^{(k+1)} - \by^{(k)} \right) = -
-        \bfm{r^{(k)}}.
-      \end{equation*}
-    }
-    \only<5|handout:2>
-    {
-      \begin{equation*}
-        \pda{r_i^{(k)}}{y_j^{(k)}} \left( \by^{(k+1)} - \by^{(k)} \right) = -
-        \bfm{r^{(k)}}.
-      \end{equation*}
-      This is the linear system
-      \begin{equation*}
-        J^{(k)} \bfm{c}^{(k)} = - \bfm{r}^{(k)}
-      \end{equation*}
-      where $J$ is the Jacobian matrix, $\bfm{c}$ the correction, giving
-      \begin{equation*}
-        \by^{(k+1)} = \by^{(k)} + \bfm{c}^{(k)}.
-      \end{equation*}
-    }
-  \end{overlayarea}
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{The algorithm}
-
-  Construct initial guess $\by^{(0)}$ (conventionally zero). Then
-  iteratively
-  \begin{enumerate}
-  \item<1-> construct the residual
-    \begin{equation*}
-      r^{(k)}_i = y^{(k)}_{i-1} + y^{(k)}_{i+1} - 2 y^{(k)}_i - h^2 f
-      \left( x_i, y^{(k)}_i, \frac{y^{(k)}_{i+1} - y^{(k)}_{i-1}}{2 h}
-      \right),
-    \end{equation*}
-  \item<2-> construct the Jacobian
-    \begin{equation*}
-      J^{(k)} = \pda{r_i^{(k)}}{y_j^{(k)}},
-    \end{equation*}
-  \item<3-> construct the correction $\bfm{c}$ by solving
-    \begin{equation*}
-      J^{(k)} \bfm{c}^{(k)} = - \bfm{r}^{(k)},
-    \end{equation*}
-  \item<4-> construct the new guess by
-      \begin{equation*}
-        \by^{(k+1)} = \by^{(k)} + \bfm{c}^{(k)}.
-      \end{equation*}
-  \end{enumerate} \pause[5]
-  \vspace{-1ex}
-  Repeat until the correction is sufficiently small.
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{The Jacobian}
-
-  Choosing central differencing the Jacobian
-  \begin{equation*}
-    J^{(k)} = \pda{r_i^{(k)}}{y_j^{(k)}}
-  \end{equation*}
-  is also tridiagonal, as
-  \begin{equation*}
-    \pda{r_i}{y_j} = \left\{
-      \begin{aligned}
-        1 + \tfrac{h}{2} \pda{f}{y'} (y_{i-1}) && j & = i - 1, \\
-        -2 - h^2 \pda{f}{y} (y_{i}) && j & = i, \\
-        1 - \tfrac{h}{2} \pda{f}{y'} (y_{i+1}) && j & = i + 1.
-      \end{aligned} \right.
-  \end{equation*} \pause
-  Hence solution of each individual system is still very
-  efficient. \pause
-
-  \vspace{1ex}
-
-  Taking advantage of structure, there are Gauss-Seidel and SOR
-  variants of iterative scheme. Can either accelerate convergence or
-  improve stability in particular cases.
-
-\end{frame}
-
-
-\begin{frame}
-  \frametitle{Example}
-
-  \begin{columns}
-    \begin{column}{0.4\textwidth}
-      In the problem
-      \begin{align*}
-        y'' & = - \frac{1}{1 + y^2}, \\ y(0) &= 0, \\ y(1) &= 0, \\ x
-        &\in [0, 1]
-      \end{align*}
-      use Newton relaxation. Initial guess
-      trivial. \pause
-
-      \vspace{1ex}
-
-      First iteration already reasonable.  \pause
-
-      \vspace{1ex}
-
-      After 4 iterations solution has settled down.
-    \end{column}
-    \begin{column}{0.6\textwidth}
-      \begin{center}
-        \includegraphics<1|handout:0>[width=\textwidth]{figures/FDBVPNewton0}
-        \includegraphics<2|handout:0>[width=\textwidth]{figures/FDBVPNewton1}
-        \includegraphics<3>[width=\textwidth]{figures/FDBVPNewtonFinal}
-      \end{center}
-    \end{column}
-  \end{columns}
-
-\end{frame}
-
 \section{Summary}
 
 \subsection{Summary}
@@ -788,18 +535,8 @@
       known vector $\bb$ (but more complex boundary conditions may
       require modification of $A$ as well).
     \end{itemize}
-  \item For nonlinear problems we construct a sequence of guesses
-    $\by^{(n)}$ that converge to the solution; the previous guess is
-    used to solve a linear system.
   \end{itemize}
 
 \end{frame}
 
 \end{document}
-
-
-
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: t
-%%% End:

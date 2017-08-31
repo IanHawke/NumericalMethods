@@ -1,0 +1,296 @@
+\documentclass{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Hawke}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{multimedia}
+
+
+%%%%%%
+% My Commands
+%%%%%%
+
+\newcommand{\bb}{{\boldsymbol{b}}}
+\newcommand{\bx}{{\boldsymbol{x}}}
+\newcommand{\by}{{\boldsymbol{y}}}
+\newcommand{\bfm}[1]{{\boldsymbol{#1}}}
+\newcommand{\pda}[2]{\frac{\partial{#1}}{\partial{#2}}}
+
+
+%%%%
+
+\title[Lecture 23] % (optional, use only with long paper titles)
+{Lecture 23 - Finite difference methods for nonlinear Boundary Value Problems}
+
+\author[I. Hawke] % (optional, use only with lots of authors)
+{I.~Hawke}
+
+\institute[University of Southampton] % (optional, but mostly needed)
+{
+%  \inst{1}%
+  School of Mathematics, \\
+  University of Southampton, UK
+}
+
+\date[Semester 1] % (optional, should be abbreviation of conference name)
+{MATH3018/6141, Semester 1}
+
+\subject{Numerical methods}
+
+\pgfdeclareimage[height=0.5cm]{university-logo}{mathematics_7469}
+\logo{\pgfuseimage{university-logo}}
+
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Finite difference methods}
+
+\subsection{Background}
+
+\begin{frame}
+  \frametitle{Boundary Value Problems}
+
+  Considering simple boundary value problem
+  \begin{equation*}
+    y'' = f(x, y, y'), \quad y(a) = A, \,\, y(b) = B, \quad x \in [a,b].
+  \end{equation*} \pause
+  Boundary conditions are only examples here. \pause
+
+  \vspace{1ex}
+
+  Standard approach: first try \emph{shooting} method.  Next try \emph{relaxation}. Linear case: grid plus finite differences give a linear system to solve. \pause
+
+  \vspace{1ex}
+
+  In the nonlinear case can still use a grid and finite differences. Resulting equations not linear.
+
+\end{frame}
+
+
+\section{Nonlinear problems}
+
+\subsection{Nonlinear problems}
+
+
+\begin{frame}
+  \frametitle{Nonlinear problems}
+
+  In linear case
+  \begin{equation*}
+    y'' + p(x) y' + q(x) y =  f(x), \quad y(a) = A, \,\, y(b) = B,
+    \quad x \in [a,b]
+  \end{equation*}
+  have approximate solution on grid after solving one linear
+  system. In nonlinear case
+  \begin{equation*}
+    y'' = f(x, y, y'), \quad y(a) = A, \,\, y(b) = B, \quad x \in [a,b]
+  \end{equation*}
+  as the $f$ depends on unknowns cannot directly write BVP as a linear
+  system. \pause
+
+  \vspace{1ex}
+
+  Instead guess solution $\by^{(k)}$. Then compute $f$ on grid using
+  old guess $\by^{(k)}$ which is \emph{known}, giving linear system
+  for $\by^{(k+1)}$. \pause
+
+  \vspace{1ex}
+
+  This process of computing a sequence of guesses, each of which
+  requires the solution of a linear system, is called
+  \emph{relaxation}.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Newton relaxation}
+
+  Approximate nonlinear problem using
+  \begin{equation*}
+    y_{i-1} + y_{i+1} - 2 y_i - h^2 f \left( x_i, y_i, \frac{y_{i+1} -
+      y_{i-1}}{2 h} \right) = r_i.
+  \end{equation*}
+  The $r_i$ are the \emph{residuals} to minimize. \pause Nonlinear
+  root finding problem -- $\bfm{r}$ is a function of $\by$, want to
+  solve $\bfm{r}(\bfm{y}) = \bfm{0}$. \pause
+
+  \vspace{1ex}
+
+  \begin{overlayarea}{\textwidth}{0.6\textheight}
+    \only<3-4|handout:1>
+    {
+      Imagine doing Newton's method
+      \begin{equation*}
+        \by^{(k+1)} = \by^{(k)} - \frac{\bfm{r^{(k)}}}{\bfm{r^{(k)}}'}.
+      \end{equation*}
+    }
+    \only<4|handout:1>
+    {
+      Meaningless as a vector equation. The equivalent is
+      \begin{equation*}
+        \pda{r_i^{(k)}}{y_j^{(k)}} \left( \by^{(k+1)} - \by^{(k)} \right) = -
+        \bfm{r^{(k)}}.
+      \end{equation*}
+    }
+    \only<5|handout:2>
+    {
+      \begin{equation*}
+        \pda{r_i^{(k)}}{y_j^{(k)}} \left( \by^{(k+1)} - \by^{(k)} \right) = -
+        \bfm{r^{(k)}}.
+      \end{equation*}
+      This is the linear system
+      \begin{equation*}
+        J^{(k)} \bfm{c}^{(k)} = - \bfm{r}^{(k)}
+      \end{equation*}
+      where $J$ is the Jacobian matrix, $\bfm{c}$ the correction, giving
+      \begin{equation*}
+        \by^{(k+1)} = \by^{(k)} + \bfm{c}^{(k)}.
+      \end{equation*}
+    }
+  \end{overlayarea}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The algorithm}
+
+  Construct initial guess $\by^{(0)}$ (conventionally zero). Then
+  iteratively
+  \begin{enumerate}
+  \item<1-> construct the residual
+    \begin{equation*}
+      r^{(k)}_i = y^{(k)}_{i-1} + y^{(k)}_{i+1} - 2 y^{(k)}_i - h^2 f
+      \left( x_i, y^{(k)}_i, \frac{y^{(k)}_{i+1} - y^{(k)}_{i-1}}{2 h}
+      \right),
+    \end{equation*}
+  \item<2-> construct the Jacobian
+    \begin{equation*}
+      J^{(k)} = \pda{r_i^{(k)}}{y_j^{(k)}},
+    \end{equation*}
+  \item<3-> construct the correction $\bfm{c}$ by solving
+    \begin{equation*}
+      J^{(k)} \bfm{c}^{(k)} = - \bfm{r}^{(k)},
+    \end{equation*}
+  \item<4-> construct the new guess by
+      \begin{equation*}
+        \by^{(k+1)} = \by^{(k)} + \bfm{c}^{(k)}.
+      \end{equation*}
+  \end{enumerate} \pause[5]
+  \vspace{-1ex}
+  Repeat until the correction is sufficiently small.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Jacobian}
+
+  Choosing central differencing the Jacobian
+  \begin{equation*}
+    J^{(k)} = \pda{r_i^{(k)}}{y_j^{(k)}}
+  \end{equation*}
+  is also tridiagonal, as
+  \begin{equation*}
+    \pda{r_i}{y_j} = \left\{
+      \begin{aligned}
+        1 + \tfrac{h}{2} \pda{f}{y'} (y_{i-1}) && j & = i - 1, \\
+        -2 - h^2 \pda{f}{y} (y_{i}) && j & = i, \\
+        1 - \tfrac{h}{2} \pda{f}{y'} (y_{i+1}) && j & = i + 1.
+      \end{aligned} \right.
+  \end{equation*} \pause
+  Hence solution of each individual system is still very
+  efficient. \pause
+
+  \vspace{1ex}
+
+  Taking advantage of structure, there are Gauss-Seidel and SOR
+  variants of iterative scheme. Can either accelerate convergence or
+  improve stability in particular cases.
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Example}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      In the problem
+      \begin{align*}
+        y'' & = - \frac{1}{1 + y^2}, \\ y(0) &= 0, \\ y(1) &= 0, \\ x
+        &\in [0, 1]
+      \end{align*}
+      use Newton relaxation. Initial guess
+      trivial. \pause
+
+      \vspace{1ex}
+
+      First iteration already reasonable.  \pause
+
+      \vspace{1ex}
+
+      After 4 iterations solution has settled down.
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1|handout:0>[width=\textwidth]{figures/FDBVPNewton0}
+        \includegraphics<2|handout:0>[width=\textwidth]{figures/FDBVPNewton1}
+        \includegraphics<3>[width=\textwidth]{figures/FDBVPNewtonFinal}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+\section{Summary}
+
+\subsection{Summary}
+
+\begin{frame}
+  \frametitle{Summary}
+
+  \begin{itemize}
+  \item First shoot, then relax.
+  \item Finite difference methods are typically less accurate and
+    efficient, and for nonlinear problems are more complex to
+    implement. However, they are much more likely to work in complex
+    cases.
+  \item For linear problems finite difference methods convert the ODE
+    to a linear system $T \by = \bfm{F}$.
+    \begin{itemize}
+    \item The matrix will be tri-diagonal (when using centred
+      differencing).
+    \item The boundary conditions are normally directly encoded in the
+      known vector $\bb$ (but more complex boundary conditions may
+      require modification of $A$ as well).
+    \end{itemize}
+  \item For nonlinear problems we construct a sequence of guesses
+    $\by^{(n)}$ that converge to the solution; the previous guess is
+    used to solve a linear system.
+  \end{itemize}
+
+\end{frame}
+
+\end{document}
