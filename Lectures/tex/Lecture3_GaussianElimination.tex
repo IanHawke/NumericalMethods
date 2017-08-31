@@ -1,0 +1,782 @@
+% $Header: /cvsroot/latex-beamer/latex-beamer/solutions/conference-talks/conference-ornate-20min.en.tex,v 1.6 2004/10/07 20:53:08 tantau Exp $
+
+\documentclass{beamer}
+%\documentclass[handout]{beamer}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
+
+% This file is a solution template for:
+
+% - Talk at a conference/colloquium.
+% - Talk length is about 20min.
+% - Style is ornate.
+
+
+
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice. 
+
+
+\mode<presentation>
+{
+%  \usetheme{Warsaw}
+%  \usetheme{Boadilla}
+%  \usetheme{Goettingen}
+%  \usetheme{Hannover}
+%  \usetheme{Madrid}
+%  \usetheme{Marburg}
+%  \usetheme{Montpellier}
+%  \usetheme{Pittsburgh}
+  \usetheme{Hawke}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+% or whatever
+
+\usepackage[latin1]{inputenc}
+% or whatever
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{multimedia}
+
+%%%%%%
+% My Commands
+%%%%%%
+
+\newcommand{\ml}{{\sc matlab}}
+\newcommand{\bb}{{\boldsymbol{b}}}
+\newcommand{\bx}{{\boldsymbol{x}}}
+\newcommand{\bfm}[1]{{\boldsymbol{#1}}}
+
+%%%%
+
+\title[Lecture 3] % (optional, use only with long paper titles)
+{Lecture 3 - Direct Methods and Gaussian Elimination} 
+
+% \subtitle
+% {Include Only If Paper Has a Subtitle}
+
+\author[I. Hawke] % (optional, use only with lots of authors)
+{I.~Hawke}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[University of Southampton] % (optional, but mostly needed)
+{
+%  \inst{1}%
+  School of Mathematics, \\
+  University of Southampton, UK
+}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date[Semester 1] % (optional, should be abbreviation of conference name)
+{MATH3018/6141, Semester 1}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Numerical methods}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+\pgfdeclareimage[height=0.5cm]{university-logo}{mathematics_7469}
+\logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+%  \AtBeginSubsection[]
+%  {
+%    \begin{frame}<beamer>
+%      \frametitle{Outline}
+%      \tableofcontents[currentsection,currentsubsection]
+%    \end{frame}
+%  }
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Direct vs.\ Indirect}
+
+\subsection{Direct vs.\ Indirect}
+
+\begin{frame}
+  \frametitle{Direct vs.\ Indirect}
+
+  We want to solve the linear system
+  \begin{equation*}
+    A \bx = \bb
+  \end{equation*}
+  for (reasonably conditioned) arbitrary $A$. This can be done using a
+  method that is either 
+  \begin{itemize}
+  \item Direct: a finite algorithm that produces the correct answer, or
+  \item Indirect (or iterative): an infinite algorithm that steadily
+    approaches the correct answer, maybe only asymptotically.
+  \end{itemize}
+  \pause
+
+  \vspace{1ex}
+
+  Direct is \emph{not} always best:
+  \begin{enumerate}
+  \item For a large matrix ($n \gtrsim 10^5$) a direct method may be
+    impractical.
+  \item Accumulation of round-off error may make the direct method
+    considerably less accurate than the indirect method.
+  \end{enumerate}
+
+\end{frame}
+
+
+\subsection{Gaussian Elimination}
+
+\begin{frame}
+  \frametitle{Gaussian Elimination}
+  
+  The classic direct method.  Find a simple problem to solve, and
+  transform everything to that simple problem. Here make the matrix
+  \emph{upper triangular}. \pause
+
+  \begin{equation*}
+    \begin{pmatrix}
+      \color<5|handout:0>{red}1 & \color<5|handout:0>{red}2 & \color<5|handout:0>{red}3 \\
+      0 & \color<4|handout:0>{red}4 & \color<4|handout:0>{red}5 \\
+      0 & 0 & \color<3|handout:0>{red}6
+    \end{pmatrix}
+    \begin{pmatrix}
+      \color<5|handout:0>{red}x_1 \\ \color<4|handout:0>{red}x_2 \\ \color<3|handout:0>{red}x_3
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+      \color<5|handout:0>{red}6 \\ \color<4|handout:0>{red}9 \\ \color<3|handout:0>{red}6
+    \end{pmatrix}
+  \end{equation*}
+  is trivially solved by \emph{back-substitution}.\pause\ Solve from
+  the bottom up:
+  \begin{overlayarea}{\textwidth}{0.35\textheight}
+    \only<3|handout:0>
+    {
+      \begin{align*}
+        && {6 x_3} & {= 6} & {\Rightarrow x_3} & {= 1} \\
+        && \phantom{4 x_2 + 5 x_3} & \phantom{= 9} && \\
+        \phantom{\implies} && \phantom{4 x_2} & \phantom{= 4} & \phantom{\Rightarrow x_2} & \phantom{= 1} \\
+        && \phantom{x_1 + 2 x_2 + 3 x_3} & \phantom{= 6} && \\
+        \phantom{\implies} && \phantom{x_1} & \phantom{= 1.}
+      \end{align*}
+    }
+    \only<4|handout:0>
+    {
+      \begin{align*}
+        && { 6 x_3 } & { = 6 } & { \Rightarrow x_3 } & { = 1 } \\
+        && { 4 x_2 + 5 x_3 } & { = 9 } && \\
+        { \implies } && { 4 x_2 } & { = 4 } & { \Rightarrow x_2 } & {
+          = 1 } \\
+        && \phantom{ x_1 + 2 x_2 + 3 x_3 } & \phantom{ = 6 } && \\
+        \phantom{ \implies } && \phantom{ x_1 } & \phantom{ = 1. }
+      \end{align*}
+    }
+    \only<5>
+    {
+      \begin{align*}
+        && {6 x_3} & {= 6} & {\Rightarrow x_3} & {= 1} \\
+        && {4 x_2 + 5 x_3} & {= 9} && \\
+        {\implies} && {4 x_2} & {= 4} & {\Rightarrow x_2} & {= 1} \\
+        && {x_1 + 2 x_2 + 3 x_3} & {= 6} && \\
+        {\implies} && {x_1} & {= 1.}
+      \end{align*}
+    }
+  \end{overlayarea}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Converting to upper triangular form}
+  
+  Want upper triangular form. Matrix problem is 
+  system of simultaneous equations. Eliminate appropriate variables
+  from equations. \pause
+
+  \vspace{2ex}
+
+  Must consistently change right hand side. 
+  Use \emph{augmented matrix}
+  \begin{equation*}
+    \left(
+    \begin{array}{c|c}
+      A & \bb
+    \end{array}
+    \right)
+  \end{equation*}
+
+  \vspace{1ex}
+
+  Can e.g.\ scale equations (rows) or subtract one equation (row) from another.
+
+  \vspace{2ex}
+
+  Work from top to bottom, left to right, eliminating all entries
+  below the diagonal.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Converting to upper triangular form - example}
+
+  \begin{overlayarea}{\textwidth}{0.8\textheight}
+    \only<1|handout:1>
+    {
+      Given a system form the augmented matrix:
+      \begin{equation*}
+        \begin{pmatrix}
+          3 & 0 & 1 \\
+          6 & 2 & 4 \\
+          9 & 2 & 6
+        \end{pmatrix}
+        \bx =
+        \begin{pmatrix}
+          4 \\ 10 \\ 15
+        \end{pmatrix} \rightarrow
+        \left(
+          \begin{array}{c c c|c}
+            3 & 0 & 1 & 4 \\
+            6 & 2 & 4 & 10 \\
+            9 & 2 & 6 & 15      
+          \end{array}
+        \right).
+      \end{equation*}
+    }
+    \only<2|handout:2>
+    {
+      \begin{equation*}
+        \left(
+          \begin{array}{c c c|c}
+            3 & 0 & 1 & 4 \\
+            6 & 2 & 4 & 10 \\
+            9 & 2 & 6 & 15      
+          \end{array}
+        \right)
+      \end{equation*}
+      Take the first column. Eliminate entries below the diagonal
+      using multiples of the first row:
+      \begin{align*}
+        \left(
+          \begin{array}{c c c|c}
+            3 & 0 & 1 & 4 \\
+            6 & 2 & 4 & 10 \\
+            9 & 2 & 6 & 15      
+          \end{array}
+        \right)
+        & \rightarrow
+        \left(
+          \begin{array}{c c c|c}
+            3 & 0 & 1 & 4 \\
+            6 - \tfrac{6}{3} \times 3 & 2 - \tfrac{6}{3} \times 0 & 4
+            - \tfrac{6}{3} \times 1 & 10 - \tfrac{6}{3} \times 4 \\
+            9 - \tfrac{9}{3} \times 3& 2 - \tfrac{9}{3} \times 0 & 6 -
+            \tfrac{9}{3} \times 1 & 15 - \tfrac{9}{3} \times 4
+          \end{array}
+        \right) \\
+        & =     
+        \left(
+          \begin{array}{c c c|c}
+            3 & 0 & 1 & 4 \\
+            0 & 2 & 2 & 2 \\
+            0 & 2 & 3 & 3
+          \end{array}
+        \right)
+      \end{align*}
+    }
+    \only<3|handout:3>
+    {
+      \begin{equation*}
+        \left(
+          \begin{array}{c c c|c}
+            3 & 0 & 1 & 4 \\
+            6 & 2 & 4 & 10 \\
+            9 & 2 & 6 & 15     
+          \end{array}
+        \right)
+      \end{equation*}
+      For the second column use multiples of the second row:
+      \begin{align*}
+        \left(
+          \begin{array}{c c c|c}
+            3 & 0 & 1 & 4 \\
+            6 & 2 & 4 & 10 \\
+            9 & 2 & 6 & 15      
+          \end{array}
+        \right)
+        & \rightarrow
+        \left(
+          \begin{array}{c c c|c}
+            3 & 0 & 1 & 4 \\
+            0 & 2 & 2 & 2 \\
+            0 & 2 & 3 & 3
+          \end{array}
+        \right) \\
+        & \rightarrow
+        \left(
+          \begin{array}{c c c|c}
+            3 & 0 & 1 & 4 \\
+            0 & 2 & 2 & 2 \\
+            0 & 2 - \tfrac{2}{2} \times 2 & 3 - \tfrac{2}{2} \times 2
+            & 3 - \tfrac{2}{2} \times 2 
+          \end{array}
+        \right) \\
+        & =
+        \left(
+          \begin{array}{c c c|c}
+            3 & 0 & 1 & 4 \\
+            0 & 2 & 2 & 2 \\
+            0 & 0 & 1 & 1
+          \end{array}
+        \right) \Rightarrow \bx =
+        \begin{pmatrix}
+          1 \\ 0 \\ 1
+        \end{pmatrix}.
+      \end{align*}
+    }
+  \end{overlayarea}
+
+\end{frame}
+
+
+\subsection{Pivoting}
+
+\begin{frame}
+  \frametitle{Swapping rows and columns.}
+
+  We can make our matrix simpler/better without changing the
+  result. As the matrix defines simultaneous equations we can: \pause
+  \begin{enumerate}
+  \item scale any equation by a non-zero scalar number.  Equivalent to
+    multiplying a row in the \emph{augmented} matrix by a
+    number \pause
+  \item swap the order of the equations. Equivalent to
+    swapping rows in the \emph{augmented} matrix, \pause
+  \item swap the order of the unknown variables.  Equivalent to
+    swapping columns in the matrix. \pause
+  \end{enumerate}
+  \begin{overlayarea}{\textwidth}{0.35\textheight}
+    \only<5-7> 
+    { 
+      Swapping rows is called \emph{pivoting}. Why do it? Trivial
+      reason: Gaussian elimination requires dividing by a matrix
+      coefficient, which must be non-zero.
+    } \only<6|handout:1> {
+      \begin{equation*}
+        A = \left(
+          \begin{array}{c c c |c}
+            1 & 1 & 1 & 1 \\
+            0 & 0 & 2 & 1 \\
+            0 & 1 & 1 & 2
+          \end{array} \right).
+      \end{equation*}
+      Without pivoting we would need to compute $1/0$: disaster!
+    }
+    \only<7|handout:2>
+    {
+      \begin{equation*}
+        A = \left(
+          \begin{array}{c c c |c}
+            1 & 1 & 1 & 1 \\
+            0 & 0 & 2 & 1 \\
+            0 & 1 & 1 & 2
+          \end{array} \right) \rightarrow
+        \left(
+          \begin{array}{c c c |c}
+            1 & 1 & 1 & 1 \\
+            0 & 1 & 1 & 2 \\
+            0 & 0 & 2 & 1
+          \end{array} \right) 
+      \end{equation*}
+      The row swap avoids the zero division.
+    }      
+  \end{overlayarea}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Pivoting for accuracy}
+  
+  A more subtle error appears can appear (here $\varepsilon \ll 1$).
+  {\footnotesize
+  \begin{equation*}
+    \left(
+      \begin{array}{c c|c}
+        \varepsilon & 1 & 1 \\
+        1 & 1 & 2
+      \end{array}
+      \right) \rightarrow     
+      \left(
+      \begin{array}{c c|c}
+        \varepsilon & 1 & 1 \\
+        0 & 1 - \varepsilon^{-1} & 2 - \varepsilon^{-1}
+      \end{array}
+    \right) \simeq
+    \left(
+      \begin{array}{c c|c}
+        \varepsilon & 1 & 1 \\
+        0 & - \varepsilon^{-1} & - \varepsilon^{-1}
+      \end{array}
+    \right) \Rightarrow \bx  =
+    \begin{pmatrix}
+      0 \\ 1
+    \end{pmatrix}.
+  \end{equation*}} \pause
+  The correct answer is $\bx = (1, 1)^T$. The  system has good
+  condition number, but division by small $\varepsilon$ destroys
+  precision. \pause
+  
+  \vspace{1ex}
+
+  Instead \emph{pivot} by swapping rows: we have the system
+  \begin{equation*}
+    \left(
+      \begin{array}{c c|c}
+        1 & 1 & 2 \\
+        \varepsilon & 1 & 1 
+      \end{array}
+    \right)  \Rightarrow \bx \simeq
+    \begin{pmatrix}
+      1 \\ 1
+    \end{pmatrix}.
+  \end{equation*}
+  The pivot should be as large in magnitude as possible.
+
+\note{
+
+  Do the calculation explicitly:
+  \begin{align*}
+    &&
+    \left(
+      \begin{array}{c c|c}
+        \varepsilon & 1 & 1 \\
+        1 & 1 & 2        
+      \end{array}
+    \right) & \rightarrow
+    \left(
+      \begin{array}{c c|c}
+        \varepsilon & 1 & 1 \\
+        0 & 1 - \varepsilon^{-1} & 2 - \varepsilon^{-1}
+      \end{array}
+    \right) \\
+    &&& \simeq
+    \left(
+      \begin{array}{c c|c}
+        \varepsilon & 1 & 1 \\
+        0 & - \varepsilon^{-1} & - \varepsilon^{-1}
+      \end{array}
+    \right) \\
+    \Rightarrow&& \bx & =
+    \begin{pmatrix}
+      0 \\ 1
+    \end{pmatrix}.
+  \end{align*}
+  However, this is an artefact; the pivoted calculation gives
+  \begin{align*}
+    &&
+    \left(
+      \begin{array}{c c|c}
+        1 & 1 & 2 \\
+        \varepsilon & 1 & 1
+      \end{array}
+    \right) & \rightarrow
+    \left(
+      \begin{array}{c c|c}
+        1 & 1 & 2 \\
+        0 & 1 - \varepsilon & 1 - 2 \varepsilon
+      \end{array}
+    \right) \\
+    &&& \simeq
+    \left(
+      \begin{array}{c c|c}
+        1 & 1 & 2 \\
+        0 & 1 & 1
+      \end{array}
+    \right) \\
+    \Rightarrow&& \bx & =
+    \begin{pmatrix}
+      1 \\ 1
+    \end{pmatrix},
+  \end{align*}
+  which is correct in the limit $\varepsilon \rightarrow 0$.
+}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Partial vs. total pivoting}
+    
+  {
+    \footnotesize
+    \renewcommand{\arraystretch}{-1.2}
+  \begin{equation*}
+    \left(
+      \begin{array}{c c c c c c|c}
+        1 & \cdots & \cdots & \cdots & \cdots & \cdots & \vdots \\
+        0 & \ddots & \cdots & \cdots & \cdots & \cdots & \vdots \\
+        0 & 0 & 2 & \cdots & \cdots & \cdots & \vdots \\
+        0 & 0 & \color<1|handout:0>{red}-10 & \cdots & \cdots & \cdots & \vdots \\
+        0 & 0 & \vdots & \cdots & \cdots & \color<2-3|handout:0>{red}100 & \vdots \\
+        0 & 0 & \vdots & \cdots & \cdots & \cdots & \vdots \\
+      \end{array}
+    \right)
+  \end{equation*}
+  }
+
+  \emph{Partial pivoting}: For row $i$ find row ($j \geq i$) with
+  largest coefficient $a_{ji}$ (in absolute value). Swap row $j$ with
+  row $i$. \pause
+
+  \vspace{1ex}
+
+  \emph{Total pivoting}: For row $i$ find row ($j \geq i$) with
+  largest coefficient $a_{jk}$ (in absolute value). Swap row $j$ with
+  row $i$ \emph{and} column $i$ with column $k$. \pause
+
+  \vspace{1ex}
+
+  Total pivoting is complex, expensive and usually
+  unnecessary. Partial pivoting is often essential.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example}
+  
+  The augmented matrix is
+  \begin{equation*}
+    A = \left(
+      \begin{array}{c c c|c}
+        1 & 2 & 2 & 5 \\
+        2 & 1 & 0 & 3 \\
+        3 & -1 & 1 & 3 
+      \end{array}
+      \right).
+  \end{equation*}\pause
+  \begin{overlayarea}{\textwidth}{0.7\textheight}
+    \only<2|handout:1>
+    {
+      Remove entries below the diagonal in the first column.  Pivot to
+      get biggest coefficient on diagonal. Swapping rows:
+      \begin{equation*}
+        \left(
+          \begin{array}{c c c|c}
+            1 & 2 & 2 & 5 \\
+            2 & 1 & 0 & 3 \\
+            \color{red}3 & -1 & 1 & 3
+          \end{array}
+        \right) \xrightarrow{\text{Row 1} \leftrightarrow \text{Row 3}}
+        \left(
+          \begin{array}{c c c|c}
+            3 & -1 & 1 & 3 \\
+            2 & 1 & 0 & 3 \\
+            1 & 2 & 2 & 5 
+          \end{array}
+        \right).
+      \end{equation*}
+    }
+    \only<3|handout:2>
+    {
+      Eliminate entries in first column:
+      {
+        \renewcommand{\arraystretch}{1.2}
+      \begin{equation*}
+        \left(
+          \begin{array}{c c c|c}
+            3 & -1 & 1 & 3 \\
+            2 & 1 & 0 & 3 \\
+            1 & 2 & 2 & 5 
+          \end{array} \right) \xrightarrow[\substack{\text{Row 2}
+          \rightarrow \text{Row 2} - \tfrac{2}{3}\text{Row 1,} \\
+          \text{Row 3} \rightarrow \text{Row 3} -
+          \tfrac{1}{3}\text{Row 1}}]{\text{eliminate column 1}}
+        \left(
+          \begin{array}{c c c|c}
+            3 & -1 & 1 & 3 \\
+            0 & \tfrac{5}{3} & -\tfrac{2}{3} & 1 \\
+            0 & \tfrac{7}{3} & \tfrac{5}{3} & 4 
+          \end{array}\right) .
+      \end{equation*}
+    }
+    }
+    \only<4|handout:3>
+    {
+      To simplify algebra rescale the last two rows: 
+      {
+      \renewcommand{\arraystretch}{1.2}
+      \begin{equation*}
+        \left(
+          \begin{array}{c c c|c}
+            3 & -1 & 1 & 3 \\
+            0 & \tfrac{5}{3} & -\tfrac{2}{3} & 1 \\
+            0 & \tfrac{7}{3} & \tfrac{5}{3} & 4 
+          \end{array} \right) \xrightarrow{\text{multiply rows 2, 3 by
+          3}}  \left(
+          \begin{array}{c c c|c}
+            3 & -1 & 1 & 3 \\
+            0 & 5 & -2 & 3 \\
+            0 & 7 & 5 & 12 
+          \end{array} \right) .
+      \end{equation*}
+    }
+    }
+    \only<5|handout:4>
+    {
+      Done first column. For the second column, \emph{consider only
+        rows 2 and 3}. Once again, pivot:
+      \begin{equation*}
+        \left(
+          \begin{array}{c c c|c}
+            3 & -1 & 1 & 3 \\
+            0 & 5 & -2 & 3 \\
+            0 & \color{red}7 & 5 & 12 
+          \end{array} \right) \xrightarrow{\text{Row 2}
+          \leftrightarrow \text{Row 3}}  \left(
+          \begin{array}{c c c|c}
+            3 & -1 & 1 & 3 \\
+            0 & 7 & 5 & 12 \\
+            0 & 5 & -2 & 3
+          \end{array} \right) .
+      \end{equation*}
+    }
+    \only<6|handout:5>
+    {
+      Finally eliminate the second column:
+      \begin{align*}
+        && \left(
+          \begin{array}{c c c|c}
+            3 & -1 & 1 & 3 \\
+            0 & 7 & 5 & 12 \\
+            0 & 5 & -2 & 3
+          \end{array} \right) & \xrightarrow[\text{Row 3} \rightarrow
+        \text{Row 3} - \tfrac{5}{7} \text{Row 2}]{\text{eliminate
+            column 2}}  \left(
+          \begin{array}{c c c|c}
+            3 & -1 & 1 & 3 \\
+            0 & 7 & 5 & 12 \\
+            0 & 0 & -\tfrac{39}{7} & -\tfrac{39}{7}
+          \end{array} \right) \\ 
+        && \Rightarrow
+        \bx & =
+        \begin{pmatrix}
+          1 \\ 1 \\ 1
+        \end{pmatrix}.
+      \end{align*}
+    }
+  \end{overlayarea}
+
+\end{frame}
+
+\subsection{Operation count}
+
+\begin{frame}
+  \frametitle{Operation count}
+
+  How expensive is Gaussian elimination?
+
+  \vspace{1ex}
+
+  Only count multiplication/division. Consider a large $n \times n$
+  matrix and approximate.
+
+  \vspace{1ex}
+
+  For row $k$ we eliminate $n-k$ entries by multiplying the pivot by
+  the row, hence $n(n-k)$ operations. Total is
+  % 
+  \begin{equation*}
+    \sum_{k=1}^{n-1} n (n - k) = \tfrac{1}{2} n^2 (n - 1).
+  \end{equation*}
+  % 
+  For large $n$ this is $\sim \tfrac{1}{2} n^3$.
+  
+  \vspace{1ex}
+
+  Back substitution is $\sim n^2$ so small in comparison.
+
+\end{frame}
+
+\section{Summary}
+
+\subsection{Summary}
+
+ \begin{frame}
+   \frametitle{Summary}
+
+   \begin{itemize}
+   \item Direct methods solve linear systems in a finite number of
+     steps; indirect or iterative methods may be infinite but can be
+     truncated to give an approximate solution.
+   \item Indirect methods are often faster to reach a given accuracy;
+     accumulated round-off error may mean direct methods are not
+     ``exact''.
+   \item Gaussian elimination is a direct method that is an $n^3$
+     algorithm, where $n$ is the matrix size.
+   \item Pivoting increases accuracy (reduces error due to accumulated
+     round-off). \emph{It does not help if the problem is
+       ill-conditioned}.
+   \item Partial pivoting is preferred to total pivoting in practice.
+   \item All operations (except swapping columns) are applied to the
+     \emph{augmented} matrix.
+   \end{itemize}
+   
+ \end{frame}
+
+
+
+\end{document}
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

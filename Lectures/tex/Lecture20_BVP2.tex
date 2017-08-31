@@ -1,0 +1,805 @@
+% $Header: /cvsroot/latex-beamer/latex-beamer/solutions/conference-talks/conference-ornate-20min.en.tex,v 1.6 2004/10/07 20:53:08 tantau Exp $
+
+\documentclass{beamer}
+%\documentclass[handout]{beamer}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
+
+% This file is a solution template for:
+
+% - Talk at a conference/colloquium.
+% - Talk length is about 20min.
+% - Style is ornate.
+
+
+
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice.
+
+
+\mode<presentation>
+{
+%  \usetheme{Warsaw}
+%  \usetheme{Boadilla}
+%  \usetheme{Goettingen}
+%  \usetheme{Hannover}
+%  \usetheme{Madrid}
+%  \usetheme{Marburg}
+%  \usetheme{Montpellier}
+%  \usetheme{Pittsburgh}
+  \usetheme{Hawke}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+% or whatever
+
+\usepackage[latin1]{inputenc}
+% or whatever
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{multimedia}
+
+
+%%%%%%
+% My Commands
+%%%%%%
+
+\newcommand{\ml}{{\sc matlab}}
+\newcommand{\bb}{{\boldsymbol{b}}}
+\newcommand{\bx}{{\boldsymbol{x}}}
+\newcommand{\by}{{\boldsymbol{y}}}
+\newcommand{\bfm}[1]{{\boldsymbol{#1}}}
+\newcommand{\pda}[2]{\frac{\partial{#1}}{\partial{#2}}}
+
+
+%%%%
+
+\title[Lecture 20] % (optional, use only with long paper titles)
+{Lecture 20 - Finite difference methods for Boundary Value Problems}
+
+% \subtitle
+% {Include Only If Paper Has a Subtitle}
+
+\author[I. Hawke] % (optional, use only with lots of authors)
+{I.~Hawke}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[University of Southampton] % (optional, but mostly needed)
+{
+%  \inst{1}%
+  School of Mathematics, \\
+  University of Southampton, UK
+}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date[Semester 1] % (optional, should be abbreviation of conference name)
+{MATH3018/6141, Semester 1}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Numerical methods}
+% This is only inserted into the PDF information catalog. Can be left
+% out.
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+\pgfdeclareimage[height=0.5cm]{university-logo}{mathematics_7469}
+\logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+%  \AtBeginSubsection[]
+%  {
+%    \begin{frame}<beamer>
+%      \frametitle{Outline}
+%      \tableofcontents[currentsection,currentsubsection]
+%    \end{frame}
+%  }
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command:
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Finite difference methods}
+
+\subsection{Background}
+
+\begin{frame}
+  \frametitle{Boundary Value Problems}
+
+  Considering simple boundary value problem
+  \begin{equation*}
+    y'' = f(x, y, y'), \quad y(a) = A, \,\, y(b) = B, \quad x \in [a,b].
+  \end{equation*} \pause
+  Boundary conditions are only examples here. \pause
+
+  \vspace{1ex}
+
+  Standard approach: first try \emph{shooting} method.  Convert BVP to
+  IVP with some initial data free. Free data then modified, using root
+  finding, to satisfy boundary conditions. \pause
+
+  \vspace{1ex}
+
+  Shooting is straightforward and efficient -- when it
+  works. Otherwise use \emph{relaxation} methods based on \emph{finite
+    differences}.
+
+\end{frame}
+
+
+\subsection{Finite differences for linear problems}
+
+\begin{frame}
+  \frametitle{The linear problem}
+
+  Consider the linear problem
+  \begin{equation*}
+    y'' + p(x) y' + q(x) y =  f(x), \quad y(a) = A, \,\, y(b) = B,
+    \quad x \in [a,b].
+  \end{equation*} \pause
+  %
+  Introduce a \emph{grid}, evenly spaced over the interval,
+  %
+  \begin{equation*}
+    x_i = a + i h, \quad i = 0, 1, \dots, n + 1, \quad h = \frac{b -
+      a}{n + 1}.
+  \end{equation*}
+  %
+  Contains $n$ \emph{interior} points and 2 boundary points.
+  \pause The value of $y$ at the boundary points given by
+  boundary conditions,
+  %
+  \begin{align*}
+    y_0 & = y(a) = A, \\
+    y_{n+1} & = y(b) = B.
+  \end{align*} \pause
+  %
+  Value of $y$ at interior points unknown; these
+  give approximate solution. Require approximation to converge to
+  true solution as $h \rightarrow 0$.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Finite differences}
+
+  Given grid $\{x_j\}$, approximate derivatives using standard finite
+  difference formulas. \pause Typically use centred differencing
+  formulas
+  \begin{align*}
+    y' (x_i) & = \frac{y_{i+1} - y_{i-1}}{2 h} + {\cal O} (h^2), \\
+    y'' (x_i) & = \frac{y_{i+1} + y_{i-1} - 2 y_i}{h^2} + {\cal O} (h^2),
+  \end{align*}
+  which are second order accurate. \pause
+
+  \vspace{1ex}
+
+  Substituting into BVP equation
+  \begin{equation*}
+    y'' + p(x) y' + q(x) y =  f(x), \quad y(a) = A, \,\, y(b) = B,
+    \quad x \in [a,b]
+  \end{equation*}
+  for \emph{interior} points gives finite difference formula ($q_i =
+  q(x_i)$ etc.)
+  \begin{equation*}
+    y_{i-1} \left( 1 - \tfrac{h}{2} p_i \right) +  y_{i} \left( h^2
+      q_i - 2 \right) + y_{i+1} \left( 1 + \tfrac{h}{2} p_i \right) =
+    h^2 f_i.
+  \end{equation*}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Constructing the linear system}
+
+  Have a system of ($n+2$) linear algebraic equations
+  \begin{align*}
+    y_0 & = A, \\
+    y_{i-1} \left( 1 - \tfrac{h}{2} p_i \right) +  y_{i} \left( h^2
+      q_i - 2 \right) + y_{i+1} \left( 1 + \tfrac{h}{2} p_i \right) & =
+    h^2 f_i, \quad 1 \le i \le n \\
+    y_{n+1} & = B.
+  \end{align*} \pause
+  This is a linear system. Can simplify using the boundary conditions
+  to eliminate $y_0, y_{n+1}$ everywhere.
+
+  \vspace{1ex}
+
+  \begin{overlayarea}{\textwidth}{0.4\textheight}
+    \only<3|handout:1>
+    {
+      Take $n=3$ for example. In the interior
+      {\small
+        \begin{equation*}
+          \begin{pmatrix}
+            \dots & \dots & \dots \\
+            1 - \tfrac{h}{2} p_2 & -2 + h^2 q_2 & 1 + \tfrac{h}{2} p_2 \\
+            \dots & \dots & \dots
+          \end{pmatrix}
+          \begin{pmatrix}
+            y_1 \\ y_2 \\ y_3
+          \end{pmatrix} =
+          \begin{pmatrix}
+            \dots \\ h^2 f_2 \\ \dots
+          \end{pmatrix}.
+        \end{equation*}
+      }
+    }
+    \only<4|handout:2>
+    {
+      Using boundary conditions replace $y_0, y_{n+1}$.  Full system
+      is
+      {\small
+        \begin{equation*}
+          \begin{pmatrix}
+            -2 + h^2 q_1 & 1 + \tfrac{h}{2} p_1 & 0 \\
+            1 - \tfrac{h}{2} p_2 & -2 + h^2 q_2 & 1 + \tfrac{h}{2} p_2 \\
+            0 & 1 - \tfrac{h}{2} p_3 & -2 + h^2 q_3
+          \end{pmatrix}
+          \begin{pmatrix}
+            y_1 \\ y_2 \\ y_3
+          \end{pmatrix} =
+          \begin{pmatrix}
+            h^2 f_1 - A ( 1 - \tfrac{h}{2} p_1 ) \\ h^2 f_2
+            \\ h^2 f_3 - B ( 1 + \tfrac{h}{2} p_3 )
+          \end{pmatrix}.
+        \end{equation*}
+      }
+    }
+  \end{overlayarea}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Points about the linear system}
+
+  Important point: provided central differencing is used, the matrix
+  is \emph{tridiagonal}.  Very efficient algorithms for solving the
+  linear system. \pause
+
+  \vspace{1ex}
+
+  Also note that here the matrix $T$ is not modified by the boundary
+  conditions.  Always true for Dirichlet type conditions which fix
+  $y(a)$.  Not true for Neumann type conditions which fix $y'(a)$,
+  for example.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example}
+
+  For the problem
+  \begin{equation*}
+    y'' + y' + 1 = 0, \quad y(0) = 0, \,\, y(1) = 1, \quad x \in [0, 1]
+  \end{equation*}
+  we have $p(x) = 1$, $q(x) = 0$, $f(x) = -1$. \pause  Look at grid
+  with 3 points ($n = 1, h = 1/2$). \pause Gives the equations
+  \begin{align*}
+    y_0 & = 0, \\
+    y_0 \left( 1 - \tfrac{h}{2} \cdot 1 \right) + y_1 \left( h^2 \cdot
+      0 - 2 \right) + y_2 \left( 1 + \tfrac{h}{2} \cdot 1 \right) & =
+    h^2 \cdot (-1), \\
+    y_2 & = 1.
+  \end{align*} \pause
+  %
+  Boundary points $y_0, y_2$ given by boundary conditions and are
+  exact. \pause Central point $y_1$ has value
+  \begin{equation*}
+    y_1 = \tfrac{3}{4}; \quad y_e(x = 1/2) = 0.74492.
+  \end{equation*}
+  Good accuracy for such a coarse grid, as $y_e(x)$ close to linear.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example: 2}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      The problem
+      \begin{align*}
+        y'' + y' + 1 &= 0, \\ y(0) &= 0, \\ y(1) &= 1, \\ x &\in [0, 1]
+      \end{align*}
+      solved with finite differences is impressively accurate. \pause
+
+      \vspace{1ex}
+
+      Increase $n$ the result converges \pause well. \pause
+
+      \vspace{1ex}
+
+      The convergence is second order in $h$.
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1|handout:1>[width=\textwidth]{figures/FDBVP1}
+        \includegraphics<2|handout:0>[width=\textwidth]{figures/FDBVP2}
+        \includegraphics<3|handout:0>[width=\textwidth]{figures/FDBVP3}
+        \includegraphics<4|handout:2>[width=\textwidth]{figures/FDBVPDirichletConvergence1}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+
+\subsection{Boundary conditions}
+
+\begin{frame}
+  \frametitle{Boundary conditions}
+
+  When constructing the linear system
+  \begin{equation*}
+    T \by = \bfm{F}
+  \end{equation*}
+  using Dirichlet type boundary conditions, could give value of $y_0,
+  y_{n+1}$ everywhere; this only modified $\bfm{F}$.
+
+  \vspace{1ex}
+
+  \begin{overlayarea}{\textwidth}{0.6\textheight}
+    \only<2-5|handout:1>
+    {
+      If instead have Neumann type boundary conditions, e.g.\
+      $y'(b) = \alpha$, the situation changes.
+    }
+    \only<3-5|handout:1>
+    {
+      First need finite difference approximation of
+      \emph{boundary condition itself}.
+    }
+    \only<4-5|handout:1>
+    {
+      For example could use first order differencing:
+      \begin{equation*}
+        \frac{y_{n+1} - y_n}{h} = \alpha.
+      \end{equation*}
+    }
+    \only<5|handout:1>
+    {
+      Then rearrange to find condition on boundary point $y_{n+1}$:
+      \begin{equation*}
+        y_{n+1} = y_n + h \alpha.
+      \end{equation*}
+    }
+    \only<6|handout:0>
+    {
+      \begin{equation*}
+        y'(b) = \alpha \rightarrow y_{n+1} = y_n + h \alpha.
+      \end{equation*}
+      \vspace{1ex}
+      Note that
+      \begin{enumerate}
+      \item The value of $y_{n+1}$ is now \emph{not exact} as we
+        specify it by finite differences.
+      \end{enumerate}
+    }
+    \only<7|handout:2>
+    {
+      \begin{equation*}
+        y'(b) = \alpha \rightarrow y_{n+1} = y_n + h \alpha.
+      \end{equation*}
+      \vspace{1ex}
+      Note that
+      \begin{enumerate}
+      \item The value of $y_{n+1}$ is now \emph{not exact} as we
+        specify it by finite differences.
+      \item Use condition on $y_{n+1}$ to construct the linear system,
+        giving new terms including $y_n$; hence matrix $T$ is modified
+        as well as $\bfm{F}$.
+      \end{enumerate}
+    }
+  \end{overlayarea}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Example}
+
+  For the problem
+  \begin{equation*}
+    y'' + y' + 1 = 0, \quad y(0) = 0, \,\, y'(1) = \tfrac{3 - e}{e -
+      1}, \quad x \in [0, 1]
+  \end{equation*}
+  have same solution as before. \pause Look at grid with 3 points ($n
+  = 1, h = 1/2$). \pause Gives equations (two match Dirichlet case)
+  \begin{align*}
+    y_0 & = 0, \\
+    y_0 \left( 1 - \tfrac{h}{2} \cdot 1 \right) + y_1 \left( h^2 \cdot
+      0 - 2 \right) + y_2 \left( 1 + \tfrac{h}{2} \cdot 1 \right) & =
+    h^2 \cdot (-1), \\
+    y_2 & = y_1 + h \tfrac{3 - e}{e - 1}.
+  \end{align*}  \pause
+  %
+  Substituting in expressions for $y_0, y_2$, find central
+  point $y_1$ has value
+  \begin{align*}
+&&    y_1 & = \tfrac{1}{3} + \tfrac{5 \alpha}{6} = 0.470; &  y_e(x =
+    1/2) &= 0.74492. \\
+\Rightarrow && y_2 &= 0.470 + h \alpha = 0.552; & y_e(x =
+    1) &= 1.
+  \end{align*}
+  This result is much worse than the Dirichlet case.
+
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Example: 2}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      The approximate solution to
+      \begin{align*}
+        y'' + y' + 1 &= 0, \\ y(0) &= 0, \\ y'(1) &= \tfrac{3 - e}{e -
+      1}, \\ x &\in [0, 1]
+      \end{align*}
+      is not as good as Dirichlet case. \pause \vspace{1ex}
+
+      Increasing $n$ the result converges \pause eventually. \pause
+      \vspace{1ex}
+
+       Convergence only first order in $h$.
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1|handout:1>[width=\textwidth]{figures/FDBVPNeumann1}
+        \includegraphics<2|handout:0>[width=\textwidth]{figures/FDBVPNeumann2}
+        \includegraphics<3|handout:0>[width=\textwidth]{figures/FDBVPNeumann3}
+        \includegraphics<4|handout:2>[width=\textwidth]{figures/FDBVPNeumannConvergence1}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Example: 3}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      Take same problem
+      \begin{align*}
+        y'' + y' + 1 &= 0, \\ y(0) &= 0, \\ y'(1) &= \tfrac{3 - e}{e -
+      1}, \\ x &\in [0, 1]
+      \end{align*}
+      using second order approximation to derivative in
+      boundary condition gives better results.\pause
+
+      \vspace{1ex}
+
+      Increasing $n$ the result converges \pause faster. \pause
+
+      \vspace{1ex}
+
+      Convergence is second order in $h$.
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1|handout:1>[width=\textwidth]{figures/FDBVPNeumann2_1}
+        \includegraphics<2|handout:0>[width=\textwidth]{figures/FDBVPNeumann2_2}
+        \includegraphics<3|handout:0>[width=\textwidth]{figures/FDBVPNeumann2_3}
+        \includegraphics<4|handout:2>[width=\textwidth]{figures/FDBVPNeumann2Convergence1}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+
+\subsection{Error analysis}
+
+\begin{frame}
+  \frametitle{Error analysis}
+
+  Central differencing methods normally converge at second order.
+  Examples above suggest second order convergence for the BVP. \pause
+
+  \vspace{1ex}
+
+  Define error vector $\bfm{e}$ and look at linear system $T
+  \bfm{e}$:
+  \begin{align*}
+    \left( y(x_{i-1}) - y_{i-1} \right)& \left( 1 - \tfrac{h}{2} p_i
+    \right) - \\
+    \left( y(x_{i}) - y_{i} \right) & \left( 2 - h^2 q_i \right) + \\
+    \left( y(x_{i+1}) - y_{i+1} \right) & \left( 1 + \tfrac{h}{2} p_i
+    \right)
+  \end{align*}
+  for the interior entries. \pause
+
+  \vspace{1ex}
+
+  Numerical terms ($y_i$ etc.) give $-h^2 f_i$. \pause Taylor
+  expanding exact solution $y(x_i)$ gives original ODE (times $h^2$)
+  plus terms $\propto h^4$ and higher order in $h$, as all other terms
+  cancel.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Error analysis: 2}
+
+  Hence error also satisfies a linear system
+  \begin{equation*}
+    T \bfm{e} = h^4 \bfm{G}
+  \end{equation*}
+  where $T$ is the same tridiagonal matrix that defines the method and
+  $\bfm{G}$ is independent of $h$. \pause
+
+  \vspace{1ex}
+
+  Hence bound the error using
+  \begin{align*}
+    \| \bfm{e} \| & = h^4 \| T^{-1} \| \cdot \| \bfm{G} \| \\
+    & \le h^4 G \| T^{-1} \|
+  \end{align*}
+  as $\bfm{G}$ is a constant vector. \pause As $T$ is a matrix of size
+  $n \propto h^{-1}$ the best bound is
+  \begin{equation*}
+     \| T^{-1} \| \le K n^2 \quad \implies \quad
+    \| \bfm{e} \| \le \alpha h^2, \quad \alpha \text{ const.}
+  \end{equation*}
+
+\end{frame}
+
+
+\section{Nonlinear problems}
+
+\subsection{Nonlinear problems}
+
+
+\begin{frame}
+  \frametitle{Nonlinear problems}
+
+  In linear case
+  \begin{equation*}
+    y'' + p(x) y' + q(x) y =  f(x), \quad y(a) = A, \,\, y(b) = B,
+    \quad x \in [a,b]
+  \end{equation*}
+  have approximate solution on grid after solving one linear
+  system. In nonlinear case
+  \begin{equation*}
+    y'' = f(x, y, y'), \quad y(a) = A, \,\, y(b) = B, \quad x \in [a,b]
+  \end{equation*}
+  as the $f$ depends on unknowns cannot directly write BVP as a linear
+  system. \pause
+
+  \vspace{1ex}
+
+  Instead guess solution $\by^{(k)}$. Then compute $f$ on grid using
+  old guess $\by^{(k)}$ which is \emph{known}, giving linear system
+  for $\by^{(k+1)}$. \pause
+
+  \vspace{1ex}
+
+  This process of computing a sequence of guesses, each of which
+  requires the solution of a linear system, is called
+  \emph{relaxation}.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Newton relaxation}
+
+  Approximate nonlinear problem using
+  \begin{equation*}
+    y_{i-1} + y_{i+1} - 2 y_i - h^2 f \left( x_i, y_i, \frac{y_{i+1} -
+      y_{i-1}}{2 h} \right) = r_i.
+  \end{equation*}
+  The $r_i$ are the \emph{residuals} to minimize. \pause Nonlinear
+  root finding problem -- $\bfm{r}$ is a function of $\by$, want to
+  solve $\bfm{r}(\bfm{y}) = \bfm{0}$. \pause
+
+  \vspace{1ex}
+
+  \begin{overlayarea}{\textwidth}{0.6\textheight}
+    \only<3-4|handout:1>
+    {
+      Imagine doing Newton's method
+      \begin{equation*}
+        \by^{(k+1)} = \by^{(k)} - \frac{\bfm{r^{(k)}}}{\bfm{r^{(k)}}'}.
+      \end{equation*}
+    }
+    \only<4|handout:1>
+    {
+      Meaningless as a vector equation. The equivalent is
+      \begin{equation*}
+        \pda{r_i^{(k)}}{y_j^{(k)}} \left( \by^{(k+1)} - \by^{(k)} \right) = -
+        \bfm{r^{(k)}}.
+      \end{equation*}
+    }
+    \only<5|handout:2>
+    {
+      \begin{equation*}
+        \pda{r_i^{(k)}}{y_j^{(k)}} \left( \by^{(k+1)} - \by^{(k)} \right) = -
+        \bfm{r^{(k)}}.
+      \end{equation*}
+      This is the linear system
+      \begin{equation*}
+        J^{(k)} \bfm{c}^{(k)} = - \bfm{r}^{(k)}
+      \end{equation*}
+      where $J$ is the Jacobian matrix, $\bfm{c}$ the correction, giving
+      \begin{equation*}
+        \by^{(k+1)} = \by^{(k)} + \bfm{c}^{(k)}.
+      \end{equation*}
+    }
+  \end{overlayarea}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The algorithm}
+
+  Construct initial guess $\by^{(0)}$ (conventionally zero). Then
+  iteratively
+  \begin{enumerate}
+  \item<1-> construct the residual
+    \begin{equation*}
+      r^{(k)}_i = y^{(k)}_{i-1} + y^{(k)}_{i+1} - 2 y^{(k)}_i - h^2 f
+      \left( x_i, y^{(k)}_i, \frac{y^{(k)}_{i+1} - y^{(k)}_{i-1}}{2 h}
+      \right),
+    \end{equation*}
+  \item<2-> construct the Jacobian
+    \begin{equation*}
+      J^{(k)} = \pda{r_i^{(k)}}{y_j^{(k)}},
+    \end{equation*}
+  \item<3-> construct the correction $\bfm{c}$ by solving
+    \begin{equation*}
+      J^{(k)} \bfm{c}^{(k)} = - \bfm{r}^{(k)},
+    \end{equation*}
+  \item<4-> construct the new guess by
+      \begin{equation*}
+        \by^{(k+1)} = \by^{(k)} + \bfm{c}^{(k)}.
+      \end{equation*}
+  \end{enumerate} \pause[5]
+  \vspace{-1ex}
+  Repeat until the correction is sufficiently small.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Jacobian}
+
+  Choosing central differencing the Jacobian
+  \begin{equation*}
+    J^{(k)} = \pda{r_i^{(k)}}{y_j^{(k)}}
+  \end{equation*}
+  is also tridiagonal, as
+  \begin{equation*}
+    \pda{r_i}{y_j} = \left\{
+      \begin{aligned}
+        1 + \tfrac{h}{2} \pda{f}{y'} (y_{i-1}) && j & = i - 1, \\
+        -2 - h^2 \pda{f}{y} (y_{i}) && j & = i, \\
+        1 - \tfrac{h}{2} \pda{f}{y'} (y_{i+1}) && j & = i + 1.
+      \end{aligned} \right.
+  \end{equation*} \pause
+  Hence solution of each individual system is still very
+  efficient. \pause
+
+  \vspace{1ex}
+
+  Taking advantage of structure, there are Gauss-Seidel and SOR
+  variants of iterative scheme. Can either accelerate convergence or
+  improve stability in particular cases.
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Example}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      In the problem
+      \begin{align*}
+        y'' & = - \frac{1}{1 + y^2}, \\ y(0) &= 0, \\ y(1) &= 0, \\ x
+        &\in [0, 1]
+      \end{align*}
+      use Newton relaxation. Initial guess
+      trivial. \pause
+
+      \vspace{1ex}
+
+      First iteration already reasonable.  \pause
+
+      \vspace{1ex}
+
+      After 4 iterations solution has settled down.
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1|handout:0>[width=\textwidth]{figures/FDBVPNewton0}
+        \includegraphics<2|handout:0>[width=\textwidth]{figures/FDBVPNewton1}
+        \includegraphics<3>[width=\textwidth]{figures/FDBVPNewtonFinal}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+\section{Summary}
+
+\subsection{Summary}
+
+\begin{frame}
+  \frametitle{Summary}
+
+  \begin{itemize}
+  \item First shoot, then relax.
+  \item Finite difference methods are typically less accurate and
+    efficient, and for nonlinear problems are more complex to
+    implement. However, they are much more likely to work in complex
+    cases.
+  \item For linear problems finite difference methods convert the ODE
+    to a linear system $T \by = \bfm{F}$.
+    \begin{itemize}
+    \item The matrix will be tri-diagonal (when using centred
+      differencing).
+    \item The boundary conditions are normally directly encoded in the
+      known vector $\bb$ (but more complex boundary conditions may
+      require modification of $A$ as well).
+    \end{itemize}
+  \item For nonlinear problems we construct a sequence of guesses
+    $\by^{(n)}$ that converge to the solution; the previous guess is
+    used to solve a linear system.
+  \end{itemize}
+
+\end{frame}
+
+\end{document}
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

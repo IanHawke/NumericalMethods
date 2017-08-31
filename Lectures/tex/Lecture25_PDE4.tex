@@ -1,0 +1,442 @@
+% $Header: /cvsroot/latex-beamer/latex-beamer/solutions/conference-talks/conference-ornate-20min.en.tex,v 1.6 2004/10/07 20:53:08 tantau Exp $
+
+\documentclass{beamer}
+%\documentclass[handout]{beamer}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
+
+% This file is a solution template for:
+
+% - Talk at a conference/colloquium.
+% - Talk length is about 20min.
+% - Style is ornate.
+
+
+
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice.
+
+
+\mode<presentation>
+{
+%  \usetheme{Warsaw}
+%  \usetheme{Boadilla}
+%  \usetheme{Goettingen}
+%  \usetheme{Hannover}
+%  \usetheme{Madrid}
+%  \usetheme{Marburg}
+%  \usetheme{Montpellier}
+%  \usetheme{Pittsburgh}
+  \usetheme{Hawke}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+% or whatever
+
+\usepackage[latin1]{inputenc}
+% or whatever
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{multimedia}
+
+
+%%%%%%
+% My Commands
+%%%%%%
+
+\newcommand{\ml}{{\sc matlab}}
+\newcommand{\bb}{{\boldsymbol{b}}}
+\newcommand{\bx}{{\boldsymbol{x}}}
+\newcommand{\by}{{\boldsymbol{y}}}
+\newcommand{\bfm}[1]{{\boldsymbol{#1}}}
+\newcommand{\oda}[2]{\frac{\text{d}{#1}}{\text{d}{#2}}}
+\newcommand{\pda}[2]{\frac{\partial{#1}}{\partial{#2}}}
+\newcommand{\pdb}[2]{\frac{\partial^2{#1}}{\partial{#2}^2}}
+\newcommand{\pdc}[3]{\frac{\partial^2{#1}}{\partial{#2}\partial{#3}}}
+
+
+%%%%
+
+\title[Lecture 25] % (optional, use only with long paper titles)
+{Lecture 25 - Upwind Methods}
+
+% \subtitle
+% {Include Only If Paper Has a Subtitle}
+
+\author[I. Hawke] % (optional, use only with lots of authors)
+{I.~Hawke}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[University of Southampton] % (optional, but mostly needed)
+{
+%  \inst{1}%
+  School of Mathematics, \\
+  University of Southampton, UK
+}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date[Semester 1] % (optional, should be abbreviation of conference name)
+{MATH3018/6141, Semester 1}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Numerical methods}
+% This is only inserted into the PDF information catalog. Can be left
+% out.
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+\pgfdeclareimage[height=0.5cm]{university-logo}{mathematics_7469}
+\logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+%  \AtBeginSubsection[]
+%  {
+%    \begin{frame}<beamer>
+%      \frametitle{Outline}
+%      \tableofcontents[currentsection,currentsubsection]
+%    \end{frame}
+%  }
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command:
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Hyperbolic equations and information}
+
+\subsection{Information propagation}
+
+\begin{frame}
+  \frametitle{Partial differential equations}
+
+  Partial differential equations (PDEs) involve derivatives of
+  functions of more than one variable, say $u(x, y)$ or $y(t,
+  x)$. Hence more complex behaviour and more interesting
+  physics. \pause
+
+  \vspace{1ex}
+
+  Only look at linear problems.  Also only consider finite difference
+  methods: simple to analyse but not always competitive. \pause
+
+  \vspace{1ex}
+
+  Only stable and convergent method for hyperbolic equations seen is
+  Forward Time, Backwards Space (FTBS), sometimes called the
+  \emph{upwind} method. Von Neumann stability ``explains'' failure of
+  the FTCS method, but does not help in producing more accurate
+  algorithms.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Characteristics for the advection equation}
+  \begin{overlayarea}{\textwidth}{0.9\textheight}
+    \only<1|handout:0>
+    {
+      Focus on advection equation
+      \begin{equation*}
+        \partial_t y + v \partial_x y = 0.
+      \end{equation*}
+      As hyperbolic,
+      write in terms of convection or advection number $c = v
+      \delta / h$  ($\delta$  time step, $h$ space step).
+    }
+    \only<2->
+    {
+      \begin{equation*}
+        \partial_t y + v \partial_x y = 0.
+      \end{equation*}
+      Hyperbolic equations propagate
+      information.   There are curves,
+      $x(t)$, along which $y$ \emph{does not change}.
+    }
+    \only<3->
+    {
+      Look at $y\left( x(t), t \right)$.
+    }
+    \only<4->
+    {
+      If the solution does not change then
+      \begin{align*}
+         0 & = \oda{}{t} y\left( x(t), t \right) \\
+           & = \oda{x(t)}{t} \partial_x y + \partial_t y \\
+           & = \left( \oda{x(t)}{t} - v \right) \partial_x y. \\
+        \Rightarrow \quad x(t) & = v t.
+      \end{align*}
+    }
+    \only<5->
+    {
+      Information is propagated \emph{without
+        changing} along straight lines (\emph{characteristic curves})
+      in $(x, t)$ with slope $v$.
+    }
+  \end{overlayarea}
+
+\end{frame}
+
+
+\subsection{Upwind methods}
+
+
+\begin{frame}
+  \frametitle{Reinterpreting FTBS}
+
+  \begin{center}
+    \includegraphics<1|handout:0>[width=0.9\textwidth]{figures/Grid1a}
+    \includegraphics<2|handout:0>[width=0.9\textwidth]{figures/Grid2}
+    \includegraphics<3-4|handout:1>[width=0.9\textwidth]{figures/Grid3}
+    \includegraphics<5|handout:2>[width=0.9\textwidth]{figures/Grid3a}
+  \end{center}
+  \begin{overlayarea}{\textwidth}{0.35\textheight}
+    \only<1-3|handout:1>
+    {
+      Look at characteristics for advection equation on a grid.
+    }
+    \only<2-3|handout:1>
+    {
+      Given value of $y^{n+1}_i$, could follow characteristic
+      \emph{back in time} to known data at $t^n$.
+    }
+    \only<3|handout:1>
+    {
+      Will not land on a grid point, so must interpolate.
+    }
+    \only<4-|handout:2>
+    {
+      Linear interpolation gives
+      \begin{equation*}
+        y_i^{n+1} = (1 - \frac{v \delta}{h}) y_i^n + \frac{v \delta}{h}
+        y_{i-1}^n.
+      \end{equation*}
+    }
+    \only<5|handout:2>
+    {
+      This is exactly FTBS.
+    }
+  \end{overlayarea}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Interpreting the stability result}
+
+  \begin{center}
+    \includegraphics<1|handout:1>[width=0.9\textwidth]{figures/Grid4}
+    \includegraphics<2|handout:2>[width=0.9\textwidth]{figures/Grid4a}
+    \includegraphics<3|handout:3>[width=0.9\textwidth]{figures/Grid5a}
+    \includegraphics<4|handout:4>[width=0.9\textwidth]{figures/Grid5b}
+  \end{center}
+  \begin{overlayarea}{\textwidth}{0.35\textheight}
+    \only<1-2|handout:1-2>
+    {
+      If timestep $\delta$ too large ($c > 1$) then characteristic,
+      traced back to known data, does not fall between $x_i$ and
+      $x_{i-1}$.
+    }
+    \only<2|handout:2>
+    {
+      Would be \emph{extrapolating} using FTBS; generically
+      unstable. Known as the \emph{Courant-Friedrichs-Lewy} (CFL)
+      condition.
+    }
+    \only<3-|handout:3->
+    {
+      If $v<0$ then FTBS is an extrapolation; Von Neumann analysis
+      shows FTBS unconditionally unstable (note $c < 0$).
+    }
+    \only<4|handout:4>
+    {
+      Should be clear that FTFS will work in this case.
+    }
+  \end{overlayarea}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Upwind methods}
+
+  The direction of information propagation depends on sign of $v$;
+  called \emph{wind direction} (climate analogy). \pause
+  Information propagates with wind, or \emph{upwind}:
+  stable numerical algorithms take this into account. \pause
+
+  \vspace{1ex}
+
+  Simplest upwind algorithm: choose FTBS or FTFS depending on sign of
+  $v$.
+  \begin{align*}
+    v & > 0 \quad \Rightarrow  \text{FTBS} \\
+    v & < 0 \quad \Rightarrow  \text{FTFS} .
+  \end{align*} \pause
+
+  If advection velocity depends on \emph{space}, $v \equiv v(x)$, make
+  choice \emph{pointwise}. \pause For each $x_i$ check sign of
+  $v(x_i)$. Then update $y_i^{n+1}$ depending on sign of $v(x_i)$.
+
+\end{frame}
+
+
+\section{Nonlinear equations}
+
+
+\subsection{Burger's equation}
+
+\begin{frame}
+  \frametitle{Burger's equation}
+
+  Nonlinear hyperbolic equations can produce complex behaviour from
+  simple initial data. \pause Toy problem: \emph{Burger's equation}
+  \begin{equation*}
+    \partial_t y + \partial_x \left( \tfrac{1}{2} y^2 \right) = 0.
+  \end{equation*} \pause
+  A linearization of Euler equations, useful in gasdynamics. \pause
+
+  \vspace{1ex}
+
+  If $y$ remains differentiable, can be written as
+  \begin{equation*}
+    \partial_t y + y \partial_x y = 0.
+  \end{equation*} \pause
+  Looks like advection equation, except advection velocity $v$ varies
+  in space -- it is the solution $y$ itself!
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Evolving to form shocks}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      Start with smooth initial data. \pause We ``trace along the
+      characteristics'': the \emph{form} of the data changes. \pause
+      It steadily steepens. \pause
+
+      \vspace{1ex}
+
+      Eventually function not well-defined: in reality, a \emph{shock}
+      forms.
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1|handout:0>[width=\textwidth]{figures/BurgersChar0}
+        \includegraphics<2|handout:1>[width=\textwidth]{figures/BurgersChar1}
+        \includegraphics<3|handout:0>[width=\textwidth]{figures/BurgersChar2}
+        \includegraphics<4-|handout:2>[width=\textwidth]{figures/BurgersChar3}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Numerical evolutions of Burger's equation}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      Evolve using upwind methods. If $y_i$ is positive use FTBS,
+      otherwise FTFS. \pause
+
+      \vspace{1ex}
+
+      At low resolution see profile steepen \pause[5] and
+      discontinuity form.  \pause Increase resolution \pause and see
+      similar behaviour, better resolved \pause[10] leading to the
+      shock.
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1|handout:0>[width=\textwidth]{figures/UpwindBurger1_0.png}
+        \includegraphics<2|handout:0>[width=\textwidth]{figures/UpwindBurger1_2.png}
+        \includegraphics<3|handout:0>[width=\textwidth]{figures/UpwindBurger1_4.png}
+        \includegraphics<4|handout:0>[width=\textwidth]{figures/UpwindBurger1_8.png}
+        \includegraphics<5|handout:1>[width=\textwidth]{figures/UpwindBurger1_16.png}
+        \includegraphics<6|handout:0>[width=\textwidth]{figures/UpwindBurger5_0.png}
+        \includegraphics<7|handout:0>[width=\textwidth]{figures/UpwindBurger5_32.png}
+        \includegraphics<8|handout:0>[width=\textwidth]{figures/UpwindBurger5_64.png}
+        \includegraphics<9|handout:0>[width=\textwidth]{figures/UpwindBurger5_128.png}
+        \includegraphics<10|handout:2>[width=\textwidth]{figures/UpwindBurger5_256.png}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+\section{Summary}
+
+\subsection{Summary}
+
+\begin{frame}
+  \frametitle{Summary}
+
+  \begin{itemize}
+  \item Upwind methods take into account the direction and speed of
+    information propagation.
+  \item As they rely on information propagation they only work for
+    hyperbolic problems.
+  \item Most upwind methods are explicit and conditionally stable,
+    requiring the CFL condition.
+  \item The upwind condition allows for the reinterpretation of, e.g.,
+    FTBS.
+  \item Upwind methods can be extended to problems where the advection
+    velocity varies in space, or to genuinely nonlinear problems.
+  \item Genuinely nonlinear problems that involve discontinuities
+    forming are typically solved using upwind methods; extensions to
+    higher order accuracy are non-trivial work.
+  \end{itemize}
+
+\end{frame}
+
+\end{document}
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

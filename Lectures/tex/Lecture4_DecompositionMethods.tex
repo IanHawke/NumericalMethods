@@ -1,0 +1,670 @@
+\documentclass{beamer}
+
+
+\mode<presentation>
+{
+  \usetheme{Hawke}
+  \setbeamercovered{transparent}
+}
+
+
+\usepackage[english]{babel}
+% or whatever
+
+\usepackage[latin1]{inputenc}
+% or whatever
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{multimedia}
+
+
+%%%%%%
+% My Commands
+%%%%%%
+
+\newcommand{\ml}{{\sc matlab}}
+\newcommand{\bb}{{\boldsymbol{b}}}
+\newcommand{\bx}{{\boldsymbol{x}}}
+\newcommand{\by}{{\boldsymbol{y}}}
+\newcommand{\bfm}[1]{{\boldsymbol{#1}}}
+
+%%%%
+
+\title[Lecture 4] % (optional, use only with long paper titles)
+{Lecture 4 - Decomposition Methods} 
+
+% \subtitle
+% {Include Only If Paper Has a Subtitle}
+
+\author[I. Hawke] % (optional, use only with lots of authors)
+{I.~Hawke}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[University of Southampton] % (optional, but mostly needed)
+{
+%  \inst{1}%
+  School of Mathematics, \\
+  University of Southampton, UK
+}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date[Semester 1] % (optional, should be abbreviation of conference name)
+{MATH3018/6141, Semester 1}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Numerical methods}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+\pgfdeclareimage[height=0.5cm]{university-logo}{mathematics_7469}
+\logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+%  \AtBeginSubsection[]
+%  {
+%    \begin{frame}<beamer>
+%      \frametitle{Outline}
+%      \tableofcontents[currentsection,currentsubsection]
+%    \end{frame}
+%  }
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Decomposition Methods}
+
+\subsection{Decomposition Methods}
+
+\begin{frame}
+  \frametitle{Decomposition Methods}
+
+  We (still) want to solve the linear system
+  \begin{equation*}
+    A \bx = \bb.
+  \end{equation*}
+  General technique: split $A$ into the product of matrices, then
+  solve the succession of (easier) linear systems. \pause For example,
+  set
+  \begin{equation*}
+    A = L U,
+  \end{equation*}
+  solve the problem
+  \begin{equation*}
+    L \by = \bb,
+  \end{equation*}
+  and then solve the problem
+  \begin{equation*}
+    U \bx = \by
+  \end{equation*}
+  for the original unknown $\bx$. \pause
+
+  Only makes sense if new linear systems are straightforward to
+  solve. Here we only consider the $LU$ decomposition, where $L$ and
+  $U$ are lower and upper triangular matrices.
+
+\end{frame}
+
+
+\subsection{\texorpdfstring{$LU$ decomposition}{LU decomposition}}
+
+\begin{frame}
+  \frametitle{Example}
+
+  \begin{overlayarea}{\textwidth}{0.8\textheight}
+    \only<1-2|handout:1>
+    {
+      \begin{equation*}
+        \begin{pmatrix}
+          2 & 1 & -1 \\
+          4 & 1 & 0 \\
+          -2 & -3 & 8
+        \end{pmatrix}
+        \bx =
+        \begin{pmatrix}
+          0 \\ 6 \\ -12
+        \end{pmatrix}
+      \end{equation*}
+      will be solved by writing $A = L U$ and then using forward and
+      backward substitution to solve the sub-problems.  
+
+      \vspace{1ex}
+    }
+    \only<2-|handout:2->
+    {
+
+      The matrix can be decomposed as
+      \begin{equation*}
+        \begin{pmatrix}
+          2 & 1 & -1 \\
+          4 & 1 & 0 \\
+          -2 & -3 & 8
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+          1 & 0 & 0 \\
+          2 & 1 & 0 \\
+          -1 & 2 & 1
+        \end{pmatrix}
+        \begin{pmatrix}
+          2 & 1 & -1 \\
+          0 & -1 & 2 \\
+          0 & 0 & 3
+        \end{pmatrix}.
+      \end{equation*}
+    }
+    \only<3-|handout:2->
+    {
+      Then solve $L \by = \bb$ by \emph{forward} substitution:
+      \begin{equation*}
+        \begin{pmatrix}
+          1 & 0 & 0 \\
+          2 & 1 & 0 \\
+          -1 & 2 & 1
+        \end{pmatrix}
+        \begin{pmatrix}
+          y_1 \\ y_2 \\ y_3
+        \end{pmatrix} =
+        \begin{pmatrix}
+          0 \\ 6 \\ -12
+        \end{pmatrix}
+        \Rightarrow \left\{
+          \begin{aligned}
+            y_1 & = 0, \\
+            y_2 & = 6, \\
+            y_3 & = -24.
+          \end{aligned}
+        \right.
+      \end{equation*}
+    }
+    \only<4|handout:3>
+    {
+      Then solve $U \bx = \by$ by \emph{backward} substitution:
+    \begin{equation*}
+      \begin{pmatrix}
+        2 & 1 & -1 \\
+        0 & -1 & 2 \\
+        0 & 0 & 3
+      \end{pmatrix}
+      \begin{pmatrix}
+        x_1 \\ x_2 \\ x_3
+      \end{pmatrix} =
+      \begin{pmatrix}
+        0 \\ 6 \\ -24
+      \end{pmatrix}
+      \Rightarrow \left\{
+        \begin{aligned}
+          x_1 & = 7, \\
+          x_2 & = -22, \\
+          x_3 & = -8.
+        \end{aligned}
+      \right.
+    \end{equation*}
+  }
+  \end{overlayarea}
+
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{How do we factorise?}
+  
+  The factorisation is not unique: $L$ and $U$ together have $n^2+n$
+  free coefficients; $A$ only has $n^2$.  Can freely choose $n$
+  coefficients. \pause\  Two obvious choices are
+  \begin{enumerate}
+  \item Doolittle's factorisation: The diagonal entries of $L$ are 1.
+  \item Crout's factorisation: The diagonal entries of $U$ are 1.
+  \end{enumerate} \pause
+
+  \vspace{1ex}
+
+  Then use the explicit matrix multiplication formula, and work from
+  the top left corner. Each coefficient obeys
+  \begin{equation*}
+    a_{i j} = \sum_{s=1}^n \ell_{i s} u_{s j} = \sum_{s=1}^{\min(i,j)}
+     \ell_{i s} u_{s j}
+  \end{equation*}
+  where the last equality holds because $L$ and $U$ are triangular:
+  $\ell_{i s} = 0$ for $s > i$ and $u_{s j} = 0$ for $s > j$.
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Factorisation by example}
+  
+  The previous example had the matrix
+  \begin{equation*}
+    A =
+    \begin{pmatrix}
+      2 & 1 & -1 \\
+      4 & 1 & 0 \\
+      -2 & -3 & 8
+    \end{pmatrix}
+  \end{equation*}
+  which we decompose using
+  \begin{equation*}
+    a_{i j} = \sum_{s=1}^{\min(i, j)} \ell_{i s} u_{s j}.
+  \end{equation*} \pause
+
+  First coefficient, $i = j = 1$, obeys
+  \begin{equation*}
+    a_{1 1}  = 2 = \ell_{1 1} u_{1 1}.
+  \end{equation*}
+  Use our freedom to set some coefficients to choose $\ell_{1
+    1} = 1$, for example, which gives $u_{1 1} = a_{1 1} = 2$.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Factorisation by example - II}
+
+  Now consider the first row of $U$ ($i = 1$, $j$ free) and the first
+  column of $L$ ($i$ free, $j = 1$). The first row of $U$ obeys
+  \begin{equation*}
+    a_{1 j} = \ell_{1 1} u_{1 j} = u_{1 j}
+  \end{equation*}
+  and the first column of $L$ obeys
+  \begin{equation*}
+    a_{i 1} = \ell_{i 1} u_{1 1} = 2 \ell_{i 1}.
+  \end{equation*}
+  Therefore we know that
+  \begin{equation*}
+    L =
+    \begin{pmatrix}
+      1 & 0 & 0 \\
+      \tfrac{4}{2} & ?? & 0 \\
+      \tfrac{-2}{2} & ?? & ??
+    \end{pmatrix}, \quad
+    U =
+    \begin{pmatrix}
+      2 & 1 & -1 \\
+      0 & ?? & ?? \\
+      0 & 0 & ??
+    \end{pmatrix}.
+  \end{equation*}
+
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Factorisation by example - III}
+
+  Go to second row and column.
+  \begin{equation*}
+    a_{2 2} = \ell_{2 1} u_{1 2} + \ell_{2 2} u_{2 2}.
+  \end{equation*}
+  Already computed entries $\ell_{2 1} = 2$, $u_{1 2} = 1$. Again set
+  $\ell_{2 2} = 1$, giving
+  \begin{equation*}
+    a_{2 2} = 1 = 2 + u_{2 2} \Rightarrow u_{2 2} = -1.
+  \end{equation*} \pause
+
+  As in the previous step, consider the second row of $U$ and
+  second column of $L$, finding
+  \begin{align*}
+    u_{2 j}    & = a_{2 j} - \ell_{2 1} u_{1 j}, \\
+    \ell_{i 2} & = \left(a_{i 2} - \ell_{i 1} u_{1 2} \right) / u_{2 2},
+  \end{align*}
+  which implies that
+  \begin{align*}
+    u_{2 3}    & = 0 - 2 \times (-1) = 2, \\
+    \ell_{3 2} & = \left(-3 - (-1) \times 1\right) / (-1) = 2.
+  \end{align*}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Factorisation by example - IV}
+
+  We now have the first two rows and columns:
+  \begin{equation*}
+    L =
+    \begin{pmatrix}
+      1 & 0 & 0 \\
+      2 & 1 & 0 \\
+      -1 & 2 & ??
+    \end{pmatrix}, \quad
+    U =
+    \begin{pmatrix}
+      2 & 1 & -1 \\
+      0 & -1 & 2 \\
+      0 & 0 & ??
+    \end{pmatrix}.
+  \end{equation*} \pause
+  Continuing as above, use last free choice to set $\ell_{3 3} =
+  1$. Finally, as above, compute that $u_{3 3} = 3$. So we finally
+  have
+  \begin{equation*}
+    L =
+    \begin{pmatrix}
+      1 & 0 & 0 \\
+      2 & 1 & 0 \\
+      -1 & 2 & 1
+    \end{pmatrix}, \quad
+    U =
+    \begin{pmatrix}
+      2 & 1 & -1 \\
+      0 & -1 & 2 \\
+      0 & 0 & 3
+    \end{pmatrix}.
+  \end{equation*}
+
+\end{frame}
+
+
+\subsection{Summary of the algorithm}
+
+\begin{frame}
+  \frametitle{Summary of the algorithm}
+  
+  \begin{itemize}
+  \item Write down the explicit formula for the matrix coefficients.
+    \begin{enumerate}
+    \item Work from the first row / column to the last.
+    \item Look at the diagonal entry of $A$: use the freedom to choose
+      the value of either $L$ or $U$'s diagonal entry.
+    \item The appropriate row of $U$ and column of $L$ follows from
+      the explicit formula as all other entries are known.
+    \end{enumerate} \pause
+  \item If either $u_{k k}$ or $\ell_{k k}$ are zero the simple
+    algorithm fails; however, an $LU$ decomposition may still exist. \pause
+  \item $U$ is the matrix that would be found using Gaussian
+    elimination. $LU$ decomposition has the advantage that it holds
+    for any $\bb$ in $A \bx = \bb$, whereas with Gaussian elimination
+    the whole algorithm needs repeating. \pause
+  \item As with Gaussian elimination, pivoting for accuracy is
+    necessary for general matrices.
+  \end{itemize}
+
+\end{frame}
+
+
+\subsection{Conditions for factorisation}
+
+\begin{frame}
+  \frametitle{Conditions for factorisation - background}
+  
+  We \emph{assumed} an $LU$ decomposition is always possible. However,
+  we then noted that the algorithm works only if both $u_{k k}$ and
+  $\ell_{k k}$ are non-zero, which is not known in advance. \pause
+
+  \vspace{1ex}
+
+  Two key concepts used in determining if a factorisation exists.
+  \begin{enumerate}
+  \item The \emph{principal minor} of order $k$ of a matrix $A$ is the
+    (sub-) matrix
+    \begin{equation*}
+      \begin{pmatrix}
+        a_{1 1} & \cdots & a_{1 k} \\
+        \vdots & \ddots & \vdots \\
+        a_{k 1} & \cdots & a_{k k}
+      \end{pmatrix} .
+    \end{equation*} \pause
+  \item A matrix is \emph{strictly diagonally dominant} if
+    \begin{equation*}
+      | a_{i i} | > \sum_{\substack{j = 1 \\ j \ne i}}^n | a_{i j} |,
+        \quad (1 \le i \le n).
+    \end{equation*}
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Conditions for factorisation - theorems}
+  
+  Summarize the two key theorems; see references given in the notes:
+
+  \vspace{2ex}
+
+  {\bf Theorem 1.1}: If all $n - 1$ leading principal minors of the $n
+  \times n$ matrix $A$ are nonsingular, then an $LU$ decomposition of
+  $A$ exists. \pause
+
+  \vspace{1ex}
+
+  The relation between $LU$ decomposition and Gaussian elimination is
+  exploited to prove this theorem. It also shows that, if the matrix
+  is nonsingular, its rows can be permuted so that an $LU$
+  decomposition of the permuted matrix can be found.  \pause
+
+  \vspace{2ex}
+
+  {\bf Theorem 1.2}: Every strictly diagonally dominant matrix is
+  nonsingular and has an $LU$ decomposition. \pause
+
+  \vspace{1ex}
+
+  Diagonal dominance is a very simple condition to check. Most
+  matrices involved in numerical methods for solving PDEs are
+  diagonally dominant, leading to the practical utility of this
+  theorem.
+
+\end{frame}
+
+\section{Summary}
+
+\subsection{Summary}
+
+\begin{frame}
+  \frametitle{Summary}
+  
+  \begin{itemize}
+  \item Decomposition methods rewrite the matrix $A$ as the product of
+    two matrices so that the sub-problems are easy to solve.
+  \item The $LU$ decomposition is the simplest example.
+    \begin{itemize}
+    \item The sub-problems are triangular matrix problems, solved by
+      forwards or backwards substitution.
+    \item There are $n$ free choices in the coefficients of $L$ and/or
+      $U$, which can be picked to simplify the method.
+    \item The algorithm may not work even when an $LU$ decomposition
+      exists.
+    \item $LU$ decomposition is closely related to Gaussian
+      elimination, but is independent of $\bb$ and hence more
+      efficient.
+    \item A non-singular matrix can be permuted to one with an $LU$
+      decomposition; a diagonally dominant matrix has an $LU$
+      decomposition. 
+    \end{itemize}
+  \item In special cases there are more efficient algorithms (not
+    examined in this course):
+    \begin{itemize}
+    \item For $A$ symmetric, positive definite, \emph{Cholesky
+        factorisation} is used.
+    \item For $A$ \emph{tridiagonal} the \emph{Thomas algorithm} - a
+      simplified Gaussian elimination method - is used.
+    \end{itemize}
+  \end{itemize}
+   
+\end{frame}
+
+
+\section{Additional material}
+
+
+\subsection{Cholesky factorisation}
+
+
+\begin{frame}
+  \frametitle{Cholesky factorisation - example}
+  
+  We want to decompose the symmetric, positive definite matrix
+  \begin{equation*}
+    A =
+    \begin{pmatrix}
+      2 & 1 \\
+      1 & 3
+    \end{pmatrix}
+  \end{equation*}
+  as $A = L L^T$ where $L$ is lower triangular with positive diagonal
+  elements. \pause Again we write the coefficients out explicitly and
+  look at the diagonal elements first:
+  \begin{align*}
+                && A & = L L^T \\
+    \Rightarrow &&
+    \begin{pmatrix}
+      2 & 1 \\
+      1 & 3
+    \end{pmatrix}
+    & =
+    \begin{pmatrix}
+      \ell_{1 1}^2 & \ell_{1 1} \ell_{2 1} \\
+      \ell_{1 1} \ell_{2 1} & \ell_{2 1}^2 +  \ell_{2 2}^2
+    \end{pmatrix} \\ 
+    \Rightarrow && &\left\{ 
+      \begin{aligned}
+        \ell_{1 1} & = \sqrt{2} \\
+        \ell_{2 1} & = 1 / \sqrt{2} \\
+        \ell_{2 2} & = \sqrt{3 - \ell_{2 1}^2} \\
+                   & = \sqrt{5/2}
+      \end{aligned}\right. .
+  \end{align*}
+
+\end{frame}
+
+
+\subsection{Tridiagonal systems}
+
+\begin{frame}
+  \frametitle{Tridiagonal systems}
+
+  \begin{overlayarea}{\textwidth}{0.8\textheight}
+    \only<1|handout:1>
+    {
+      Tridiagonal systems turn up frequently in the solution of
+      differential equations, particularly when using finite
+      difference methods as we shall later in the unit.
+    }
+    \only<2-3|handout:1-2>
+    {
+      Consider the simple $4 \times 4$ system
+      \begin{equation*}
+        \begin{pmatrix}
+          2 & 1 & 0 & 0 \\
+          1 & 2 & 1 & 0 \\
+          0 & 1 & 2 & 1 \\
+          0 & 0 & 1 & 2
+        \end{pmatrix}
+        \begin{pmatrix}
+          x_1 \\ x_2 \\ x_3 \\ x_4
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+          -1 \\ 0 \\ 0 \\ -1
+        \end{pmatrix}.
+      \end{equation*}
+    }
+    \only<3|handout:2>
+    {
+      We proceed as we would with Gaussian elimination: remove the
+      (single) coefficient below the diagonal first, rescaling as we
+      go:
+      \begin{equation*}
+        \begin{pmatrix}
+          1 & \tfrac{1}{2} & 0 & 0 \\
+          0 & 1 & \frac{2}{3} & 0 \\
+          0 & 0 & 1 & \tfrac{3}{4} \\
+          0 & 0 & 0 & 1
+        \end{pmatrix}
+        \begin{pmatrix}
+          x_1 \\ x_2 \\ x_3 \\ x_4
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+          -\tfrac{1}{2} \\ \tfrac{1}{3} \\ -\tfrac{1}{4} \\ -\tfrac{3}{5}
+        \end{pmatrix},
+      \end{equation*}
+    }
+    \only<4-|handout:3>
+    {
+      Consider the simple $4 \times 4$ system
+      \begin{equation*}
+        \begin{pmatrix}
+          2 & 1 & 0 & 0 \\
+          1 & 2 & 1 & 0 \\
+          0 & 1 & 2 & 1 \\
+          0 & 0 & 1 & 2
+        \end{pmatrix}
+        \begin{pmatrix}
+          x_1 \\ x_2 \\ x_3 \\ x_4
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+          -1 \\ 0 \\ 0 \\ -1
+        \end{pmatrix}
+        \rightarrow
+        \begin{pmatrix}
+          1 & \tfrac{1}{2} & 0 & 0 \\
+          0 & 1 & \frac{2}{3} & 0 \\
+          0 & 0 & 1 & \tfrac{3}{4} \\
+          0 & 0 & 0 & 1
+        \end{pmatrix}
+        \begin{pmatrix}
+          x_1 \\ x_2 \\ x_3 \\ x_4
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+          -\tfrac{1}{2} \\ \tfrac{1}{3} \\ -\tfrac{1}{4} \\ -\tfrac{3}{5}
+        \end{pmatrix},        
+      \end{equation*}
+      and then use back-substitution to get
+      \begin{equation*}
+        \left\{
+          \begin{aligned}
+            x_4 & =-\tfrac{3}{5} \\
+            x_3 & = \tfrac{1}{5} \\
+            x_2 & = \tfrac{1}{5} \\
+            x_1 & =-\tfrac{3}{5}
+          \end{aligned} \right. .
+      \end{equation*}
+    }
+  \end{overlayarea}
+  
+\end{frame}
+
+
+\end{document}
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

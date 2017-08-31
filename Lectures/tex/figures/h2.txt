@@ -1,0 +1,6 @@
+To perform the direct numerical simulation of turbulent combustion, energy and many species conservation equations have to be solved in addition to the turbulent flow field. Flame is composed of many chemical species and many elementary reactions. To simulate the flame with high accuracy, higher spatial resolution and smaller time steps compared with nonreactive turbulence are required. As for hydrogen-air combustion, more than ten chemical species and dozens of elementary reactions should be considered. For methane-air combustion, several tens of chemical species and several hundreds elementary reactions are required. Therefore, these characteristics of the flame results in difficulty of DNS of turbulent combustion.
+
+In this laboratory, three-dimensional DNS of turbulent combustion with detailed kinetic mechanism, which was the first 3-D DNS in the world, has been conducted in 2000. In the turbulent combustion, interaction between fine scale structure and flame dominates the local characteristics of the turbulent flame and has significant effects on turbulent burning velocity . The investigation of detailed structure of the turbulent combustion may lead to the developments of high efficiency and low emissions combustors in near future.
+
+
+http://www.3mech.titech.ac.jp/ma_miyauchi/ma_miyauchi_e.html

@@ -1,0 +1,1026 @@
+% $Header: /cvsroot/latex-beamer/latex-beamer/solutions/conference-talks/conference-ornate-20min.en.tex,v 1.6 2004/10/07 20:53:08 tantau Exp $
+
+\documentclass{beamer}
+%\documentclass[handout]{beamer}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
+
+% This file is a solution template for:
+
+% - Talk at a conference/colloquium.
+% - Talk length is about 20min.
+% - Style is ornate.
+
+
+
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice.
+
+
+\mode<presentation>
+{
+%  \usetheme{Warsaw}
+%  \usetheme{Boadilla}
+%  \usetheme{Goettingen}
+%  \usetheme{Hannover}
+%  \usetheme{Madrid}
+%  \usetheme{Marburg}
+%  \usetheme{Montpellier}
+%  \usetheme{Pittsburgh}
+  \usetheme{Hawke}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+% or whatever
+
+\usepackage[latin1]{inputenc}
+% or whatever
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{multimedia}
+
+
+%%%%%%
+% My Commands
+%%%%%%
+
+\newcommand{\ml}{{\sc matlab}}
+\newcommand{\bb}{{\boldsymbol{b}}}
+\newcommand{\bx}{{\boldsymbol{x}}}
+\newcommand{\by}{{\boldsymbol{y}}}
+\newcommand{\bfm}[1]{{\boldsymbol{#1}}}
+\newcommand{\pda}[2]{\frac{\partial{#1}}{\partial{#2}}}
+\newcommand{\pdb}[2]{\frac{\partial^2{#1}}{\partial{#2}^2}}
+\newcommand{\pdc}[3]{\frac{\partial^2{#1}}{\partial{#2}\partial{#3}}}
+
+
+%%%%
+
+\title[Lecture 23] % (optional, use only with long paper titles)
+{Lecture 23 - Basic Methods for Parabolic and Hyperbolic Equations}
+
+% \subtitle
+% {Include Only If Paper Has a Subtitle}
+
+\author[I. Hawke] % (optional, use only with lots of authors)
+{I.~Hawke}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[University of Southampton] % (optional, but mostly needed)
+{
+%  \inst{1}%
+  School of Mathematics, \\
+  University of Southampton, UK
+}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date[Semester 1] % (optional, should be abbreviation of conference name)
+{MATH3018/6141, Semester 1}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Numerical methods}
+% This is only inserted into the PDF information catalog. Can be left
+% out.
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+\pgfdeclareimage[height=0.5cm]{university-logo}{mathematics_7469}
+\logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+%  \AtBeginSubsection[]
+%  {
+%    \begin{frame}<beamer>
+%      \frametitle{Outline}
+%      \tableofcontents[currentsection,currentsubsection]
+%    \end{frame}
+%  }
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command:
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Evolutionary PDEs}
+
+\subsection{Evolutionary PDEs}
+
+\begin{frame}
+  \frametitle{Partial differential equations}
+
+  Partial differential equations (PDEs) involve derivatives of
+  functions of more than one variable, say $u(x, y)$ or $y(t,
+  x)$. Hence more complex behaviour and more interesting
+  physics. \pause
+
+  \vspace{1ex}
+
+  Only look at linear problems.  Also only consider finite difference
+  methods: simple to analyse but not always competitive. \pause
+
+  \vspace{1ex}
+
+  Here consider simple methods for evolutionary problems; that is, for
+  simple hyperbolic and parabolic equations.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The problems}
+
+  Prototypes: \emph{parabolic} heat and \emph{hyperbolic} wave equations:
+  \begin{equation*}
+    \partial_{t} y - k \partial_{x x} y = 0, \qquad \partial_{t t} y -
+    c^2 \partial_{x x} y = 0.
+  \end{equation*} \pause
+  Second time derivatives awkward: use \emph{advection} equation
+  \begin{equation*}
+    \partial_{t} y + v \partial_{x} y = 0.
+  \end{equation*} \pause
+  Use $q_{\pm} = \partial_t y \mp c \partial_x y$ in wave equation:
+  \begin{equation*}
+    \partial_t
+    \begin{pmatrix}
+      q_+ \\ q_-
+    \end{pmatrix} + c \partial_x
+    \begin{pmatrix}
+      q_+ \\ -q_-
+    \end{pmatrix} = 0:
+  \end{equation*}
+  just a pair of advection equations.
+
+  % \begin{overlayarea}{\textwidth}{0.9\textheight}
+  %   \only<1|handout:1>
+  %   {
+  %     The two prototype equations are the \emph{parabolic} heat equation
+  %     \begin{equation*}
+  %       \partial_{t} y - k \partial_{x x} y = 0
+  %     \end{equation*}
+  %     and the \emph{hyperbolic} wave equation
+  %     \begin{equation*}
+  %       \partial_{t t} y - c^2 \partial_{x x} y = 0.
+  %     \end{equation*}
+  %   }
+  %   \only<2->
+  %   {
+  %     It is awkward (although not impossible) to deal with second
+  %     \emph{time} derivatives in evolutionary equations, so we will
+  %     actually look at the heat equation
+  %     \begin{equation*}
+  %       \partial_{t} y - k \partial_{x x} y = 0
+  %     \end{equation*}
+  %     and the hyperbolic \emph{advection} equation
+  %     \begin{equation*}
+  %       \partial_{t} y + v \partial_{x} y = 0.
+  %     \end{equation*}
+  %   }
+  %   \only<3|handout:2>
+  %   {
+  %     By taking the wave equation
+  %     \begin{equation*}
+  %       \partial_{t t} y - c^2 \partial_{x x} y = 0.
+  %     \end{equation*}
+  %     and looking at the equations for $q_{\pm} = \partial_t y \pm
+  %     \partial_x y$ we find
+  %     \begin{equation*}
+  %       \partial_t
+  %       \begin{pmatrix}
+  %         q_+ \\ q_-
+  %       \end{pmatrix} + c \partial_x
+  %       \begin{pmatrix}
+  %         q_- \\ -q_+
+  %       \end{pmatrix} = 0,
+  %     \end{equation*}
+  %     which is just a pair of coupled advection equations.
+  %   }
+  % \end{overlayarea}
+
+\end{frame}
+
+
+\subsection{Finite Difference Methods}
+
+\begin{frame}
+  \frametitle{Finite Difference Methods}
+
+  As before our strategy will be
+  \begin{enumerate}
+  \item<1-> Introduce grid (equally spaced for simplicity) covering
+    domain. \pause Bounded in space ($x \in [0,1]$ in following),
+    semi-infinite in time ($t \ge 0$ in following).
+  \item<3-> Replace PDE with finite differences. Only works for
+    interior points (in space).
+  \item<4-> Rearrange interior difference equations to get either
+    \begin{itemize}
+    \item \emph{Explicit} method: value of interior
+      points given known data (boundary data or previously
+      computed interior points), or
+    \item<5-> \emph{Implicit} method:, value of interior points
+      depends on other interior points whose value is not known; these
+      methods typically involve solving a linear system.
+    \end{itemize}
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Grid}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \begin{overlayarea}{\textwidth}{0.8\textheight}
+        \only<1-6|handout:1>
+        {
+          Introduce grid. Initial conditions fix known data.
+        }
+        \only<2-6|handout:1>
+        {
+
+          \vspace{1ex}
+          This allows interior update.
+        }
+        \only<3-6|handout:1>
+        {
+
+          \vspace{1ex}
+          Applying boundary conditions completes one iteration.
+        }
+        \only<4-6|handout:1>
+        {
+
+          \vspace{1ex}
+          Further iterations same.
+        }
+        \only<5-6|handout:1>
+        {
+
+          \vspace{1ex}
+          Boundary conditions used at every step.
+        }
+        \only<6|handout:1>
+        {
+
+          \vspace{1ex}
+          The algorithm can go on forever.
+        }
+        \only<7-|handout:2>
+        {
+          Note: write discrete grid points
+          \begin{equation*}
+            (x_i, t^n), \quad 0 \le i \le N+1, \,\, n \ge 0
+          \end{equation*}
+          where $i, n$ are integer grid indices. $t^2$ means ``the
+          second time step'', not ``$t$ squared''.
+        }
+        \only<8|handout:2>
+        {
+
+          \vspace{1ex}
+          From spatial boundaries get grid spacing
+          \begin{equation*}
+            h = 1 / (N+1).
+          \end{equation*}
+          However timestep, $\delta$, can be set freely.
+        }
+      \end{overlayarea}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1-2|handout:0>[width=\textwidth]{figures/Grid5}
+        \includegraphics<3|handout:0>[width=\textwidth]{figures/Grid4}
+        \includegraphics<4|handout:0>[width=\textwidth]{figures/Grid3}
+        \includegraphics<5|handout:0>[width=\textwidth]{figures/Grid2}
+        \includegraphics<6|handout:1>[width=\textwidth]{figures/Grid1}
+        \includegraphics<7-|handout:2>[width=\textwidth]{figures/Grid1h}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+
+\section{Heat Equation}
+
+
+\subsection{FTCS}
+
+
+\begin{frame}
+  \frametitle{FTCS}
+
+  \begin{overlayarea}{\textwidth}{0.8\textheight}
+    \only<1-4|handout:1>
+    {
+      Look at heat equation with $k=1$,
+      \begin{equation*}
+        \partial_{t} y - \partial_{x x} y = 0.
+      \end{equation*}
+    }
+    \only<2-4|handout:1>
+    {
+      % \begin{equation*}
+      %   \partial_{t} y - \partial_{x x} y = 0.
+      % \end{equation*}
+      Assume initial conditions known, $y(x, 0) = g(x)$
+      and trivial boundary conditions given
+      \begin{equation*}
+        y(0, t) = 0, \quad y(1, t) = 0.
+      \end{equation*}
+    }
+    \only<3-4|handout:1>
+    {
+      % \begin{equation*}
+      %   \partial_{t} y - \partial_{x x} y = 0. \quad y(x, 0) = g(x),
+      %   \,\, y(0, t) = 0, \,\, y(1, t) = 0.
+      % \end{equation*}
+
+      Introduce grid $(x_i, t^n)$. Initial condition gives values at
+      $t^0 \implies y_i^0$.
+    }
+    \only<4|handout:1>
+    {
+
+      \vspace{1ex}
+
+      Convert heat equation to difference equation.
+      Standard approach is central differencing:
+      \begin{equation*}
+        \partial_{x x} y |_{x = x_i} = \frac{ y_{i+1} + y_{i-1} - 2
+          y_i}{h^2} + {\cal O}(h^2).
+      \end{equation*}
+    }
+    \only<5-7|handout:2>
+    {
+      \begin{equation*}
+        \partial_{t} y - \partial_{x x} y = 0. \quad y(x, 0) = g(x),
+        \,\, y(0, t) = 0, \,\, y(1, t) = 0.
+      \end{equation*}
+      \begin{equation*}
+        \partial_{x x} y |_{x = x_i} = \frac{ y_{i+1} + y_{i-1} - 2
+          y_i}{h^2} + {\cal O}(h^2).
+      \end{equation*}
+      Central differencing in \emph{time} difficult [only one time
+      slice ($t^0$) known]; instead use \emph{forward} differencing
+      \begin{equation*}
+        \partial_t y |_{t = t^n} = \frac{y^{n+1} - y^n}{\delta} + {\cal
+          O}(\delta^2).
+      \end{equation*}
+    }
+    \only<6-|handout:2>
+    {
+      % \begin{equation*}
+      %   \partial_{t} y - \partial_{x x} y = 0. \quad y(x, 0) = g(x),
+      %   \,\, y(0, t) = 0, \,\, y(1, t) = 0.
+      % \end{equation*}
+      % \begin{equation*}
+      %   \partial_{x x} y |_{x = x_i} = \frac{ y_{i+1} + y_{i-1} - 2
+      %     y_i}{h^2} + {\cal O}(h^2).
+      % \end{equation*}
+      % \begin{equation*}
+      %   \partial_t y |_{t = t^n} = \frac{y^{n+1} - y^n}{\delta} + {\cal
+      %     O}(\delta^2).
+      % \end{equation*}
+      Substituting in the difference formulas and rearranging gives
+      \begin{align*}
+        && y_i^{n+1} & = y_i^n + \frac{\delta}{h^2} \left( y_{i+1}^n +
+          y_{i-1}^n - 2 y_i^n \right); \\
+        s = \delta / h^2 & \implies &
+        y_i^{n+1} &= ( 1 - 2 s ) y_i^n + s \left( y_{i+1}^n +
+          y_{i-1}^n \right).
+      \end{align*}
+    }
+    \only<7|handout:2>
+    {
+      \emph{Explicit} algorithm called FTCS (Forward Time,
+      Centred Space).
+    }
+  \end{overlayarea}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      Apply FTCS to heat equation.  Initial data is ``tent'' function.
+      Choose timestep such that $s = 1/3$. \pause
+
+      \vspace{1ex}
+
+      Result evolves \pause in roughly the right fashion. \pause
+      Increasing resolution \pause improves accuracy \pause as we
+      evolve. \pause
+
+      \vspace{1ex}
+
+      Convergence check: second order convergence.
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1|handout:0>[width=\textwidth]{figures/FTCSHeat1_0}
+        \includegraphics<2|handout:1>[width=\textwidth]{figures/FTCSHeat1_38}
+        \includegraphics<3|handout:0>[width=\textwidth]{figures/FTCSHeat1_57}
+        \includegraphics<4|handout:0>[width=\textwidth]{figures/FTCSHeat3_0}
+        \includegraphics<5|handout:0>[width=\textwidth]{figures/FTCSHeat3_600}
+        \includegraphics<6|handout:0>[width=\textwidth]{figures/FTCSHeat3_1200}
+        \includegraphics<7|handout:2>[width=\textwidth]{figures/FTCSHeatConvergence1}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example: 2}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \begin{overlayarea}{\textwidth}{0.8\textheight}
+        \only<1-|handout:1>
+        {
+          Fixing $s = \delta / h^2 = 1/3$ is a severe restriction on time step.
+          Double $n \implies h$ reduced by half $\implies \delta$
+          reduced by a quarter.
+        }
+        \only<2-|handout:1>
+        {
+
+          \vspace{1ex}
+
+          Instead increase timestep setting $s=2/3$. Less restrictive, but
+          evolution not as good. In fact, it seems to be rubbish.
+        }
+        \only<4-|handout:2->
+        {
+
+          \vspace{1ex}
+
+          Increasing resolution helped before; now just make things worse.
+        }
+        \only<7-|handout:2->
+        {
+
+          \vspace{1ex}
+
+          No convergence at all!
+        }
+      \end{overlayarea}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1|handout:0>[width=\textwidth]{figures/FTCSHeatUnstable1_0}
+        \includegraphics<2|handout:1>[width=\textwidth]{figures/FTCSHeatUnstable1_2}
+        \includegraphics<3|handout:0>[width=\textwidth]{figures/FTCSHeatUnstable1_4}
+        \includegraphics<4|handout:0>[width=\textwidth]{figures/FTCSHeatUnstable3_0}
+        \includegraphics<5|handout:2>[width=\textwidth]{figures/FTCSHeatUnstable3_30}
+        \includegraphics<6|handout:0>[width=\textwidth]{figures/FTCSHeatUnstable3_60}
+        \includegraphics<7|handout:3>[width=\textwidth]{figures/FTCSHeatUnstableConvergence1}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+
+\end{frame}
+
+
+\subsection{BTCS}
+
+\begin{frame}
+  \frametitle{BTCS}
+
+  \begin{overlayarea}{\textwidth}{0.8\textheight}
+    \only<1-3|handout:1>
+    {
+      FTCS has problems where $s
+      > 1/2$:  a limitation. Instead modify
+      finite differencing to improve  behaviour.
+    }
+    \only<2-3|handout:1>
+    {
+
+      \vspace{1ex}
+
+      Still have the problem
+      \begin{equation*}
+        \partial_{t} y - \partial_{x x} y = 0. \quad y(x, 0) = g(x),
+        \,\, y(0, t) = 0, \,\, y(1, t) = 0
+      \end{equation*}
+      and central differencing in space
+      \begin{equation*}
+        \partial_{x x} y |_{x = x_i} = \frac{ y_{i+1} + y_{i-1} - 2
+          y_i}{h^2} + {\cal O}(h^2).
+      \end{equation*}
+    }
+    \only<3|handout:1>
+    {
+
+      Try \emph{backward} differencing in time,
+      \begin{equation*}
+        \partial_t y |_{t = t^{n+1}} = \frac{y^{n+1} - y^n}{\delta} + {\cal
+          O}(\delta^2).
+      \end{equation*}
+    }
+    \only<4-|handout:2>
+    {
+      \begin{equation*}
+        \partial_{t} y - \partial_{x x} y = 0. \quad y(x, 0) = g(x),
+        \,\, y(0, t) = 0, \,\, y(1, t) = 0.
+      \end{equation*}
+      \begin{equation*}
+        \partial_{x x} y |_{x = x_i} = \frac{ y_{i+1} + y_{i-1} - 2
+          y_i}{h^2} + {\cal O}(h^2).
+      \end{equation*}
+      \begin{equation*}
+        \partial_t y |_{t = t^{n+1}} = \frac{y^{n+1} - y^n}{\delta} + {\cal
+          O}(\delta^2).
+      \end{equation*}
+      Substituting in the difference formulas and rearranging gives
+      \begin{align*}
+        && y_i^{n+1} & = y_i^n + \frac{\delta}{h^2} \left( y_{i+1}^{n+1} +
+          y_{i-1}^{n+1} - 2 y_i^{n+1} \right); \\
+        s = \delta / h^2 & \implies & (1 + 2 s) y_i^{n+1} & = y_i^n +
+        s \left( y_{i+1}^{n+1} + y_{i-1}^{n+1} \right).
+      \end{align*}
+    }
+    \only<5|handout:2>
+    {
+      This \emph{implicit} algorithm is called BTCS (Backward Time,
+      Centred Space). It requires solving a linear system.
+    }
+  \end{overlayarea}
+
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{BTCS - linear system}
+
+  BTCS can be written
+  \begin{equation*}
+    (1 + 2 s) y_i^{n+1} - s \left( y_{i+1}^{n+1} + y_{i-1}^{n+1}
+    \right) = y_i^n.
+  \end{equation*} \pause
+  See directly that we have the linear system
+  \begin{equation*}
+    A \by^{n+1} = \by^n + \bfm{F}
+  \end{equation*}
+  where the matrix is, for example
+  \begin{equation*}
+    \begin{pmatrix}
+      1 + 2 s & -s & 0 & 0 & \dots \\
+      -s & 1 + 2 s & -s & 0 & \dots \\
+      0 & -s & 1 + 2 s & -s & \dots \\
+      \vdots & \ddots & \ddots & \ddots & \ddots
+    \end{pmatrix}
+  \end{equation*} \pause
+  and the known vector is ($y_0, y_{N+1}$ from boundary conditions)
+  \begin{equation*}
+    \bfm{F} =
+    \begin{pmatrix}
+       y_0^n + s y_0^{n+1} & y_1^n & \dots & y_2^n & y_{N+1}^n + s y_{N+1}^{n+1}
+    \end{pmatrix}^T.
+  \end{equation*}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Example}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      Apply BTCS to heat equation.  Initial data is ``tent'' function.
+      Choose timestep such that $s = 1/2$. \pause
+
+      \vspace{1ex}
+
+      Result evolves \pause in roughly the right fashion. \pause
+      Increasing resolution \pause improves accuracy \pause as we
+      evolve. \pause
+
+      \vspace{1ex}
+
+      Convergence check: second order convergence.
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1|handout:0>[width=\textwidth]{figures/BTCSHeat1_0}
+        \includegraphics<2|handout:1>[width=\textwidth]{figures/BTCSHeat1_13}
+        \includegraphics<3|handout:0>[width=\textwidth]{figures/BTCSHeat1_39}
+        \includegraphics<4|handout:0>[width=\textwidth]{figures/BTCSHeat3_0}
+        \includegraphics<5|handout:2>[width=\textwidth]{figures/BTCSHeat3_200}
+        \includegraphics<6|handout:0>[width=\textwidth]{figures/BTCSHeat3_600}
+        \includegraphics<7|handout:3>[width=\textwidth]{figures/BTCSHeatConvergence1}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Example: 2}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \begin{overlayarea}{\textwidth}{0.8\textheight}
+        \only<1->
+        {
+          Fixing $s = \delta / h^2 = 1/2$ is a severe restriction on
+          the time step.  Double $n \implies h$ reduced by half
+          $\implies \delta$ reduced by a quarter.
+        }
+        \only<2->
+        {
+          \vspace{1ex}
+
+          Instead increase $s$ to $5$: less restrictive and evolution
+          appears reasonable.
+        }
+        \only<4-> {
+          \vspace{1ex}
+
+          Increasing resolution helps here.
+        }
+        \only<7->
+        {
+          \vspace{1ex}
+
+          Still have second order convergence.
+        }
+      \end{overlayarea}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1|handout:0>[width=\textwidth]{figures/BTCSHeatHiS2_0}
+        \includegraphics<2|handout:1>[width=\textwidth]{figures/BTCSHeatHiS2_10}
+        \includegraphics<3|handout:0>[width=\textwidth]{figures/BTCSHeatHiS2_20}
+        \includegraphics<4|handout:0>[width=\textwidth]{figures/BTCSHeatHiS3_0}
+        \includegraphics<5|handout:2>[width=\textwidth]{figures/BTCSHeatHiS3_20}
+        \includegraphics<6|handout:0>[width=\textwidth]{figures/BTCSHeatHiS3_40}
+        \includegraphics<7|handout:3>[width=\textwidth]{figures/BTCSHeatHiSConvergence1}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+
+\end{frame}
+
+
+\section{Advection Equation}
+
+
+\subsection{FTCS}
+
+
+\begin{frame}
+  \frametitle{FTCS}
+
+  \begin{overlayarea}{\textwidth}{0.8\textheight}
+    \only<1-4|handout:1>
+    {
+      Now look at advection equation with $v=1$,
+      \begin{equation*}
+        \partial_{t} y + \partial_{x} y = 0.
+      \end{equation*}
+    }
+    \only<2-4|handout:1>
+    {
+      % \begin{equation*}
+      %   \partial_{t} y \partial_{x} y = 0.
+      % \end{equation*}
+      Assume initial conditions known, $y(x, 0) = g(x)$
+      and \emph{periodic} boundary conditions given:
+      \begin{equation*}
+        y(0, t) = y(1, t).
+      \end{equation*}
+    }
+    \only<3-4|handout:1>
+    {
+      % \begin{equation*}
+      %   \partial_{t} y + \partial_{x} y = 0. \quad y(x, 0) = g(x),
+      %   \,\, y(0, t) = y(1, t).
+      % \end{equation*}
+
+      Introduce grid $(x_i, t^n)$. Initial condition gives values at
+      $t^0 \implies y_i^0$.
+    }
+    \only<4|handout:1>
+    {
+
+      \vspace{1ex}
+
+      Convert advection equation to difference equation.
+      Standard approach is central differencing:
+      \begin{equation*}
+        \partial_{x} y |_{x = x_i} = \frac{ y_{i+1} - y_{i-1}}{2 h} +
+        {\cal O}(h^2).
+      \end{equation*}
+    }
+    \only<5-7|handout:2>
+    {
+      \begin{equation*}
+        \partial_{t} y + \partial_{x} y = 0. \quad y(x, 0) = g(x),
+        \,\, y(0, t) = y(1, t).
+      \end{equation*}
+      \begin{equation*}
+        \partial_{x} y |_{x = x_i} = \frac{ y_{i+1} - y_{i-1}}{2 h} +
+        {\cal O}(h^2).
+      \end{equation*}
+      As before use \emph{forward} differencing in time,
+      \begin{equation*}
+        \partial_t y |_{t = t^n} = \frac{y^{n+1} - y^n}{\delta} + {\cal
+          O}(\delta^2).
+      \end{equation*}
+    }
+    \only<6-|handout:2>
+    {
+      % \begin{equation*}
+      %   \partial_{t} y + \partial_{x} y = 0. \quad y(x, 0) = g(x),
+      %   \,\, y(0, t) = y(1, t).
+      % \end{equation*}
+      % \begin{equation*}
+      %   \partial_{x} y |_{x = x_i} = \frac{y_{i+1} - y_{i-1}}{2 h} +
+      %   {\cal O}(h^2).
+      % \end{equation*}
+      % \begin{equation*}
+      %   \partial_t y |_{t = t^n} = \frac{y^{n+1} - y^n}{\delta} + {\cal
+      %     O}(\delta^2).
+      % \end{equation*}
+      Substituting in the difference formulas and rearranging gives
+      \begin{align*}
+        && y_i^{n+1} & = y_i^n - \frac{\delta}{2 h} \left( y_{i+1}^n -
+          y_{i-1}^n \right); \\
+        c = \delta / h & \implies &
+        y_i^{n+1} & = y_i^n - \frac{c}{2} \left( y_{i+1}^n -
+          y_{i-1}^n \right).
+      \end{align*}
+    }
+    \only<7|handout:2>
+    {
+      \emph{Explicit} algorithm again called FTCS (Forward Time,
+      Centred Space).
+    }
+  \end{overlayarea}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Example}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      Apply FTCS to advection equation. Initial data a gaussian. Choose
+      timestep such that $c = 1/2$. \pause
+
+      \vspace{1ex}
+
+      Result evolves \pause in roughly the right fashion. \pause
+      Increasing resolution \pause introduces oscillations \pause
+      which blow up.
+
+      \vspace{1ex}
+
+      No sign of convergence. Modifying $c$ has no effect.
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1|handout:0>[width=\textwidth]{figures/FTCSAdvection1_0}
+        \includegraphics<2|handout:1>[width=\textwidth]{figures/FTCSAdvection1_3}
+        \includegraphics<3|handout:0>[width=\textwidth]{figures/FTCSAdvection1_9}
+        \includegraphics<4|handout:0>[width=\textwidth]{figures/FTCSAdvection5_0}
+        \includegraphics<5|handout:2>[width=\textwidth]{figures/FTCSAdvection5_80}
+        \includegraphics<6|handout:0>[width=\textwidth]{figures/FTCSAdvection5_160}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+
+\end{frame}
+
+
+\subsection{FTBS (Upwind)}
+
+\begin{frame}
+  \frametitle{FTBS - Upwind methods}
+
+  \begin{overlayarea}{\textwidth}{0.8\textheight}
+    \only<1|handout:1>
+    {
+      FTCS method is \emph{sometimes} stable for
+      heat equation, but \emph{never} stable for advection
+      equation. Try modifying differencing to improve
+      behaviour in the hyperbolic case.
+    }
+    \only<2|handout:1>
+    {
+      \begin{equation*}
+        \partial_{t} y + \partial_{x} y = 0. \quad y(x, 0) = g(x),
+        \,\, y(0, t) = y(1, t).
+      \end{equation*}
+      Try modifying \emph{spatial} differencing using \emph{backward}
+      differences:
+      \begin{equation*}
+        \partial_{x} y |_{x = x_i} = \frac{y_{i} - y_{i-1}}{h} + {\cal
+          O}(h^2).
+      \end{equation*}
+    }
+    \only<3|handout:2>
+    {
+      \begin{equation*}
+        \partial_{t} y + \partial_{x} y = 0. \quad y(x, 0) = g(x),
+        \,\, y(0, t) = y(1, t).
+      \end{equation*}
+      \begin{equation*}
+        \partial_{x} y |_{x = x_i} = \frac{y_{i} - y_{i-1}}{h} + {\cal
+          O}(h^2).
+      \end{equation*}
+      Combine this with forward differencing in time,
+      \begin{equation*}
+        \partial_t y |_{t = t^n} = \frac{y^{n+1} - y^n}{\delta} + {\cal
+          O}(\delta^2).
+      \end{equation*}
+    }
+    \only<4-|handout:3>
+    {
+      \begin{equation*}
+        \partial_{t} y + \partial_{x} y = 0. \quad y(x, 0) = g(x),
+        \,\, y(0, t) = y(1, t).
+      \end{equation*}
+      \begin{equation*}
+        \partial_{x} y |_{x = x_i} = \frac{y_{i} - y_{i-1}}{h} + {\cal
+          O}(h^2).
+      \end{equation*}
+      \begin{equation*}
+        \partial_t y |_{t = t^n} = \frac{y^{n+1} - y^n}{\delta} + {\cal
+          O}(\delta^2).
+      \end{equation*}
+      Substituting in the difference formulas and rearranging gives
+      \begin{align*}
+        && y_i^{n+1} & = y_i^n - \frac{\delta}{h} \left( y_{i}^n -
+          y_{i-1}^n \right), \\
+        c = \delta / h & \implies &
+        y_i^{n+1} & = y_i^n - c \left( y_{i}^n - y_{i-1}^n \right).
+      \end{align*}
+    }
+    \only<5|handout:3>
+    {
+      \emph{Explicit} algorithm called FTBS (Forward Time,
+      Backward Space).
+    }
+  \end{overlayarea}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      Apply FTBS to advection equation. Initial data a gaussian.
+      Choose timestep such that $c = 1/2$. \pause
+
+      \vspace{1ex}
+
+      Result evolves in roughly the right fashion.
+      \pause Increasing the resolution \pause improves matters
+      slowly. \pause
+
+      \vspace{1ex}
+
+      There is first order convergence in this case.
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1|handout:0>[width=\textwidth]{figures/FTBSAdvection1_0}
+        \includegraphics<2|handout:1>[width=\textwidth]{figures/FTBSAdvection1_120}
+        \includegraphics<3|handout:0>[width=\textwidth]{figures/FTBSAdvection3_0}
+        \includegraphics<4|handout:2>[width=\textwidth]{figures/FTBSAdvection3_480}
+        \includegraphics<5|handout:3>[width=\textwidth]{figures/FTBSAdvectionConvergence1}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Example: 2}
+
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      Apply FTBS to advection equation.  Initial data a gaussian.
+      Choose timestep such that $c = 3/2$. \pause
+
+      \vspace{1ex}
+
+      Result evolves \pause in roughly the right fashion.  \pause
+      Increasing resolution \pause shows an instability \pause that
+      blows up.
+
+      \vspace{1ex}
+
+      There is no convergence in this case.
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \includegraphics<1|handout:0>[width=\textwidth]{figures/FTBSAdvectionUnstable1_0}
+        \includegraphics<2|handout:1>[width=\textwidth]{figures/FTBSAdvectionUnstable1_10}
+        \includegraphics<3|handout:0>[width=\textwidth]{figures/FTBSAdvectionUnstable1_20}
+        \includegraphics<4|handout:0>[width=\textwidth]{figures/FTBSAdvectionUnstable3_0}
+        \includegraphics<5|handout:2>[width=\textwidth]{figures/FTBSAdvectionUnstable3_40}
+        \includegraphics<6|handout:0>[width=\textwidth]{figures/FTBSAdvectionUnstable3_80}
+      \end{center}
+    \end{column}
+  \end{columns}
+
+
+\end{frame}
+
+
+\section{Summary}
+
+\subsection{Summary}
+
+\begin{frame}
+  \frametitle{Summary}
+
+  \begin{itemize}
+  \item Finite difference methods result from the standard algorithm:
+    \begin{enumerate}
+    \item Introduce a grid
+    \item Replacing derivatives with finite differences
+    \item Rearrange to get either
+      \begin{itemize}
+      \item an explicit update formula, or
+      \item an implicit equation which can be converted to a linear system.
+      \end{itemize}
+    \end{enumerate}
+  \item For the heat equation the simple FTCS method is stable if $s <
+    1/2$, whereas the implicit BTCS method is good for all $s$.
+  \item For the advection equation FTCS is unstable for all $c$,
+    whilst FTBS is stable if $c < 1$.
+  \item Von Neumann stability analysis in the next lecture will
+    indicate the reasons for the results above.
+  \end{itemize}
+
+\end{frame}
+
+\end{document}
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

@@ -1,0 +1,8 @@
+Micromagnetism example taken from
+http://www.soton.ac.uk/~fangohr/research/micromaggallery/index.html
+
+The visualisation below is that of the magnetisation of a
+ferromagnetic sphere of radius 200nm at zero applied field. The colour
+scale represents the angle between the x and y components of the
+magnetisation; the streamlines represent tracers which have been
+dropped in to highlight the vortex state.

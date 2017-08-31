@@ -1,0 +1,612 @@
+% $Header: /cvsroot/latex-beamer/latex-beamer/solutions/conference-talks/conference-ornate-20min.en.tex,v 1.6 2004/10/07 20:53:08 tantau Exp $
+
+\documentclass{beamer}
+%\documentclass[handout]{beamer}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
+
+% This file is a solution template for:
+
+% - Talk at a conference/colloquium.
+% - Talk length is about 20min.
+% - Style is ornate.
+
+
+
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice. 
+
+
+\mode<presentation>
+{
+%  \usetheme{Warsaw}
+%  \usetheme{Boadilla}
+%  \usetheme{Goettingen}
+%  \usetheme{Hannover}
+%  \usetheme{Madrid}
+%  \usetheme{Marburg}
+%  \usetheme{Montpellier}
+%  \usetheme{Pittsburgh}
+  \usetheme{Hawke}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+% or whatever
+
+\usepackage[latin1]{inputenc}
+% or whatever
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{multimedia}
+
+
+%%%%%%
+% My Commands
+%%%%%%
+
+\newcommand{\ml}{{\sc matlab}}
+\newcommand{\bb}{{\boldsymbol{b}}}
+\newcommand{\bx}{{\boldsymbol{x}}}
+\newcommand{\by}{{\boldsymbol{y}}}
+\newcommand{\bfm}[1]{{\boldsymbol{#1}}}
+\newcommand{\pda}[2]{\frac{\partial{#1}}{\partial{#2}}}
+\newcommand{\pdb}[2]{\frac{\partial^2{#1}}{\partial{#2}^2}}
+\newcommand{\pdc}[3]{\frac{\partial^2{#1}}{\partial{#2}\partial{#3}}}
+
+
+%%%%
+
+\title[Lecture 24] % (optional, use only with long paper titles)
+{Lecture 24 - Von Neumann stability}
+
+% \subtitle
+% {Include Only If Paper Has a Subtitle}
+
+\author[I. Hawke] % (optional, use only with lots of authors)
+{I.~Hawke}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[University of Southampton] % (optional, but mostly needed)
+{
+%  \inst{1}%
+  School of Mathematics, \\
+  University of Southampton, UK
+}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date[Semester 1] % (optional, should be abbreviation of conference name)
+{MATH3018/6141, Semester 1}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Numerical methods}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+\pgfdeclareimage[height=0.5cm]{university-logo}{mathematics_7469}
+\logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+%  \AtBeginSubsection[]
+%  {
+%    \begin{frame}<beamer>
+%      \frametitle{Outline}
+%      \tableofcontents[currentsection,currentsubsection]
+%    \end{frame}
+%  }
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Stability}
+
+\subsection{Evidence}
+
+\begin{frame}
+  \frametitle{Partial differential equations}
+
+  Partial differential equations (PDEs) involve derivatives of
+  functions of more than one variable, say $u(x, y)$ or $y(t,
+  x)$. Hence more complex behaviour and more interesting
+  physics. \pause
+
+  \vspace{1ex}
+
+  Only look at linear problems.  Also only consider finite difference
+  methods: simple to analyse but not always competitive. \pause
+
+  \vspace{1ex}
+
+  Previously looked at simple finite difference algorithms applied to
+  heat and advection equations. At present have no explanation for
+  which worked and which did not; for that we need stability theory.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The results}
+
+  \begin{center}
+    \begin{tabular}{c|c c}
+      Algorithm & Heat equation & Advection equation \\ \hline
+      FTCS & Stable $s < 1/2$ & Unstable \\
+      BTCS & Stable $\forall s$ & ?? \\
+      FTBS & ?? & Stable $c < 1$
+    \end{tabular}
+  \end{center}
+
+  Here $s = k \delta / h^2$ for the heat equation
+  \begin{equation*}
+    \partial_t y - k \partial_{x x} y = 0,
+  \end{equation*}
+  and $c = v \delta / h$ for the advection equation
+  \begin{equation*}
+    \partial_t y + v \partial_x y = 0.
+  \end{equation*}
+
+\end{frame}
+
+
+\subsection{Lax Theorem}
+
+\begin{frame}
+  \frametitle{Consistency}
+  
+  \begin{overlayarea}{\textwidth}{0.8\textheight}
+    \only<1|handout:1>
+    {
+      Theory for multistep methods for IVPs related
+      \emph{consistency}, \emph{stability} and \emph{convergence}. 
+      Have similar concepts and theory for PDEs. 
+    }
+    \only<2-|handout:1->
+    {
+      Finite difference equation \emph{consistent} if it tends to the
+      PDE as grid sizes go to zero \emph{independently}.
+    }
+    \only<3-|handout:1->
+    {
+
+      \vspace{1ex}
+      Local error must vanish as $h, \delta \rightarrow 0$ in any way.
+    }
+    \only<4-|handout:1>
+    {
+
+      \vspace{1ex}
+      All the methods defined previously are clearly consistent.
+    }
+    \only<5|handout:2>
+    {
+
+      \vspace{1ex}
+      The Lax method for the advection equation,
+      \begin{equation*}
+        y_i^{n+1} = \frac{1}{2} \left( y_{i+1}^n + y_{i-1}^n \right) -
+        \frac{c}{2} \left( y_{i+1}^n - y_{i-1}^n \right)
+      \end{equation*}
+      can be Taylor expanded to give
+      \begin{equation*}
+        \partial_t y + v \partial_x y = \tfrac{1}{2} \left(
+          h^2 / \delta - v^2 \delta \right) \partial_{x x} y + \dots
+      \end{equation*}
+      which is consistent if, for example, $h / \delta$ is constant, but
+      not in general.
+    }
+  \end{overlayarea}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stability}
+
+  As before a finite difference equation is \emph{stable} if it
+  produces a bounded solution and unstable otherwise. \pause
+
+  \vspace{1ex}
+
+  Have seen that BTCS is stable for the heat equation, whilst FTCS was
+  stable only when $s < 1/2$. For heat equation FTCS is
+  \emph{conditionally} stable, whilst BTCS is \emph{unconditionally}
+  stable. \pause Have also seen that FTCS is unstable for advection
+  equation; it is \emph{unconditionally unstable}. \pause
+
+  \vspace{1ex}
+
+  As for IVPs there may exist genuine unbounded solutions, and
+  spurious solutions that swamp genuine solutions.  Often closely
+  related to the complex concept of well-posedness: shall ignore this
+  issue here.
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Convergence}
+  
+  Key concept is \emph{convergence}: in the limit of zero grid spacing
+  the finite difference solution converges to the exact
+  solution. \pause
+
+  \vspace{1ex}
+
+  Exceptionally difficult to directly prove in general. \pause Instead
+  rely on
+
+  \vspace{2ex}
+
+  {\bf Lax's Theorem (1954)}: Given a properly posed linear
+  initial-value problem and a finite difference approximation to it
+  that is consistent, stability is necessary and sufficient for
+  convergence. \pause
+
+  \vspace{2ex}
+
+  Can be extended (with some caveats) to nonlinear problems with
+  non-trivial boundary conditions, even when discontinuities form.
+
+\end{frame}
+
+
+\section{Von Neumann stability theory}
+
+\subsection{Von Neumann stability theory}
+
+\begin{frame}
+  \frametitle{Determining stability}
+
+  Von Neumann stability method for linear algorithms and equations:
+  \begin{enumerate}
+  \item<2-> Make ansatz that solutions of the finite difference
+    equation have form
+    \begin{equation*}
+      y_{\ell}^k =  e^{\alpha j \ell h} q^k, \qquad (\, j = \sqrt{-1}, \alpha \in {\mathbb R}, q \in {\mathbb C} ).
+    \end{equation*}
+  \item<3-> Substitute this solution into the finite difference
+    equation.
+  \item<4-> Determine $q$ as a function of $\alpha$, the grid spacings
+    $h,\delta$, and known numbers (such as the advection velocity
+    $v$).
+  \item<5-> Determine under what conditions we have stability, i.e.\ when
+    \begin{equation*}
+      |q| < 1 \quad \forall \alpha.
+    \end{equation*}
+  \end{enumerate} \pause[6] 
+  Can apply method blindly to produce stability result; but how does
+  it come about?
+  
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Von Neumann stability}
+
+  \begin{overlayarea}{\textwidth}{0.8\textheight}
+    \only<1-2|handout:1>
+    {
+      Consider a linear initial-value problem, such as heat or
+      advection equation.  Assume we have a consistent finite
+      difference algorithm (easily checked).
+    }
+    \only<2|handout:1>
+    {
+
+      \vspace{1ex}
+
+      To prove convergence need to show algorithm is
+      stable: i.e., numerical result is bounded.
+    }
+    \only<3-|handout:1->
+    {
+      Assume we can separate variables and write
+      \begin{equation*}
+        y = \sum_{m = 0}^{\infty} A_{m}(t) \cos (m x) +
+        B_{m}(t) \sin (m x). 
+      \end{equation*}    
+    }
+    \only<4-|handout:2>
+    {
+      Implies assumptions about e.g.\ spatial domain (ignore here).
+    }
+    \only<5-|handout:2>
+    {
+
+      \vspace{1ex}
+
+      Use exponential form of trigonometric terms to
+      write as
+      \begin{equation*}
+        y = \sum_{m = -\infty}^{\infty} a_{m}(t) e^{j m x}
+      \end{equation*}
+      where $a$ is \emph{complex} function (containing the
+      two degrees of freedom in $A,B$), and $j = \sqrt{-1}$.
+    }
+    \only<6-|handout:2>
+    {
+
+      \vspace{1ex}
+
+      As problem is linear can superpose solutions, so each
+      $a_{m}$ is independent. Hence problem stable \emph{only
+        if} $a_{m}$ does not grow with $t$ for \emph{every}
+      $m$.  }
+  \end{overlayarea}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Linear stability}
+
+  % \begin{overlayarea}{\textwidth}{0.8\textheight}
+  %   \only<1-4>
+  %   {
+      From linearity consider just the single mode ``solution''
+      \begin{equation*}
+        y = a_{m}(t) e^{j m x}, \qquad m \in \mathbb{Z}.
+      \end{equation*}
+      Just need to show that $y$ bounded for general $m$. \pause
+    % }
+    % \only<2-4>
+    % {
+
+      \vspace{1ex}
+
+      Consider a point on grid $\{ x_{\ell} \} = \ell h$, so that
+      \begin{equation*}
+        y_{\ell} = a_{m}(t) e^{j m \ell h}.
+      \end{equation*} \pause
+    % }
+    % \only<3-4>
+    % {
+      At first two steps $t^0, t^1 = t^0 + \delta$, have values
+      \begin{equation*}
+        y_{\ell}^0 = a_{m}(t^0) e^{j m \ell h}, \quad y_{\ell}^1 =
+        a_{m}(t^1) e^{j m \ell h}.
+      \end{equation*} \pause
+    % }
+    % \only<4>
+    % {
+      \emph{Define} the growth from one timestep to the next as
+      \begin{equation*}
+        q \equiv \frac{y_{\ell}^{k+1}}{y_{\ell}^k} =
+        \frac{a_{m}(t^{k+1})}{a_{m}(t^k)} \quad \therefore \quad
+        \text{Stability} \Leftrightarrow | q | < 1.
+      \end{equation*}
+  %   }
+  % \end{overlayarea}
+
+\end{frame}
+
+
+\section{Von Neumann stability in practise}
+
+
+\subsection{Von Neumann stability in practise}
+
+
+\begin{frame}
+  \frametitle{FTCS for the heat equation}
+  
+  Our finite difference algorithm is
+  \begin{equation*}
+    y_i^{n+1} = ( 1 - 2 s ) y_i^n + s \left( y_{i+1}^n + y_{i-1}^n
+    \right).
+  \end{equation*} \pause
+  By identifying $i \leftrightarrow \ell$ and $n \leftrightarrow k$ we
+  can substitute in our ansatz
+  \begin{align*}
+    && y_{\ell}^k & =  e^{\alpha j \ell h} q^k. \\
+    & \implies & 
+    e^{\alpha j \ell h} q^{k+1} &= (1 - 2 s) e^{\alpha j \ell h} q^k +
+    s \left( e^{\alpha j (\ell + 1) h} q^k + e^{\alpha j (\ell - 1) h}
+      q^k \right).
+  \end{align*} \pause
+  Removing the common factor of $e^{\alpha j \ell h} q^k$ gives
+  \begin{equation*}
+    q = (1 - 2 s) + s \left( e^{\alpha j h} +  e^{-\alpha j h} \right).
+  \end{equation*}
+  Relates $q$ to (undetermined) $\alpha$ and (free) $h$ and $s$.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{FTCS for the heat equation: 2}
+  
+  \begin{equation*}
+    y_i^{n+1} = ( 1 - 2 s ) y_i^n + s \left( y_{i+1}^n + y_{i-1}^n
+    \right).
+  \end{equation*}
+  \begin{equation*}
+    q = (1 - 2 s) + s \left( e^{\alpha j h} +  e^{-\alpha j h} \right).
+  \end{equation*}
+  \begin{overlayarea}{\textwidth}{0.7\textheight}
+    \only<1-2|handout:1>
+    {
+      Now bound $|q|$ for \emph{any} $\alpha$
+      (may depend on grid spacing).
+    }
+    \only<2|handout:1>
+    {
+      More obvious by writing
+      \begin{equation*}
+        q = 1 - 4 s \sin^2 \left(\frac{\alpha h}{2} \right).
+      \end{equation*}
+    }
+    \only<3-|handout:2>
+    {
+      \vspace{-1ex}
+      \begin{equation*}
+        q = 1 - 4 s \sin^2 \left(\frac{\alpha h}{2} \right)
+      \end{equation*}
+      See that, for arbitrary $\alpha$, $\sin$ term
+      bounded between $0$ and $1$.
+    }
+    \only<4-|handout:2>
+    {
+      Therefore the limiting values for $q$ are
+      \begin{align*}
+        q & \le 1 & (\sin^2(\dots) & = 0) \\
+        q & \ge 1 - 4 s & (\sin^2(\dots) & = 1).
+      \end{align*}
+    }
+    \only<5-|handout:2>
+    {
+      Therefore stability, and hence convergence, is given when \vspace{-.5ex}
+      \begin{equation*}
+        |q| < 1 \Leftrightarrow s < \tfrac{1}{2} \Leftrightarrow
+        \frac{\delta}{h^2} < \tfrac{1}{2}. 
+      \end{equation*}
+    }
+  \end{overlayarea}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{BTCS for the heat equation}
+  
+  We look at BTCS in the form
+  \begin{equation*}
+    (1 + 2 s) y_i^{n+1} = y_i^n + s \left( y_{i+1}^{n+1} +
+      y_{i-1}^{n+1} \right). 
+  \end{equation*} \pause
+  Use ansatz $y_{\ell}^k =  \exp (\alpha j \ell h) q^k$
+  and removing common factors:
+  \begin{equation*}
+    (1 + 2 s) q = 1 + s q \left( e^{\alpha j h} +  e^{-\alpha j h}
+    \right). 
+  \end{equation*} \pause
+  Rewrite this as
+  \begin{align*}
+    && q & = 1 + 2 s \left( e^{\alpha j h} +  e^{-\alpha j h} - 2 \right)
+    q \\
+    && & = 1 - 4 s q \sin^2 \left( \tfrac{\alpha h}{2} \right) \\
+    & \implies & q & = \left( 1 + 4 s \sin^2 \left( \tfrac{\alpha
+          h}{2} \right) \right)^{-1}, 
+  \end{align*} \pause
+  which is \emph{always} less than 1. Hence BTCS is unconditionally
+  stable. 
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{FTCS for the advection equation}
+
+  Ignore difference in \emph{differential} equation; only need
+  analysis at level of finite difference equation:
+  \begin{equation*}
+    y_i^{n+1} = y_i^n - \frac{c}{2} \left( y_{i+1}^n - y_{i-1}^n
+    \right).
+  \end{equation*}
+  Use ansatz $y_{\ell}^k = \exp (\alpha j \ell h) q^k$ and remove
+  common factors:
+  \begin{align*}
+    && q & = 1 - \frac{c}{2} \left( e^{\alpha j h} - e^{-\alpha j h}
+    \right) \\
+    & \implies & q & = 1 - j c \sin ( \alpha h ).
+  \end{align*} \pause
+  As this is complex the modulus is
+  \begin{equation*}
+    |q|^2 = 1 + c^2 \sin^2 ( \alpha h )
+  \end{equation*}
+  which is always greater than 1: method is unconditionally unstable.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{FTBS for the advection equation}
+  
+  Finally for the upwind method, FTBS, we had the difference equation
+  \begin{equation*}
+    y_i^{n+1} = y_i^n - c \left( y_{i}^n - y_{i-1}^n \right).
+  \end{equation*}
+  Use ansatz $y_{\ell}^k =  \exp (\alpha j \ell h) q^k$
+  and remove common factors:
+  \begin{equation*}
+    q = 1 - c \left( 1 - e^{-\alpha j h} \right). 
+  \end{equation*} \pause
+
+  Describes circle radius $c$ in the complex plane, centre at $1 -
+  c$. \pause If $c > 1$ there are finite values of $\alpha$ for which
+  $|q| > 1$, leading to instability; if $c < 1$ then $q$ is at most 1,
+  leading to stability.
+
+\end{frame}
+
+\section{Summary}
+
+\subsection{Summary}
+
+\begin{frame}
+  \frametitle{Summary}
+  
+  \begin{itemize}
+  \item Von Neumann stability analysis is the key tool for
+    understanding the results seen ``experimentally'' in the last
+    lecture.
+  \item By looking at the growth or decay of individual frequency
+    modes we can check the stability of the method; Lax's theorem then
+    proves convergence.
+  \item For complex equations and / or algorithms, it is often very
+    difficult or impossible to apply even Von Neumann stability
+    analysis.
+  \item If an algorithm does not work in the linear case then it is
+    highly unlikely to work for more complex problems!
+  \end{itemize}
+   
+\end{frame}
+
+\end{document}
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
