@@ -1,0 +1,242 @@
+\documentclass{beamer}
+
+
+\mode<presentation>
+{
+  \usetheme{Hawke}
+  \setbeamercovered{transparent}
+}
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{multimedia}
+
+
+%%%%%%
+% My Commands
+%%%%%%
+
+\newcommand{\bb}{{\boldsymbol{b}}}
+\newcommand{\bx}{{\boldsymbol{x}}}
+\newcommand{\by}{{\boldsymbol{y}}}
+\newcommand{\bfm}[1]{{\boldsymbol{#1}}}
+\newcommand{\pda}[2]{\frac{\partial{#1}}{\partial{#2}}}
+\newcommand{\pdb}[2]{\frac{\partial^2{#1}}{\partial{#2}^2}}
+\newcommand{\pdc}[3]{\frac{\partial^2{#1}}{\partial{#2}\partial{#3}}}
+
+
+%%%%
+
+\title[Lecture 28] % (optional, use only with long paper titles)
+{Lecture 28 - Von Neumann stability 2}
+
+\author[I. Hawke] % (optional, use only with lots of authors)
+{I.~Hawke}
+\institute[University of Southampton] % (optional, but mostly needed)
+{
+  School of Mathematics, \\
+  University of Southampton, UK
+}
+
+\date[Semester 1] % (optional, should be abbreviation of conference name)
+{MATH3018/6141, Semester 1}
+
+\subject{Numerical methods}
+
+\pgfdeclareimage[height=0.5cm]{university-logo}{mathematics_7469}
+\logo{\pgfuseimage{university-logo}}
+
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Stability}
+
+\subsection{Evidence}
+
+\begin{frame}
+  \frametitle{Partial differential equations}
+
+  Partial differential equations (PDEs) involve derivatives of
+  functions of more than one variable, say $u(x, y)$ or $y(t,
+  x)$. Hence more complex behaviour and more interesting
+  physics. \pause
+
+  \vspace{1ex}
+
+  Only look at linear problems.  Also only consider finite difference
+  methods: simple to analyse but not always competitive. \pause
+
+  \vspace{1ex}
+
+  Previously looked at simple finite difference algorithms applied to
+  heat and advection equations. At present have no explanation for
+  which worked and which did not; for that we need stability theory.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The results}
+
+  \begin{center}
+    \begin{tabular}{c|c c}
+      Algorithm & Heat equation & Advection equation \\ \hline
+      FTCS & Stable $s < 1/2$ & Unstable \\
+      BTCS & Stable $\forall s$ & ?? \\
+      FTBS & ?? & Stable $c < 1$
+    \end{tabular}
+  \end{center}
+
+  Here $s = k \delta / h^2$ for the heat equation
+  \begin{equation*}
+    \partial_t y - k \partial_{x x} y = 0,
+  \end{equation*}
+  and $c = v \delta / h$ for the advection equation
+  \begin{equation*}
+    \partial_t y + v \partial_x y = 0.
+  \end{equation*}
+
+\end{frame}
+
+
+\section{Von Neumann stability theory}
+
+\subsection{Von Neumann stability theory}
+
+\begin{frame}
+  \frametitle{Determining stability}
+
+  Von Neumann stability method for linear algorithms and equations:
+  \begin{enumerate}
+  \item<2-> Make ansatz that solutions of the finite difference
+    equation have form
+    \begin{equation*}
+      y_{\ell}^k =  e^{\alpha j \ell h} q^k, \qquad (\, j = \sqrt{-1}, \alpha \in {\mathbb R}, q \in {\mathbb C} ).
+    \end{equation*}
+  \item<3-> Substitute this solution into the finite difference
+    equation.
+  \item<4-> Determine $q$ as a function of $\alpha$, the grid spacings
+    $h,\delta$, and known numbers (such as the advection velocity
+    $v$).
+  \item<5-> Determine under what conditions we have stability, i.e.\ when
+    \begin{equation*}
+      |q| < 1 \quad \forall \alpha.
+    \end{equation*}
+  \end{enumerate}
+
+\end{frame}
+
+
+\section{Von Neumann stability in practise}
+
+
+\subsection{Von Neumann stability in practise}
+
+\begin{frame}
+  \frametitle{BTCS for the heat equation}
+
+  We look at BTCS in the form
+  \begin{equation*}
+    (1 + 2 s) y_i^{n+1} = y_i^n + s \left( y_{i+1}^{n+1} +
+      y_{i-1}^{n+1} \right).
+  \end{equation*} \pause
+  Use ansatz $y_{\ell}^k =  \exp (\alpha j \ell h) q^k$
+  and removing common factors:
+  \begin{equation*}
+    (1 + 2 s) q = 1 + s q \left( e^{\alpha j h} +  e^{-\alpha j h}
+    \right).
+  \end{equation*} \pause
+  Rewrite this as
+  \begin{align*}
+    && q & = 1 + 2 s \left( e^{\alpha j h} +  e^{-\alpha j h} - 2 \right)
+    q \\
+    && & = 1 - 4 s q \sin^2 \left( \tfrac{\alpha h}{2} \right) \\
+    & \implies & q & = \left( 1 + 4 s \sin^2 \left( \tfrac{\alpha
+          h}{2} \right) \right)^{-1},
+  \end{align*} \pause
+  which is \emph{always} less than 1. Hence BTCS is unconditionally
+  stable.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{FTCS for the advection equation}
+
+  Ignore difference in \emph{differential} equation; only need
+  analysis at level of finite difference equation:
+  \begin{equation*}
+    y_i^{n+1} = y_i^n - \frac{c}{2} \left( y_{i+1}^n - y_{i-1}^n
+    \right).
+  \end{equation*}
+  Use ansatz $y_{\ell}^k = \exp (\alpha j \ell h) q^k$ and remove
+  common factors:
+  \begin{align*}
+    && q & = 1 - \frac{c}{2} \left( e^{\alpha j h} - e^{-\alpha j h}
+    \right) \\
+    & \implies & q & = 1 - j c \sin ( \alpha h ).
+  \end{align*} \pause
+  As this is complex the modulus is
+  \begin{equation*}
+    |q|^2 = 1 + c^2 \sin^2 ( \alpha h )
+  \end{equation*}
+  which is always greater than 1: method is unconditionally unstable.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{FTBS for the advection equation}
+
+  Finally for the upwind method, FTBS, we had the difference equation
+  \begin{equation*}
+    y_i^{n+1} = y_i^n - c \left( y_{i}^n - y_{i-1}^n \right).
+  \end{equation*}
+  Use ansatz $y_{\ell}^k =  \exp (\alpha j \ell h) q^k$
+  and remove common factors:
+  \begin{equation*}
+    q = 1 - c \left( 1 - e^{-\alpha j h} \right).
+  \end{equation*} \pause
+
+  Describes circle radius $c$ in the complex plane, centre at $1 -
+  c$. \pause If $c > 1$ there are finite values of $\alpha$ for which
+  $|q| > 1$, leading to instability; if $c < 1$ then $q$ is at most 1,
+  leading to stability.
+
+\end{frame}
+
+\section{Summary}
+
+\subsection{Summary}
+
+\begin{frame}
+  \frametitle{Summary}
+
+  \begin{itemize}
+  \item Von Neumann stability analysis is the key tool for
+    understanding the results seen ``experimentally'' in the last
+    lecture.
+  \item By looking at the growth or decay of individual frequency
+    modes we can check the stability of the method; Lax's theorem then
+    proves convergence.
+  \item For complex equations and / or algorithms, it is often very
+    difficult or impossible to apply even Von Neumann stability
+    analysis.
+  \item If an algorithm does not work in the linear case then it is
+    highly unlikely to work for more complex problems!
+  \end{itemize}
+
+\end{frame}
+
+\end{document}
